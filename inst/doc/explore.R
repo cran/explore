@@ -98,7 +98,7 @@ iris %>% describe(Sepal.Length)
 ## ----eval=FALSE, echo=TRUE-----------------------------------------------
 #  description <- data.frame(
 #                    variable = c("Species"),
-#                    description = c("Species of Iris flower")))
+#                    description = c("Species of Iris flower"))
 #  data_dict_md(iris,
 #               title = "iris flower data set",
 #               description =  description,

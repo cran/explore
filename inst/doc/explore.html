@@ -12,7 +12,7 @@
 
 <meta name="author" content="Roland Krasser" />
 
-<meta name="date" content="2019-05-16" />
+<meta name="date" content="2019-05-19" />
 
 <title>explore</title>
 
@@ -95,13 +95,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">explore</h1>
 <h4 class="author">Roland Krasser</h4>
-<h4 class="date">2019-05-16</h4>
+<h4 class="date">2019-05-19</h4>
 
 
 
-<p>Interactive data exploration with one line of code or use a easy to remember set of tidy functions to explore your data. Introduces two main verbs for data analysis. <strong>describe()</strong> to describe a variable or table, <strong>explore()</strong> to grafically explore a variable or table.</p>
+<p>Interactive data exploration with one line of code or use a easy to remember set of tidy functions for exploratory data analysis. Introduces two main verbs. <strong>describe()</strong> to describe a variable or table, <strong>explore()</strong> to grafically explore a variable or table.</p>
 <p>explore package on Github: <a href="https://github.com/rolkra/explore" class="uri">https://github.com/rolkra/explore</a></p>
-<p>As the explore-funcitons fits well into the tidyverse, we load the dplyr-package as well.</p>
+<p>As the explore-functions fits well into the tidyverse, we load the dplyr-package as well.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
 <span class="kw">library</span>(explore)</code></pre></div>
 <div id="interactive-data-exploration" class="section level3">
@@ -233,7 +233,7 @@ iris <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">des
 <p>Add title, detailed descriptions and change default filename</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">description &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
                   <span class="dt">variable =</span> <span class="kw">c</span>(<span class="st">&quot;Species&quot;</span>), 
-                  <span class="dt">description =</span> <span class="kw">c</span>(<span class="st">&quot;Species of Iris flower&quot;</span>))<span class="er">)</span>
+                  <span class="dt">description =</span> <span class="kw">c</span>(<span class="st">&quot;Species of Iris flower&quot;</span>))
 <span class="kw">data_dict_md</span>(iris, 
              <span class="dt">title =</span> <span class="st">&quot;iris flower data set&quot;</span>, 
              <span class="dt">description =</span>  description, 
