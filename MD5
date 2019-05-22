@@ -1,10 +1,10 @@
-4158e7039e102ad93a30d8770ca221fd *DESCRIPTION
+2f172e20d2098bb1a34df8967dec4d56 *DESCRIPTION
 90c9552b19e627c0f46ce09b4fe6483c *NAMESPACE
-8ec90b63cbee23d88ff03b363575e79b *R/explore.R
+07822628470cd2edb889c9a5aa1e37e7 *R/explore.R
 b064c81f1b89f862cc79c5259592d1f1 *build/vignette.rds
 60a44f8ed114f80db7027f90e3570424 *inst/doc/explore.R
 dc34c22b9000063d7d453b9915b46e90 *inst/doc/explore.Rmd
-eff5ad50fea206473bf67b948bf0e28c *inst/doc/explore.html
+9856eb39e530c13ac3d57f19f64d0207 *inst/doc/explore.html
 13740179329f99fa81dde2fabc9c4256 *inst/extdata/template_report_attribute.Rmd
 12dc7fee79c939c7ee5d361b0fbc1953 *inst/extdata/template_report_target_den.Rmd
 283998c9382a0791d7376d6e7e3f25a1 *inst/extdata/template_report_target_pct.Rmd
@@ -39,7 +39,7 @@ ed8b7d025c27f6304e0d463cbf4c56d5 *man/get_nrow.Rd
 e65a53015a234e9170360808574d1b22 *man/guess_cat_num.Rd
 5091b2232e283c10edd6cc0fac54515f *man/plot_text.Rd
 e0c61a125250261c9580b6d9bf4b41fa *man/replace_na_with.Rd
-96bbf0f243ae2bb6c0d56333f58a7837 *man/report.Rd
+eeefcc20577537d214943f9e83ff14ac *man/report.Rd
 51085f69e6a04caa5f9e96bcdeaa08c8 *man/target_explore_cat.Rd
 7e35b04cc6a0bdc571429e074843eb13 *man/target_explore_num.Rd
 dc34c22b9000063d7d453b9915b46e90 *vignettes/explore.Rmd
