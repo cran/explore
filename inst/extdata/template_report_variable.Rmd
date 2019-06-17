@@ -12,7 +12,7 @@ d <- describe(data)
 knitr::kable(d)
 ```
 
-## Explore Attributes
+## Explore Variables
 
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
 total_col = 2

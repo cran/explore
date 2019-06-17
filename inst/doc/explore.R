@@ -13,7 +13,7 @@ library(explore)
 
 ## ----eval=FALSE, echo=TRUE-----------------------------------------------
 #  iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
-#  iris %>% explore(target = is_versicolor)
+#  iris %>% explore()
 
 ## ----eval=FALSE, echo=TRUE-----------------------------------------------
 #  # report of all variables
