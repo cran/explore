@@ -1,21 +1,10 @@
 ################################################################################
 # explore by Roland Krasser
 #
-# Version 0.4.1
-#   prepare for CRAN
-#   fix na parameter for target_explore_cat
-#   add data_dict_md function
-#   improve documentation
-#   use tempdir() in examples
-#   switch from RODBC to DBI/odbc
-#   drop dwh_write_table
-#   define intermediates_dir as output_dir in render
-#   add clean = TRUE in render (already was the default value)
-#
 # Version 0.4.2 (CRAN)
 #   add rmarkdown::pandoc_available("1.12.3") in example
 #
-# Version 0.4.3
+# Version 0.4.3 (CRAN)
 #   Typo in DESCRIPTION (a easy -> an easy)
 #   fix parameter in explore: auto_scale, na
 #   add parameter min_val, max_val in explore_cat
@@ -25,15 +14,37 @@
 #   explore_shiny: use output_dir / tempdir()
 #   change "attribute" to "variable" (consistent)
 #
+# Version 0.4.4 (DEV)
+#   add function explore_bar
+#   explore_density full tidy eval, target cat > 2 possible
+#   target_explore_cat full tidy eval
+#   target_explore_num full tidy eval
+#   add plot_var_info - function (ggplot obj.)
+#   plot_var_info explore/explore_all if <oth>
+#   add max_cat in explore_bar, explore_density and explain_tree
+#   add explore_tbl
+#   drop explore_cat & explore_num
+#   rename template_report_target_den > _split
+#   intelligent placing of labels in plots
+#   info window "generating report ..." in explore_shiny
+#   format_num -> format_num_kMB, format_num_space
+#   format_target -> if numeric split 0/1 by mean
+#   report -> default .html file extension
+#   consistency showing NA info in explore-title
+#   split default = FALSE
+#   target num in explore_all & report
+#   describe_tbl -> fix target not bin
+#   change out="vector" to out="list"
+#
 # dwh_connect, dwh_disconnect,
 # dwh_read_table, dwh_read_data, dwh_fastload
-# clean_var
+# clean_var, balance_target
 # describe, describe_all, describe_cat, describe_num
-# explore, explore_all, explore_density, explore_shiny, explore_cor
+# explore, explore_all, explore_tbl
+# explore_density, explore_shiny, explore_cor
 # explain_tree, explain_logreg
 # get_type, guess_cat_num, replace_na_with, format_num, format_target
-# get_nrow, plot_text
-# explore_cat, explore_num
+# get_nrow, plot_text, plot_var_info
 # target_explore_cat, target_explore_num
 ################################################################################
 
@@ -248,6 +259,7 @@ dwh_fastload <- function(data, dsn, table, ...)  {
 #' @param na Value that replaces NA
 #' @param min_val All values < min_val are converted to min_val (var numeric or character)
 #' @param max_val All values > max_val are converted to max_val (var numeric or character)
+#' @param max_cat Maximum number of different factor levels for categorical variable (if more, .OTHER is added)
 #' @param name New name of variable (as string)
 #' @return Dataset
 #' @import rlang
@@ -256,7 +268,7 @@ dwh_fastload <- function(data, dsn, table, ...)  {
 #' clean_var(iris, Sepal.Width, max_val = 3.5, name = "sepal_width")
 #' @export
 
-clean_var <- function(data, var, na = NA, min_val = NA, max_val = NA, name = NA)  {
+clean_var <- function(data, var, na = NA, min_val = NA, max_val = NA, max_cat = NA, name = NA)  {
 
   # check if var is missing
   if (missing(var)){
@@ -294,6 +306,25 @@ clean_var <- function(data, var, na = NA, min_val = NA, max_val = NA, name = NA)
     data[ ,var_txt] <- col
   }
 
+  # set levels based on max_cat
+  if (!is.na(max_cat) & max_cat > 0)  {
+    # factorise if necessary
+    if (!is.factor(data[[var_txt]])) {
+      data[[var_txt]] <- factor(data[[var_txt]])
+    }
+
+    # number of different levels of variable
+    n_var_cat <- length(levels(data[[var_txt]]))
+
+    # add level for NA (if in data)
+    data[[var_txt]] <- forcats::fct_explicit_na(data[[var_txt]], na_level = ".NA")
+
+    # keep max. different levels
+    if (n_var_cat > max_cat)  {
+        data[[var_txt]] <- forcats::fct_lump(data[[var_txt]],max_cat, other_level = ".OTHER")
+    }
+  } # if max_cat
+
   # rename variable
   if (!is.na(name))  {
     var_names <- colnames(data)
@@ -307,6 +338,75 @@ clean_var <- function(data, var, na = NA, min_val = NA, max_val = NA, name = NA)
   # return data
   data
 } # clean_var
+
+#============================================================================
+#  balance_target
+#============================================================================
+#' Balance target variable
+#'
+#' Balances the target variable in your dataset.
+#' Target must be 0/1, FALSE/TRUE ore no/yes
+#'
+#' @param data A dataset
+#' @param target Target variable (0/1, TRUE/FALSE, yes/no)
+#' @param min_prop Minimum proportion of one of the target categories
+#' @return Data
+#' @import rlang
+#' @import dplyr
+#' @examples
+#' iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
+#' balanced <- balance_target(iris, target = is_versicolor, min_prop = 0.5)
+#' describe(balanced, is_versicolor)
+#' @export
+
+balance_target <- function(data, target, min_prop = 0.1) {
+
+  # check if parameters are missing
+  if (missing(data))  {
+    stop("data is missing")
+  }
+
+  if (missing(target))  {
+    stop("target is missing")
+  }
+
+  # check if min_prop has a meaningful value
+  if (min_prop < 0 | min_prop > 1)  {
+    stop("min_prop must be a value between 0 and 1")
+  }
+
+  # tidy eval for target
+  target_quo <- enquo(target)
+  target_txt <- quo_name(target_quo)[[1]]
+
+  # check levels of target
+  target_levels <- length(unique(data[[target_txt]]))
+  if (target_levels > 2)  {
+    stop(paste("target has", target_levels, "levels, expected 2"))
+  }
+
+  # balance
+  observed_prop   <- data %>%
+    dplyr::pull(!!target_quo) %>%
+    table()
+  minClass        <- min(observed_prop)
+  names(minClass) <- names(which(observed_prop == minClass))
+  maxClass        <- floor(minClass / min_prop - minClass)
+
+  if (max(observed_prop) < maxClass) {
+    return(data)
+
+  } else {
+    data_minClass <- data %>%
+      dplyr::filter(!!target_quo == names(minClass)) %>%
+      dplyr::sample_n(minClass)
+    data_maxClass <- data %>%
+      dplyr::filter(!!target_quo != names(minClass)) %>%
+      dplyr::sample_n(maxClass)
+
+    return(rbind(data_minClass, data_maxClass))
+  }
+} # balance_target
 
 #============================================================================
 #  plot_text
@@ -324,28 +424,92 @@ clean_var <- function(data, var, na = NA, min_val = NA, max_val = NA, name = NA)
 #' plot_text("hello", size = 2, color = "red")
 #' @export
 
-plot_text <- function(text="hello world", size=1.6, color="black")  {
+plot_text <- function(text="hello world", size=1.2, color="black")  {
   plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
   text(x = 0.5, y = 0.5, text, cex = size, col = color)
 }
 
 #============================================================================
-#  format_num
+#  plot_var_info
+#============================================================================
+#' Plot a variable info
+#'
+#' Creates a ggplot with the variable-name as title and a text
+#'
+#' @param data A dataset
+#' @param var Variable
+#' @param info Text to plot
+#' @return Plot (ggplot)
+#' @import rlang
+#' @import dplyr
+#' @import ggplot2
+
+plot_var_info <- function(data, var, info = "")  {
+
+  # parameter var
+  if(!missing(var))  {
+    var_quo <- enquo(var)
+    var_txt <- quo_name(var_quo)[[1]]
+  } else {
+    var_txt = NA
+  }
+
+  # plot variable info
+  ggplot(NULL) +
+    geom_blank() +
+    geom_text(aes(x = 0, y = 0, label = info)) +
+    theme_minimal() +
+    labs(title = var_txt, x = "", y = " ") +
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank(),
+          plot.margin = unit(c(0.1,0.1,0.5,1), "cm")) #t,r,b,l
+} # plot_var_info
+
+#============================================================================
+#  format_num_spcace
 #============================================================================
 #' Format number
 #'
-#' Formats a big number as k (1000) or M (100000)
+#' Formats a big number using space as big.mark (1000 = 1 000)
 #'
 #' @param number A number (integer or real)
 #' @param digits Number of digits
 #' @return Formated number as text
 #' @examples
-#' format_num(5500, digits = 2)
+#' format_num_space(5500, digits = 2)
 #' @export
 
-format_num <- function(number = 0, digits = 1)   {
+format_num_space <- function(number = 0, digits = 1)   {
 
-  if (abs(number) >= 1000000) {
+  number <- format(round(number, digits),
+                  big.mark = " ",
+                  scientific = FALSE)
+
+} # format_num_space
+
+#============================================================================
+#  format_num_kMB
+#============================================================================
+#' Format number
+#'
+#' Formats a big number as k (1 000), M (1 000 000) or B (1 000 000 000)
+#'
+#' @param number A number (integer or real)
+#' @param digits Number of digits
+#' @return Formated number as text
+#' @examples
+#' format_num_kMB(5500, digits = 2)
+#' @export
+
+format_num_kMB <- function(number = 0, digits = 1)   {
+
+  if (abs(number) >= 1000000000) {
+    result = paste0(format(round(number / 1000000000, digits), digits = 15), "B")
+  } else if (abs(number) >= 1000000) {
     result = paste0(format(round(number / 1000000, digits), digits = 15), "M")
   } else if (abs(number) >= 1000) {
     result = paste0(format(round(number / 1000, digits), digits = 15), "k")
@@ -361,7 +525,7 @@ format_num <- function(number = 0, digits = 1)   {
 #============================================================================
 #' Format target
 #'
-#' Formats a target as a 0/1 variable
+#' Formats a target as a 0/1 variable. If target is numeric, 1 = above average.
 #'
 #' @param target Variable as vector
 #' @return Formated target
@@ -379,6 +543,8 @@ format_target <- function(target)   {
 
   if (is.factor(target))  {
     result <- ifelse(as.integer(target) == 1, 0, 1)
+  } else if (is.numeric(target))  {
+    result <- ifelse(target > mean(target, na.rm = TRUE), 1, 0)
   } else {
     result <- target
   }
@@ -392,8 +558,8 @@ format_target <- function(target)   {
 #' Create a plot to explore relation between categorial variable and a binary target
 #'
 #' @param data A dataset
-#' @param var_cat Name of categorial variable
-#' @param var_target Name of target variable (0/1 or FALSE/TRUE)
+#' @param var Categorial variable
+#' @param target Target variable (0/1 or FALSE/TRUE)
 #' @param min_val All values < min_val are converted to min_val
 #' @param max_val All values > max_val are converted to max_val
 #' @param flip Should plot be flipped? (change of x and y)
@@ -405,23 +571,39 @@ format_target <- function(target)   {
 #' @param legend_position Position of legend ("right"|"bottom"|"non")
 #' @return Plot object
 #' @importFrom magrittr "%>%"
+#' @importFrom utils head
 #' @import dplyr
 #' @import ggplot2
 
-target_explore_cat <- function(data, var_cat, var_target = "target_ind", min_val = NA, max_val = NA, flip = TRUE, num2char = TRUE, title = NA, auto_scale = TRUE, na = NA, max_cat = 30, legend_position = "bottom") {
+target_explore_cat <- function(data, var, target = "target_ind", min_val = NA, max_val = NA, flip = TRUE, num2char = TRUE, title = NA, auto_scale = TRUE, na = NA, max_cat = 30, legend_position = "bottom") {
 
   # definitions for CRAN package check
-  target <- NULL
   n_target <- NULL
   n_pct <- NULL
   weight <- NULL
   target_pct <- NULL
   num <- NULL
 
+  # parameter var
+  if(!missing(var))  {
+    var_quo <- enquo(var)
+    var_txt <- quo_name(var_quo)[[1]]
+  } else {
+    var_txt = NA
+  }
+
+  # parameter target
+  if(!missing(target))  {
+    target_quo <- enquo(target)
+    target_txt <- quo_name(target_quo)[[1]]
+  } else {
+    target_txt = NA
+  }
+
   # rename variables, to use it (lazy evaluation)
   data_bar <- data %>%
-    rename_(target = var_target) %>%
-    rename_(cat = var_cat)
+    select(!!var_quo, !!target_quo)
+  names(data_bar) <- c("cat", "target")
 
   # replace na value
   if (!is.na(na))  {
@@ -469,26 +651,46 @@ target_explore_cat <- function(data, var_cat, var_target = "target_ind", min_val
     data_bar <- head(data_bar, max_cat)
   }
 
+  # maximum percent value to be displayed
+  max_pct <- max(data_bar$target_pct)
+
   # create plot
   plot_bar <- ggplot(data = data_bar) +
     geom_bar(aes(x=cat, y=target_pct, fill=weight), stat="identity") +
     theme_light() +
-    #    theme(plot.margin=unit(c(0.5,0.5,0,1),"cm")) +   # o,r,u,l
-    ggtitle(ifelse(is.na(title), var_cat, title)) +
+    theme(plot.margin=unit(c(0.5,0.5,0,1),"cm")) +   # o,r,u,l
+    ggtitle(ifelse(is.na(title), var_txt, title)) +
     labs(x = "", y = "% target") +
     scale_fill_manual(name = "observations", values = bar_col) +
-    #theme(legend.position="bottom") +
     theme(legend.position = legend_position) +
     geom_hline(yintercept = target_mean,
                color = "#7f7f7f", alpha = 0.5,
-               linetype = "dashed", size = 1) +
-    geom_text(aes(x=cat, y=target_pct, label = round(target_pct,1)),
-              hjust = ifelse(flip,"top","center"),
-              vjust = ifelse(flip,"center","top"),
-              size = 3.5, color = "#525252")
+               linetype = "dashed", size = 1)
 
   # flip plot?
-  if(flip) plot_bar <- plot_bar + coord_flip()
+  if(flip)  {
+
+      plot_bar <- plot_bar +
+        geom_text(aes(x=cat, y=target_pct,
+                      label = round(target_pct,1),
+                      hjust = ifelse(target_pct < max_pct/10, -0.1, 1)),
+                  position = position_dodge(width = 1),
+                  vjust = 0.5,
+                  size = 3.0,
+                  color = "#525252") +
+        coord_flip()
+
+  } else {
+
+    plot_bar <- plot_bar +
+      geom_text(aes(x=cat, y=target_pct,
+                    label = round(target_pct,1),
+                    vjust = ifelse(target_pct < max_pct/10, -0.2, 1)),
+                position = position_dodge(width = 1),
+                hjust = 0.5,
+                size = 3.0,
+                color = "#525252")
+  } # if flip
 
   # save result
   # result <- list(data_bar, plot_bar)
@@ -497,6 +699,7 @@ target_explore_cat <- function(data, var_cat, var_target = "target_ind", min_val
   return(plot_bar)
 
 } # target_explore_cat
+
 
 #============================================================================
 #  Function: replace_na_with
@@ -531,8 +734,8 @@ replace_na_with <- function(data, var_name, with)  {
 #' Create a plot to explore relation between numerical variable and a binary target
 #'
 #' @param data A dataset
-#' @param var_num Name of numerical variable
-#' @param var_target Name of target variable (0/1 or FALSE/TRUE)
+#' @param var Numerical variable
+#' @param target Target variable (0/1 or FALSE/TRUE)
 #' @param min_val All values < min_val are converted to min_val
 #' @param max_val All values > max_val are converted to max_val
 #' @param flip Should plot be flipped? (change of x and y)
@@ -545,16 +748,33 @@ replace_na_with <- function(data, var_name, with)  {
 #' @import dplyr
 #' @import ggplot2
 
-target_explore_num <- function(data, var_num, var_target = "target_ind", min_val = NA, max_val = NA, flip = TRUE, title = NA, auto_scale = TRUE, na = NA, legend_position = "bottom") {
+target_explore_num <- function(data, var, target = "target_ind", min_val = NA, max_val = NA, flip = TRUE, title = NA, auto_scale = TRUE, na = NA, legend_position = "bottom") {
 
-  # define variables for CRAN package check
-  target <- NULL
+  # definitions for CRAN package check
   num <- NULL
+  cat_label <- NULL
+  explore_cat <- NULL
+
+  # parameter var
+  if(!missing(var))  {
+    var_quo <- enquo(var)
+    var_txt <- quo_name(var_quo)[[1]]
+  } else {
+    var_txt = NA
+  }
+
+  # parameter target
+  if(!missing(target))  {
+    target_quo <- enquo(target)
+    target_txt <- quo_name(target_quo)[[1]]
+  } else {
+    target_txt = NA
+  }
 
   # rename variables, to use it (lazy evaluation)
   data_bar <- data %>%
-    rename_(target = var_target) %>%
-    rename_(num = var_num)
+    select(!!var_quo, !!target_quo)
+  names(data_bar) <- c("num", "target")
 
   if (!is.na(na)) {
     data_bar <- data_bar %>% replace_na_with("num", na)
@@ -601,13 +821,13 @@ target_explore_num <- function(data, var_num, var_target = "target_ind", min_val
   #result <- data_bar
 
   result <- target_explore_cat(data_bar,
-                               "cat_label",
-                               "target",
+                               cat_label,
+                               target,
                                flip = FALSE,
                                num2char = FALSE,
                                legend_position = legend_position,
                                title = ifelse(is.na(title),
-                                              paste0(var_num),
+                                              paste0(var_txt),
                                               title)
   )
 
@@ -616,150 +836,229 @@ target_explore_num <- function(data, var_num, var_target = "target_ind", min_val
 } # target_explore_num
 
 #============================================================================
-#  explore_cat
+#  explore_bar
 #============================================================================
-#' Explore categorial variable
+#' Explore categorial variable using bar charts
 #'
-#' Create a plot to explore categorial variable
+#' Create a barplot to explore a categorial variable.
+#' If a target is selected, the barplot is created for all levels of the target.
 #'
 #' @param data A dataset
-#' @param var_cat Name of numerical variable
-#' @param min_val Filter values >= min_val
-#' @param max_val Filter values <= max_val
+#' @param var variable
+#' @param target target (can have more than 2 levels)
 #' @param flip Should plot be flipped? (change of x and y)
-#' @param percent Plot values as percentage (instead of absolute numbers)
-#' @param color Color of plot
-#' @param auto_scale Not used at the moment
+#' @param title Title of the plot (if empty var name)
 #' @param max_cat Maximum number of categories to be plotted
+#' @param max_target_cat Maximum number of categories to be plotted for target (except NA)
+#' @param legend_position Position of the legend ("bottom"|"top"|"none")
+#' @param label Show labels? (if empty, automatic)
+#' @param label_size Size of labels
+#' @param ... Further arguments
 #' @return Plot object (bar chart)
 #' @importFrom magrittr "%>%"
-#' @importFrom utils head
 #' @import dplyr
 #' @import ggplot2
+#' @export
 
-explore_cat <- function(data, var_cat, min_val = NA, max_val = NA, flip = TRUE, percent = TRUE, color = "#cccccc", auto_scale = TRUE, max_cat = 30)  {
+explore_bar <- function(data, var, target, flip = TRUE, title = "", max_cat = 30, max_target_cat = 5, legend_position = "right", label, label_size = 2.7)  {
 
   # define variables for CRAN-package check
-  cat <- NULL
   na_ind <- NULL
+  target_n <- NULL
+  pct <- NULL
 
-  # rename variables, to use it (lazy evaluation)
-  data_bar <- data %>%
-    rename_(cat = var_cat)
+  # parameter data
+  if(missing(data))  {
+    stop(paste0("data missing"))
+  }
 
-  # check for NA
-  na_check <- data_bar %>%
-    mutate(na_ind = ifelse(is.na(cat),1,0)) %>%
+  # parameter var
+  if(!missing(var))  {
+    var_quo <- enquo(var)
+    var_txt <- quo_name(var_quo)[[1]]
+    if (!var_txt %in% names(data)) {
+      stop(paste0("variable '", var_txt, "' not found"))
+    }
+  } else {
+    stop(paste0("variable missing"))
+  }
+
+  # parameter target
+  if(!missing(target))  {
+    target_quo <- enquo(target)
+    target_txt <- quo_name(target_quo)[[1]]
+    if (!target_txt %in% names(data)) {
+      stop(paste0("target variable '", target_txt, "' not found"))
+    }
+  } else {
+    target_txt = NA
+  }
+
+  # number of levels of target
+  if (missing(target))  {
+    n_target_cat = 1
+  } else {
+    n_target_cat <- length(unique(data[[target_txt]]))
+  }
+
+  # number of levels of var
+  var_cat <- data %>% count(!!var_quo) %>% pull(!!var_quo)
+  if (length(var_cat) > max_cat)  {
+    data <- data %>% filter(!!var_quo %in% var_cat[1:max_cat])
+  }
+
+  # use a factor for var if low number of cats
+  if (guess_cat_num(data[[var_txt]]) == "cat") {
+    data[[var_txt]] <- factor(data[[var_txt]])
+  }
+
+  # use a factor for target so that fill works
+  if (n_target_cat > 1 & !is.factor(data[[target_txt]]))  {
+    data[[target_txt]] <- factor(data[[target_txt]])
+    data[[target_txt]] <- forcats::fct_explicit_na(data[[target_txt]], na_level = ".NA")
+
+    # keep max. different levels
+    if (n_target_cat > max_target_cat)  {
+      data[[target_txt]] <- forcats::fct_lump(data[[target_txt]],max_target_cat, other_level = ".OTHER")
+    }
+    # recalculate number of levels in target
+    n_target_cat <- length(levels(data[[target_txt]]))
+
+  }
+
+  # if no label parameter, decide on
+  # number of bars if labels are plotted
+  bars <- length(unique(data[[var_txt]])) * n_target_cat
+  if (missing(label)) {
+    if (bars <= 20)  {
+      label <- TRUE
+    } else {
+      label <- FALSE
+    }
+  }
+
+  # check NA
+  na_check <- data %>%
+    mutate(na_ind = ifelse(is.na(!!var_quo),1,0)) %>%
     summarize(na_cnt = sum(na_ind), na_pct = sum(na_ind)/n())
   na_cnt <- na_check[1,1]
   na_pct <- na_check[1,2]
 
-  # filter min, max
-  if(!is.factor(data_bar$cat))  {
-      if (!is.na(min_val)) data_bar <- data_bar %>% filter(cat >= min_val)
-      if (!is.na(max_val)) data_bar <- data_bar %>% filter(cat <= max_val)
-  }
+  # prepare + plot (with target)
 
-  # plot as percentact or absolut numbers?
-  if (percent)  {
+  if (n_target_cat > 1)  {
+    data_target <- data %>%
+      group_by(!!target_quo) %>%
+      summarise(target_n = n())
 
-    n_pct <- NULL   # for CRAN package build
+    data_var <- data %>%
+      group_by(!!target_quo, !!var_quo) %>%
+      summarise(n = n())
 
-    data_pct <- data_bar %>%
-      count(cat) %>%
-      mutate(n_pct = n / sum(n) * 100)
+    data_bar <- data_var %>%
+      inner_join(data_target, by = target_txt) %>%
+      mutate(pct = round(n / target_n * 100.0, 1))
 
-    # limit number of categories
-    if(nrow(data_pct) > max_cat)  {
-      data_pct <- head(data_pct, max_cat)
-    }
+    max_pct = max(data_bar$pct)
 
-    # data for plotting
-    plot_bar <- data_pct %>%
-      ggplot(aes(x = cat, y = n_pct)) +
-      geom_col(fill = color) +
-      ggtitle(paste0(var_cat, ", NA = ", na_cnt, " (",round(na_pct*100,1), "%)")) +
-      labs(x = "", y = "%") +
-      theme_light() +
-      geom_text(aes(x=cat, y=n_pct, label = round(n_pct,1)),
-                hjust = ifelse(flip,"top","center"),
-                vjust = ifelse(flip,"center","top"),
-                size = 3.5, color = "#525252")
+    # plot
+    p <- ggplot(data_bar, aes(x = !!var_quo)) +
+      geom_col(aes(y = pct, fill = !!target_quo), position = "dodge") +
+      theme_minimal() +
+      theme(legend.position = legend_position) +
+      labs(x = "", y = "%")
 
   } else {
 
-    plot_bar <- data_bar %>% ggplot(aes(x = cat)) + geom_bar(fill = color) +
-      ggtitle(paste0(var_cat, ", NA = ", na_cnt, " (",round(na_pct*100,1), "%)")) +
-      labs(x = "", y = "") +
-      theme_light()
+    # prepare + plot (no target)
 
-  } # if
+    data_bar <- data %>%
+      group_by(!!var_quo) %>%
+      summarise(n = n()) %>%
+      mutate(pct = round(n / sum(n) * 100.0, 1))
 
-  # flip plot?
-  if(flip) plot_bar <- plot_bar + coord_flip()
+    max_pct = max(data_bar$pct)
 
-  plot_bar
-}
+    # plot
+    p <- ggplot(data_bar, aes(x = !!var_quo)) +
+      geom_col(aes(y = pct),
+               position = "dodge",
+               fill = "lightgrey",
+               color = "lightgrey") +
+      theme_minimal() +
+      labs(x = "", y = "%")
 
-#============================================================================
-#  explore_num
-#============================================================================
-#' Explore numerical variable
-#'
-#' Create a plot to explore numerical variable
-#'
-#' @param data A dataset
-#' @param var_num Name of numerical variable
-#' @param min_val Filter values >= min_val
-#' @param max_val Filter values <= max_val
-#' @param flip Should plot be flipped? (change of x and y)
-#' @param color Color of plot
-#' @param bins Number of bins used for histogram
-#' @param auto_scale Use 0.02 and 0.98 quantile for min_val and max_val (if min_val and max_val are not defined)
-#' @return Plot object (histogram)
-#' @importFrom magrittr "%>%"
-#' @import dplyr
-#' @import ggplot2
-
-explore_num <- function(data, var_num, min_val = NA, max_val = NA, flip = FALSE, color = "#cccccc", bins = 15, auto_scale = TRUE)  {
-
-  # define variables for CRAN-package check
-  num <- NULL
-  na_ind <- NULL
-
-  # rename variables, to use it (lazy evaluation)
-  data_bar <- data %>%
-    rename_(num = var_num)
-
-  # check for NA
-  na_check <- data_bar %>%
-    mutate(na_ind = ifelse(is.na(num),1,0)) %>%
-    summarize(na_cnt = sum(na_ind), na_pct = sum(na_ind)/n())
-  na_cnt <- na_check[1,1]
-  na_pct <- na_check[1,2]
-
-  # autoscale (if mni_val and max_val not used)
-  if (auto_scale == TRUE & is.na(min_val) & is.na(max_val))  {
-    r <- quantile(data_bar[["num"]], c(0.02, 0.98), na.rm = TRUE)
-    min_val = r[1]
-    max_val = r[2]
   }
 
-  # filter min, max
-  if (!is.na(min_val)) data_bar <- data_bar %>% filter(num >= min_val)
-  if (!is.na(max_val)) data_bar <- data_bar %>% filter(num <= max_val)
+  # color manual
+  if (n_target_cat == 2)  {
+    p <- p + scale_fill_manual(values = c("#CFD8DC","#90A4AE"))
+  }
 
-  # data for plotting
-  plot_bar <- data_bar %>% ggplot(aes(x = num)) + geom_histogram(fill = color, bins = bins) +
-    ggtitle(paste0(var_num, ", NA = ", na_cnt, " (",round(na_pct*100,1), "%)")) +
-    labs(x = "", y = "") +
-    theme_light()
+  # plot labels?
 
-  # flip plot?
-  if(flip) plot_bar <- plot_bar + coord_flip()
+  # >1 cat, FLIP == TRUE
+  if (label == TRUE & n_target_cat > 1 & flip == TRUE)  {
+    p <- p + geom_text(aes(y = pct,
+                           label = pct,
+                           group = !!target_quo,
+                           hjust = ifelse(pct < max_pct/10, -0.1, 1)
+                       ),
+                       position = position_dodge(width = 1),
+                       vjust = 0.5,
+                       size = label_size)
+  }
 
-  plot_bar
-}
+  # >1 cat, FLIP == FALSE
+  if (label == TRUE & n_target_cat > 1 & flip == FALSE)  {
+    p <- p + geom_text(aes(y = pct,
+                           label = pct,
+                           group = !!target_quo,
+                           vjust = ifelse(pct < max_pct/10, -0.3, 1)
+    ),
+    position = position_dodge(width = 0.9),
+    hjust = 0.5,
+    size = label_size)
+  }
+
+  # 1 cat, flip == TRUE
+  if (label == TRUE & n_target_cat == 1 & flip == TRUE) {
+    p <- p + geom_text(aes(y = pct,
+                           label = pct,
+                           hjust = ifelse(pct < max_pct/10, -0.1, 1)),
+                       position = position_dodge(width = 0.9),
+                       vjust = 0.5,
+                       size = label_size)
+  }
+
+  # 1 cat, flip == FALSE
+  if (label == TRUE & n_target_cat == 1 & flip == FALSE) {
+    p <- p + geom_text(aes(y = pct,
+                           label = pct,
+                           vjust = ifelse(pct < max_pct/10, -0.5, 1)),
+                       position = position_dodge(width = 0.9),
+                       hjust = 0.5,
+                       size = label_size)
+  }
+
+  # title
+  if (!is.na(title) & nchar(title) > 0)  {
+    p <- p + ggtitle(title)
+  } else if (n_target_cat == 1) {
+    p <- p + ggtitle(paste0(var_txt, ", NA = ", na_cnt, " (",round(na_pct*100,1), "%)"))
+  } else {
+    p <- p + ggtitle(paste0(var_txt))
+  }
+
+  # flip plot
+  if (is.na(flip) | flip) {
+    p <- p + coord_flip()
+  }
+
+  # plot result
+  p
+
+} # explore_bar
 
 #============================================================================
 #  explore_density
@@ -775,6 +1074,7 @@ explore_num <- function(data, var_num, min_val = NA, max_val = NA, flip = FALSE,
 #' @param max_val All values > max_val are converted to max_val
 #' @param color Color of plot
 #' @param auto_scale Use 0.02 and 0.98 percent quantile for min_val and max_val (if min_val and max_val are not defined)
+#' @param max_target_cat Maximum number of levels of target shown in the plot (except NA).
 #' @param ... Further arguments
 #' @return Plot object (density plot)
 #' @importFrom magrittr "%>%"
@@ -787,20 +1087,31 @@ explore_num <- function(data, var_num, min_val = NA, max_val = NA, flip = FALSE,
 #' explore_density(iris, Sepal.Length, target = is_virginica)
 #' @export
 
-explore_density <- function(data, var, target, min_val = NA, max_val = NA, color = "grey", auto_scale = TRUE, ...)   {
+explore_density <- function(data, var, target, min_val = NA, max_val = NA, color = "grey", auto_scale = TRUE, max_target_cat = 5, ...)   {
+
+  # parameter data
+  if(missing(data))  {
+    stop(paste0("data missing"))
+  }
 
   # parameter var
   if(!missing(var))  {
     var_quo <- enquo(var)
     var_txt <- quo_name(var_quo)[[1]]
+    if (!var_txt %in% names(data)) {
+      stop(paste0("variable '", var_txt, "' not found"))
+    }
   } else {
-    var_txt = NA
+    stop(paste0("variable missing"))
   }
 
   # parameter target
   if(!missing(target))  {
     target_quo <- enquo(target)
     target_txt <- quo_name(target_quo)[[1]]
+    if (!target_txt %in% names(data)) {
+      stop(paste0("target variable '", target_txt, "' not found"))
+    }
   } else {
     target_txt = NA
   }
@@ -810,51 +1121,69 @@ explore_density <- function(data, var, target, min_val = NA, max_val = NA, color
   na_ind <- NULL
   target_ <- NULL
 
-  # rename variables, to use it (lazy evaluation)
-  data <- data %>%
-    rename(var_ = !!var_quo)
-
-  if (!is.na(target_txt))  {
-    data <- data %>%
-      rename(target_ = !!target_quo)
+  # number of levels of target
+  if (missing(target))  {
+    n_target_cat = 1
+  } else {
+    n_target_cat <- length(unique(data[[target_txt]]))
   }
 
   # count NA
   na_check <- data %>%
-    mutate(na_ind = ifelse(is.na(var_),1,0)) %>%
+    mutate(na_ind = ifelse(is.na(!!var_quo),1,0)) %>%
     summarize(na_cnt = sum(na_ind), na_pct = sum(na_ind)/n())
   na_cnt <- na_check[1,1]
   na_pct <- na_check[1,2]
 
   # autoscale (if mni_val and max_val not used)
   if (auto_scale == TRUE & is.na(min_val) & is.na(max_val))  {
-    r <- quantile(data[["var_"]], c(0.02, 0.98), na.rm = TRUE)
+    r <- quantile(data[[var_txt]], c(0.02, 0.98), na.rm = TRUE)
     min_val = r[1]
     max_val = r[2]
   }
 
   # trim min, max
-  if (!is.na(min_val)) data <- data %>% filter(var_ >= min_val)
-  if (!is.na(max_val)) data <- data %>% filter(var_ <= max_val)
+  if (!is.na(min_val)) data <- data %>% filter(!!var_quo >= min_val)
+  if (!is.na(max_val)) data <- data %>% filter(!!var_quo <= max_val)
 
-  if (is.na(target_txt))  {
+   if (is.na(target_txt))  {
 
     # plot denisity var, no target
     data %>%
-      ggplot(aes(var_)) +
+      ggplot(aes(!!var_quo)) +
       geom_density(fill = color, alpha = 0.7) +
       ggtitle(paste0(var_txt, ", NA = ", na_cnt, " (",round(na_pct*100,1), "%)")) +
       labs(x = "", y = "") +
       theme_light()
   } else {
-    data %>%
-      ggplot(aes(var_, fill = factor(target_, levels = c(0,1), ordered = TRUE))) +
+
+    # factorise target
+    if (!is.factor(data[[target_txt]]))  {
+      data[[target_txt]] <- factor(data[[target_txt]])
+      data[[target_txt]] <- forcats::fct_explicit_na(data[[target_txt]], na_level = ".NA")
+      # keep max. different levels
+      if (n_target_cat > max_target_cat)  {
+        data[[target_txt]] <- forcats::fct_lump(data[[target_txt]],max_target_cat, other_level = ".OTHER")
+      }
+    }
+
+    # create plot var + target
+    p <- data %>%
+      ggplot(aes(!!var_quo, fill = !!target_quo)) +
       geom_density(alpha = 0.7) +
-#     ggtitle(paste0(var_txt, ", NA = ", na_cnt, " (",round(na_pct*100,1), "%)")) +
+      #ggtitle(paste0(var_txt, ", NA = ", na_cnt, " (",round(na_pct*100,1), "%)")) +
       ggtitle(var_txt) +
       labs(x = "", y = "") +
-      scale_fill_manual(values = c("#CFD8DC","#90A4AE"), name = "target") +
       theme_light()
+
+    # target with 2 levels
+    if (n_target_cat == 2)  {
+       p <- p + scale_fill_manual(values = c("#CFD8DC","#90A4AE"), name = target_txt)
+    }
+
+    # plot density + target
+    p
+
   } # if
 
 } # explore_density
@@ -864,10 +1193,10 @@ explore_density <- function(data, var, target, min_val = NA, max_val = NA, color
 #============================================================================
 #' Format type description
 #'
-#' Format type description of varable to 3 letters (int|dou|log|chr|dat)
+#' Format type description of varable to 3 letters (int|dbl|lgl|chr|dat)
 #'
 #' @param type Type description ("integer", "double", "logical", character", "date")
-#' @return Formated type description (int|dou|log|chr|dat)
+#' @return Formated type description (int|dbl|lgl|chr|dat)
 #' @examples
 #' format_type(typeof(iris$Species))
 #' @export
@@ -878,9 +1207,9 @@ format_type <- function(type) {
   } else if (type == "integer")  {
     return("int")
   } else if (type == "double")  {
-    return("dou")
+    return("dbl")
   } else if (type == "logical")  {
-    return("log")
+    return("lgl")
   } else if (type == "character")  {
     return("chr")
   } else if (type == "date")  {
@@ -967,7 +1296,7 @@ guess_cat_num <- function(var)  {
   var_unique <- length(unique(var))
   # return result
   if (var_type %in% c("integer", "double")) {
-    if (var_unique <= 8)  {
+    if (var_unique < 10)  {
       return("cat")
     } else {
       return("num")
@@ -1067,13 +1396,13 @@ describe_num <- function(data, var, out = "text", margin = 0) {
     cat(paste0(spc, "variable ="), var_name, "\n")
     #cat("type     =", paste0(var_type, " (cat/num = ", var_guess,")\n"))
     cat(paste0(spc, "type     ="), var_type,"\n")
-    cat(paste0(spc, "na       ="), paste0(format_num(var_na)," of ",format_num(var_obs)," (",format_num(var_na_pct),"%)\n"))
-    cat(paste0(spc, "unique   ="), paste0(format_num(var_unique),"\n"))
-    cat(paste0(spc, "min|max  ="), paste0(format_num(var_min), " | ", format_num(var_max), "\n"))
-    cat(paste0(spc, "q05|q95  ="), paste0(format_num(var_quantile["5%"]), " | ", format_num(var_quantile["95%"]), "\n"))
-    cat(paste0(spc, "q25|q75  ="), paste0(format_num(var_quantile["25%"]), " | ", format_num(var_quantile["75%"]), "\n"))
-    cat(paste0(spc, "median   ="), format_num(var_median), "\n")
-    cat(paste0(spc, "mean     ="), format_num(var_mean), "\n")
+    cat(paste0(spc, "na       ="), paste0(format_num_kMB(var_na)," of ",format_num_kMB(var_obs)," (",format_num_kMB(var_na_pct),"%)\n"))
+    cat(paste0(spc, "unique   ="), paste0(format_num_kMB(var_unique),"\n"))
+    cat(paste0(spc, "min|max  ="), paste0(format_num_kMB(var_min), " | ", format_num_kMB(var_max), "\n"))
+    cat(paste0(spc, "q05|q95  ="), paste0(format_num_kMB(var_quantile["5%"]), " | ", format_num_kMB(var_quantile["95%"]), "\n"))
+    cat(paste0(spc, "q25|q75  ="), paste0(format_num_kMB(var_quantile["25%"]), " | ", format_num_kMB(var_quantile["75%"]), "\n"))
+    cat(paste0(spc, "median   ="), format_num_kMB(var_median), "\n")
+    cat(paste0(spc, "mean     ="), format_num_kMB(var_mean), "\n")
   } else {
     result_num
   }
@@ -1154,15 +1483,15 @@ describe_cat <- function(data, var, max_cat = 10, out = "text", margin = 0) {
     cat(paste0(spc, "variable ="), var_name, "\n")
     #cat(paste0(spc, "type     ="), paste0(var_type, " (cat/num = ", var_guess,")\n"))
     cat(paste0(spc, "type     ="), paste0(var_type,"\n"))
-    cat(paste0(spc, "na       ="), paste0(format_num(var_na)," of ",format_num(var_obs)," (",format_num(var_na_pct),"%)\n"))
-    cat(paste0(spc, "unique   ="), paste0(format_num(var_unique),"\n"))
+    cat(paste0(spc, "na       ="), paste0(format_num_kMB(var_na)," of ",format_num_kMB(var_obs)," (",format_num_kMB(var_na_pct),"%)\n"))
+    cat(paste0(spc, "unique   ="), paste0(format_num_kMB(var_unique),"\n"))
 
     # show frequency for each category (maximum max_cat)
     for (i in seq(min(var_unique, max_cat)))  {
       var_name = format(var_frequency[[i, 1]], width = max_cat_len, justify = "left")
       cat(paste0(spc, " ", var_name,
-                 " = ", format_num(var_frequency[[i, 2]]), " (",
-                 format_num(var_frequency[[i,3]]),"%)\n" ))
+                 " = ", format_num_kMB(var_frequency[[i, 2]]), " (",
+                 format_num_kMB(var_frequency[[i,3]]),"%)\n" ))
     } # for
 
     # if more categories than displayed, show "..."
@@ -1269,16 +1598,16 @@ describe_all <- function(data = NA, out = "large") {
 } # function describe_all
 
 #============================================================================
-#  describe_tbl, out = text | vector
+#  describe_tbl, out = text | list
 #============================================================================
 #' Describe table
 #'
 #' Describe table (e.g. number of rows and columns of dataset)
 #'
 #' @param data A dataset
-#' @param target Target variable
-#' @param out Output format ("text"|"vector")
-#' @return Description as text or vector
+#' @param target Target variable (binary)
+#' @param out Output format ("text"|"list")
+#' @return Description as text or list
 #' @import rlang
 #' @examples
 #' describe_tbl(iris)
@@ -1292,6 +1621,9 @@ describe_tbl <- function(data, target, out = "text")  {
   if(!missing(target))  {
     target <- enquo(target)
     target_txt <- quo_name(target)[[1]]
+    if (!target_txt %in% names(data)) {
+      stop(paste0("target variable '", target_txt, "' not found"))
+    }
   } else {
     target_txt = NA
   }
@@ -1300,61 +1632,81 @@ describe_tbl <- function(data, target, out = "text")  {
   describe_nrow <- nrow(data)
   describe_ncol <- ncol(data)
 
-  # sum of target=1 (if defined)
-  if (!missing(target))  {
+  d <- data %>% describe_all()
+  describe_with_na <- sum(ifelse(d$na > 0, 1, 0))
+  describe_no_variance <- sum(ifelse(d$unique == 1, 1, 0))
 
-    # min value is representing target = 0, rest target = 1
-    v <- data %>% dplyr::pull(!!target)
+  # check if target is binary
+  describe_target0_cnt <- 0
+  describe_target1_cnt <- 0
+  target_show <- FALSE
 
-    table_cnt  <- v %>% table()
-    target0_val <- min(names(table_cnt))
+  if (!missing(target)) {
+     descr_target <- describe(data, !!target, out = "list")
+     target_type <- descr_target$type
 
-    # if all 1, guess there is no 0
-    if (target0_val == 1)  {
-      target0_val <- 0
+    if (descr_target$unique == 2)  {
+       target_val <- data[[target_txt]]
+       target_val <- format_target(target_val)
+       describe_target0_cnt <- sum(ifelse(target_val == 0, 1, 0))
+       describe_target1_cnt <- length(target_val) - describe_target0_cnt
+       target_show <- TRUE
     }
-    target0_cnt <- sum(ifelse(data[[target_txt]] == target0_val, 1, 0))
-    target1_cnt <- nrow(data) - target0_cnt
-    describe_target1_cnt <- target1_cnt
-  } else {
-    describe_target1_cnt = 0
   }
 
-  # result as a vector (text)
-
-  result_vector <- c(cases = format_num(describe_nrow),
-                     variables = format_num(describe_ncol),
-                     targets = format_num(describe_target1_cnt),
-                     targets_pct = format_num(describe_target1_cnt / describe_nrow, digits = 2))
+  # result as a list (text)
+  result_list <- list(observations = describe_nrow,
+                     variables = describe_ncol,
+                     with_na = describe_with_na,
+                     no_variance = describe_no_variance,
+                     targets = describe_target1_cnt,
+                     targets_pct = describe_target1_cnt / describe_nrow * 100)
 
   # result as text
-  if (!is.na(target_txt))  {
+  if (!missing(target) & target_show == FALSE)  {
 
-    result_text <- paste0(describe_nrow,
+    result_text <- paste0(format_num_space(describe_nrow),
                           ifelse(describe_nrow >= 1000,
-                                 paste0(" (",format_num(describe_nrow),")"),
+                                 paste0(" (",format_num_kMB(describe_nrow),")"),
                                  ""),
                           " observations with ",
-                          format_num(describe_ncol),
+                          format_num_space(describe_ncol),
                           " variables; ",
-                          format_num(describe_target1_cnt),
-                          " targets (",
-                          format_num(describe_target1_cnt / describe_nrow * 100, digits = 1),
-                          "%)")
-  } else {
+                          " target = not binary")
+  } else if (!missing(target) & target_show == TRUE) {
 
-    result_text <- paste0(describe_nrow,
+    result_text <- paste0(format_num_space(describe_nrow),
                           ifelse(describe_nrow >= 1000,
-                                 paste0(" (",format_num(describe_nrow),")"),
+                                 paste0(" (",format_num_kMB(describe_nrow),")"),
                                  ""),
                           " observations with ",
-                          format_num(describe_ncol),
+                          format_num_space(describe_ncol),
+                          " variables; ",
+                          format_num_space(describe_target1_cnt),
+                          " targets (",
+                          format_num_space(describe_target1_cnt / describe_nrow * 100, digits = 1),
+                          "%)")
+
+  } else {
+    result_text <- paste0(format_num_space(describe_nrow),
+                          ifelse(describe_nrow >= 1000,
+                                 paste0(" (",format_num_kMB(describe_nrow),")"),
+                                 ""),
+                          " observations with ",
+                          format_num_space(describe_ncol),
                           " variables")
   } # if
 
+  # add with_na and no_variance
+  result_text <- paste0(result_text,
+                        "\n",
+                        format_num_space(describe_with_na), " variables containing missings (NA)",
+                        "\n",
+                        format_num_space(describe_no_variance), " variables with no variance")
+
   # return output
-  if (out == "vector")  {
-    result_vector
+  if (out == "list")  {
+    result_list
   } else {
     cat(result_text)
   }
@@ -1517,8 +1869,7 @@ data_dict_md <- function(data, title = "", description = NA, output_file = "data
 #' @param data A dataset
 #' @param target Target variable (0/1 or FALSE/TRUE)
 #' @param ncol Layout of plots (number of columns)
-#' @param density Use density for histogramms
-#' @param legend_position Position of legend ("right"|"bottom"|"non")
+#' @param split Split by target (TRUE|FALSE)
 #' @return Plot
 #' @import rlang
 #' @importFrom gridExtra grid.arrange
@@ -1529,14 +1880,16 @@ data_dict_md <- function(data, title = "", description = NA, output_file = "data
 #' explore_all(iris, target = is_virginica)
 #' @export
 
-explore_all <- function(data, target, ncol = 2, density = TRUE, legend_position = "non")  {
+explore_all <- function(data, target, ncol = 2, split = TRUE)  {
 
   # parameter target
   if(!missing(target))  {
     target_quo <- enquo(target)
     target_txt <- quo_name(target_quo)[[1]]
+    guess_target <- guess_cat_num(data[[target_txt]])
   } else {
     target_txt = NA
+    guess_target = "oth"
   }
 
   # varable name of target
@@ -1574,28 +1927,39 @@ explore_all <- function(data, target, ncol = 2, density = TRUE, legend_position 
     var_type <- guess_cat_num(data_tmp[[var_name]])
 
     # no target, num
-    if ( (var_type == "num") & (is.na(var_name_target)) & (density == FALSE)) {
-      plots[[i]] <- explore_num(data_tmp, var_names[i])
-
-      # no target, num, density
-    } else if ( (var_type == "num") & (is.na(var_name_target)) & (density == TRUE)) {
-      plots[[i]] <- explore_density(data_tmp, !!var_name)
+    if ( (var_type == "num") & (is.na(var_name_target))) {
+      plots[[i]] <- explore_density(data_tmp, !!sym(var_name))
 
       # no target, cat
     } else if ( (var_type == "cat") & is.na(var_name_target) ) {
-      plots[[i]] <- explore_cat(data_tmp, var_names[i])
+      plots[[i]] <- explore_bar(data_tmp, !!sym(var_name))
+
+      # num target, num -> explore_cor
+    } else if ( (var_type == "num") & !is.na(var_name_target) & (var_names[i] != var_name_target) & (guess_target == "num"))  {
+      plots[[i]] <- explore_cor(data_tmp, x = !!sym(var_name), y = !!target_quo)
+
+      # num target, cat -> explore_cor
+    } else if ( (var_type == "cat") & !is.na(var_name_target) & (var_names[i] != var_name_target) & (guess_target == "num"))  {
+      plots[[i]] <- explore_cor(data_tmp, y = !!sym(var_name), x = !!target_quo)
 
       # target, num
-    } else if ( (var_type == "num") & !is.na(var_name_target) & (var_names[i] != var_name_target) & (density == FALSE))  {
-      plots[[i]] <- target_explore_num(data_tmp, var_names[i], var_target = var_name_target, legend_position = legend_position)
+    } else if ( (var_type == "num") & !is.na(var_name_target) & (var_names[i] != var_name_target) & (split == FALSE))  {
+      plots[[i]] <- target_explore_num(data_tmp, !!sym(var_name), target = !!target_quo)
 
-      # target, num, density
-    } else if ( (var_type == "num") & !is.na(var_name_target) & (var_names[i] != var_name_target) & (density == TRUE))  {
-      plots[[i]] <- explore_density(data_tmp, !!var_name, !!var_name_target)
+      # target, num, split
+    } else if ( (var_type == "num") & !is.na(var_name_target) & (var_names[i] != var_name_target) & (split == TRUE))  {
+      plots[[i]] <- explore_density(data_tmp, !!sym(var_name), target = !!target_quo)
 
       # target, cat
-    } else if ( (var_type == "cat") & !is.na(var_name_target) & (var_names[i] != var_name_target) ) {
-      plots[[i]] <- target_explore_cat(data_tmp, var_names[i], var_target = var_name_target, legend_position = legend_position)
+    } else if ( (var_type == "cat") & !is.na(var_name_target) & (var_names[i] != var_name_target) & (split == FALSE)) {
+      plots[[i]] <- target_explore_cat(data_tmp, !!sym(var_name), target = !!target_quo)
+
+      # target, cat, split
+    } else if ( (var_type == "cat") & !is.na(var_name_target) & (var_names[i] != var_name_target) & (split == TRUE)) {
+      plots[[i]] <- explore_bar(data_tmp, !!sym(var_name), target = !!target_quo)
+
+    } else {
+      plots[[i]] <- plot_var_info(data_tmp, !!var_name, info = "can't explore\n(data type not supported)")
     } # if
   } # for
 
@@ -1612,9 +1976,10 @@ explore_all <- function(data, target, ncol = 2, density = TRUE, legend_position 
 #'
 #' @param data A dataset
 #' @param target Target variable
-#' @param maxdepth Maximal depth of the tree
-#' @param minsplit The minimum number of observations that must exist in a node in order for a split to be attempted
-#' @param cp Complexity parameter
+#' @param max_cat Drop categorical variables with higher number of levels
+#' @param maxdepth Maximal depth of the tree (rpart-parameter)
+#' @param minsplit The minimum number of observations that must exist in a node in order for a split to be attempted (rpart-parameter)
+#' @param cp Complexity parameter (rpart-parameter)
 #' @param size Textsize of plot
 #' @param ... Further arguments
 #' @return Plot
@@ -1625,7 +1990,12 @@ explore_all <- function(data, target, ncol = 2, density = TRUE, legend_position 
 #' explain_tree(data, target = is_versicolor)
 #' @export
 
-explain_tree <- function(data, target, maxdepth=3, minsplit=20, cp=0, size=0.7, ...)  {
+explain_tree <- function(data, target, max_cat = 10, maxdepth = 3, minsplit = 20, cp = 0, size = 0.7, ...)  {
+
+  # define variables to pass CRAN-checks
+  type <- NULL
+  variable <- NULL
+
   # parameter target
   if(!missing(target))  {
     target_quo <- enquo(target)
@@ -1633,6 +2003,20 @@ explain_tree <- function(data, target, maxdepth=3, minsplit=20, cp=0, size=0.7, 
   } else {
     target_txt = NA
     return(NULL)
+  }
+
+  # drop variables, that are not usable
+  d <- describe(data)
+  var_keep <- d %>%
+    filter(type %in% c("lgl", "int", "dbl", "chr")) %>%
+    filter(type != "chr" | (type == "chr" & unique <= max_cat)) %>%
+    pull(variable)
+  data <- data %>% select(one_of(as.character(var_keep)))
+
+  # minimum 2 variables left?
+  if (ncol(data) < 2) {
+    p <- plot_text("can't grow decision tree")
+    return(invisible(p))
   }
 
   # convert target into formula
@@ -1733,7 +2117,7 @@ explain_logreg <- function(data, target, ...)  {
 #' @param data A dataset
 #' @param x Variable on x axis
 #' @param y Variable on y axis
-#' @param target Target variable (binary)
+#' @param target Target variable (categorical)
 #' @param bins Number of bins
 #' @param min_val All values < min_val are converted to min_val
 #' @param max_val All values > max_val are converted to max_val
@@ -1856,7 +2240,7 @@ explore_cor <- function(data, x, y, target, bins = 8, min_val = NA, max_val = NA
 #'
 #' @param data A dataset
 #' @param target Target variable (0/1 or FALSE/TRUE)
-#' @param density Use density? (TRUE/FALSE)
+#' @param split Split by target? (TRUE/FALSE)
 #' @param output_file Filename of the html report
 #' @param output_dir Directory where to save the html report
 #' @import rmarkdown
@@ -1866,7 +2250,7 @@ explore_cor <- function(data, x, y, target, bins = 8, min_val = NA, max_val = NA
 #' }
 #' @export
 
-report <- function(data, target, density = FALSE, output_file, output_dir)  {
+report <- function(data, target, split = TRUE, output_file, output_dir)  {
 
   # pandoc must be available to generate report
   # if RStudio is used, pandoc should be available
@@ -1893,15 +2277,19 @@ report <- function(data, target, density = FALSE, output_file, output_dir)  {
     target_text = NA
   }
 
-  # parameter density (set default value, based on target)
-  if (missing(density))  {
-    if (is.na(target_text)) {
-      density = TRUE
-    }
-    else {
-      density = FALSE
-    }
+  # parameter split (set default value)
+  if (missing(split))  {
+    split = FALSE
   }
+
+  # check if output-file has .html extension
+  # if not, add it!
+  if (!missing(output_file)) {
+      len <- nchar(output_file)
+      if (tolower(substr(output_file, len-3, len)) != ".html")  {
+         output_file <- paste0(output_file, ".html")
+      }
+  } # if
 
   # report only variables (no korrelation with target)
   if(is.na(target_text))  {
@@ -1914,10 +2302,10 @@ report <- function(data, target, density = FALSE, output_file, output_dir)  {
                       clean = TRUE
     )
 
-    # report target with density
-  } else if(density == TRUE)  {
-    input_file <- system.file("extdata", "template_report_target_den.Rmd", package="explore")
-    if (missing(output_file)) {output_file = "report_target_density.html"}
+    # report target with split
+  } else if(split == TRUE)  {
+    input_file <- system.file("extdata", "template_report_target_split.Rmd", package="explore")
+    if (missing(output_file)) {output_file = "report_target_split.html"}
     var_name_target <- target_text  # needed in report template
     rmarkdown::render(input = input_file,
                       output_file = output_file,
@@ -1939,6 +2327,93 @@ report <- function(data, target, density = FALSE, output_file, output_dir)  {
     )
   } # if
 } # report
+
+#============================================================================
+#  explore_tbl
+#============================================================================
+#' Explore table
+#'
+#' Explore a table. Plots variable types, variables with no variance and variables with NA
+#'
+#' @param data A dataset
+#' @importFrom magrittr "%>%"
+#' @import dplyr
+#' @examples
+#' explore_tbl(iris)
+#' @export
+
+explore_tbl <- function(data)  {
+
+  # define variables to pass CRAN-checks
+  type <- NULL
+  na <- NULL
+  measure <- NULL
+
+  # data table available?
+  if (missing(data))  {
+    stop("expect a data table to explore")
+  }
+
+  # describe data
+  d <- describe_all(data)
+
+  # number of variables in data
+  n_var <- nrow(d)
+
+  # prepare "all variables"
+  bar1 <- d %>% count(type)
+  bar1$measure <- "all"
+  bar1$n_pct <- bar1$n / n_var * 100
+
+  # prepare "no variance"
+  suppressWarnings(
+    bar2 <- d %>%
+      filter(type != "oth") %>%
+      filter(unique == 1) %>%
+      count(type)
+  )
+  bar2$measure <- "no variance"
+  bar2$n_pct <- bar2$n / n_var * 100
+
+  # prepare "with NA"
+  suppressWarnings(
+    bar3 <- d %>%
+      filter(na > 0) %>%
+      count(type)
+  )
+  bar3$measure <- "with NA"
+  bar3$n_pct <- bar3$n / n_var * 100
+
+  # prepare plot
+  bar <- bind_rows(bar1, bar2, bar3)
+  type_default <- min(as.character(bar$type), na.rm = TRUE)
+  bar <- bar %>% clean_var(type, na = type_default)
+  bar$type <- factor(bar$type, levels = c("lgl","int","dbl","fct","chr","dat","oth"))
+
+  # define colors
+  color_mapping <- c("lgl" = "blue",
+                     "int" = "cornflowerblue",
+                     "dbl" = "cyan",
+                     "fct" = "yellow",
+                     "chr" = "orange",
+                     "dat" = "brown",
+                     "oth" = "red")
+  # plot
+  bar %>%
+    ggplot(aes(measure, n, fill = type)) +
+    geom_col() +
+    scale_fill_manual(values = color_mapping) +
+    #geom_text(aes(measure, n, group = type, label = as.character(n)), size = 2.5) +
+    geom_text(aes(label = n, hjust = ifelse(n == 0, 0, 1)),
+              position = "stack"
+              ) +
+    labs(title = paste(ncol(data), "variables"),
+         subtitle = paste("with", format_num_kMB(nrow(data)), "observations"),
+         y = "variables",
+         x = "") +
+    coord_flip() +
+    theme_minimal()
+} # explore_tbl
 
 #============================================================================
 #  explore_shiny
@@ -1984,7 +2459,7 @@ explore_shiny <- function(data, target)  {
   # get variable types
   tbl_guesstarget <- describe(data) %>%
     filter(unique <= 2) %>%
-    filter((type %in% c("log","int","dou","num") &
+    filter((type %in% c("lgl","int","dbl","num") &
               (min == 0 | min == FALSE) &
               (max == 1 | max == TRUE)) |
               (type == "fct") ) %>%
@@ -2013,7 +2488,7 @@ explore_shiny <- function(data, target)  {
                            choices = names(data),
                            selected = "disp"),
         shiny::checkboxInput(inputId = "auto_scale", label="auto scale", value=TRUE),
-        shiny::checkboxInput(inputId = "target_density", label="target density", value=FALSE),
+        shiny::checkboxInput(inputId = "split", label="split by target", value=TRUE),
         shiny::hr(),
         shiny::actionButton(inputId = "report", "report all")
         , width = 3),  #sidebarPanel
@@ -2051,6 +2526,9 @@ explore_shiny <- function(data, target)  {
       output_dir <- normalizePath(path.expand(tempdir()))
       output_file <- "report_explore.html"
 
+      # show waiting-window
+      shiny::showModal(modalDialog("Generating report ... (this may take a while)", footer = NULL))
+
       # check if explore package is loaded
       run_explore_package <- ifelse(max(search() == "package:explore") == 1, TRUE, FALSE)
 
@@ -2061,11 +2539,11 @@ explore_shiny <- function(data, target)  {
                              "C:/R/template_report_variable.Rmd")
         rmarkdown::render(input = input_file, output_file = output_file, output_dir = output_dir)
 
-        # report target with density
-      } else if(input$target_density == TRUE)  {
+        # report target with split
+      } else if(input$split == TRUE)  {
         input_file <- ifelse(run_explore_package,
-                             system.file("extdata", "template_report_target_den.Rmd", package="explore"),
-                             "C:/R/template_report_target_den.Rmd")
+                             system.file("extdata", "template_report_target_split.Rmd", package="explore"),
+                             "C:/R/template_report_target_split.Rmd")
         rmarkdown::render(input = input_file, output_file = output_file, output_dir = output_dir)
 
         # report target with percent
@@ -2076,23 +2554,37 @@ explore_shiny <- function(data, target)  {
         rmarkdown::render(input = input_file, output_file = output_file, output_dir = output_dir)
       }
 
+      # ready
+      shiny::removeModal()
+
+      # show Report
       browseURL(paste0("file://", file.path(output_dir, output_file)))
     })
 
     output$graph_target <- shiny::renderPlot({
       if(input$target != "<no target>" & input$var != input$target)  {
-        data %>% explore(!!input$var, target = !!input$target, auto_scale = input$auto_scale, density = input$target_density)
+        data %>% explore(!!sym(input$var), target = !!sym(input$target), auto_scale = input$auto_scale, split = input$split)
       }
     }) # renderPlot graph_target
 
     output$graph_explain <- shiny::renderPlot({
       if(input$target != "<no target>") {
-        data %>% explain_tree(target = !!input$target, size=0.9)
-      }
+        if (ncol(data) > 20) {
+          # show waiting-window
+          shiny::showModal(modalDialog("Growing tree ... (this may take a while)", footer = NULL))
+          # grow decision tree
+          data %>% explain_tree(target = !!sym(input$target), size=0.9)
+          # ready
+          shiny::removeModal()
+        } else {
+          # grow decision tree
+          data %>% explain_tree(target = !!sym(input$target), size=0.9)
+        } # if ncol
+      } # if input$target
     }) # renderPlot graph_explain
 
     output$graph <- shiny::renderPlot({
-      data %>% explore(!!input$var, auto_scale = input$auto_scale)
+      data %>% explore(!!sym(input$var), auto_scale = input$auto_scale)
     }) # renderPlot graph
 
     output$text <- shiny::renderPrint({
@@ -2135,7 +2627,7 @@ explore_shiny <- function(data, target)  {
 #' @param var A variable
 #' @param var2 A variable for checking correlation
 #' @param target Target variable (0/1 or FALSE/TRUE)
-#' @param density Using density for histograms
+#' @param split Split by target variable (FALSE/TRUE)
 #' @param min_val All values < min_val are converted to min_val
 #' @param max_val All values > max_val are converted to max_val
 #' @param auto_scale Use 0.2 and 0.98 quantile for min_val and max_val (if min_val and max_val are not defined)
@@ -2158,7 +2650,6 @@ explore_shiny <- function(data, target)  {
 #' iris %>% explore(Species)
 #' iris %>% explore(Sepal.Length)
 #' iris %>% explore(Sepal.Length, min_val = 4, max_val = 7)
-#' iris %>% explore(Sepal.Length, density = FALSE)
 #'
 #' # Explore a variable with a target
 #' iris$is_virginica <- ifelse(iris$Species == "virginica", 1, 0)
@@ -2174,12 +2665,15 @@ explore_shiny <- function(data, target)  {
 #'
 #' @export
 
-explore <- function(data, var, var2, target, density, min_val = NA, max_val = NA, auto_scale = TRUE, na = NA, ...)  {
+explore <- function(data, var, var2, target, split, min_val = NA, max_val = NA, auto_scale = TRUE, na = NA, ...)  {
 
   # parameter var
   if (!missing(var)) {
     var_quo <- enquo(var)
     var_text <- quo_name(var_quo)[[1]]
+    if (!var_text %in% names(data))  {
+      stop(paste0("variable '", var_text, "' not found"))
+    }
   } else {
     var_quo <- NA
     var_text <- NA
@@ -2189,6 +2683,10 @@ explore <- function(data, var, var2, target, density, min_val = NA, max_val = NA
   if (!missing(var2)) {
     var2_quo <- enquo(var2)
     var2_text <- quo_name(var2_quo)[[1]]
+    if (!var2_text %in% names(data))  {
+      stop(paste0("variable '", var2_text, "' not found"))
+    }
+
   } else {
     var2_quo <- NA
     var2_text <- NA
@@ -2198,19 +2696,19 @@ explore <- function(data, var, var2, target, density, min_val = NA, max_val = NA
   if(!missing(target))  {
     target_quo <- enquo(target)
     target_text <- quo_name(target_quo)[[1]]
+    if (!target_text %in% names(data))  {
+      stop(paste0("target variable '", target_text, "' not found"))
+    }
+    guess_target <- guess_cat_num(data[[target_text]])
   } else {
     target_quo = NA
     target_text = NA
+    guess_target = "oth"
   }
 
-  # parameter density (set default value, based on target)
-  if (missing(density))  {
-    if (is.na(target_text)) {
-      density = TRUE
-    }
-    else {
-      density = FALSE
-    }
+  # parameter density (set default value)
+  if (missing(split))  {
+      split = TRUE
   }
 
   # intelligent guessing if num or cat
@@ -2241,31 +2739,38 @@ explore <- function(data, var, var2, target, density, min_val = NA, max_val = NA
                 min_val = min_val, max_val = max_val,
                 auto_scale = auto_scale, na = na, ...)
 
+    # var num + target num -> correlation
+  } else if (!is.na(var_text) & is.na(var2_text) & var_type == "num" & !is.na(target_text) & guess_target == "num")  {
+    explore_cor(data[c(var_text, target_text)],
+                x = !!var_quo, y = !!target_quo,
+                min_val = min_val, max_val = max_val,
+                auto_scale = auto_scale, na = na, ...)
+
+    # var cat + target num -> correlation
+  } else if (!is.na(var_text) & is.na(var2_text) & var_type == "cat" & !is.na(target_text) & guess_target == "num")  {
+    explore_cor(data[c(var_text, target_text)],
+                y = !!var_quo, x = !!target_quo,
+                min_val = min_val, max_val = max_val,
+                auto_scale = auto_scale, na = na, ...)
+
     # var_type oth
   } else if (!is.na(var_text) & var_type == "oth")  {
     warning("please use a numeric or character variable to explore")
+    plot_var_info(data, !!var_quo, info = "can't explore\n(data type not supported)")
 
-    # no target, num, density
-  } else if (is.na(target_text) & (var_type == "num") & (density == TRUE))  {
+    # no target, num
+  } else if (is.na(target_text) & (var_type == "num"))  {
     explore_density(data[var_text],
                     !!var_quo,
                     min_val = min_val, max_val = max_val,
                     auto_scale = auto_scale, na = na, ...)
 
-    # no target, num
-  } else if (is.na(target_text) & (var_type == "num") & (density == FALSE))  {
-    explore_num(data[var_text],
-                var_text,
-                min_val = min_val, max_val = max_val,
-                auto_scale = auto_scale, ...)
-
     # no target, cat
   } else if (is.na(target_text) & (var_type == "cat")) {
-    explore_cat(data[var_text],
-                var_text, min_val, max_val, ...)
+    explore_bar(data[var_text], !!var_quo, ...)
 
-    # target, num, density
-  } else if (!is.na(target_text) & (var_type == "num") & (density == TRUE)) {
+    # target, num, split
+  } else if (!is.na(target_text) & (var_type == "num") & (split == TRUE)) {
     explore_density(data[c(var_text, target_text)],
                     var = !!var_quo, target = !!target_quo,
                     min_val = min_val, max_val = max_val,
@@ -2274,17 +2779,21 @@ explore <- function(data, var, var2, target, density, min_val = NA, max_val = NA
     # target, num
   } else if (!is.na(target_text) & (var_type == "num")) {
     target_explore_num(data[c(var_text, target_text)],
-                       var_text, var_target = target_text,
+                       !!var_quo, target = !!target_quo,
                        min_val = min_val, max_val = max_val,
                        auto_scale = auto_scale, na = na, ...)
 
+    # target, cat, split
+  } else if (!is.na(target_text) & (var_type == "cat") & (split == TRUE)) {
+    explore_bar(data[c(var_text, target_text)],
+                       !!var_quo, target = !!target_quo,
+                       ...)
     # target, cat
   } else if (!is.na(target_text) & (var_type == "cat")) {
     target_explore_cat(data[c(var_text, target_text)],
-                       var_text, var_target = target_text,
+                       !!var_quo, target = !!target_quo,
                        min_val = min_val, max_val = max_val, na = na, ...)
-
-  }
+  } # if
 
 } # explore
 

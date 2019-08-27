@@ -1,0 +1,181 @@
+---
+title: "explore mtcars"
+author: "Roland Krasser"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{explore_mtcars}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## How to explore the mtcars dataset using the explore package.
+
+The explore package simplifies Exploratory Data Analysis (EDA). Get faster insights with less code!
+
+The mtcars dataset comes with the dplyr package. We use the packages explore and dplyr (for mtcars, select, mutate and the %>% operator).
+
+```{r message=FALSE, warning=FALSE}
+library(dplyr)
+library(explore)
+```
+
+### Explore dataset
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=3}
+mtcars %>% explore_tbl()
+```
+
+```{r message=FALSE, warning=FALSE}
+mtcars %>% describe()
+```
+
+The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models).
+
+* mpg = Miles/(US) gallon
+* cyl = Number of cylinders
+* disp = Displacement (cu.in.)
+* hp = Gross horsepower
+* drat = Rear axle ratio
+* wt = Weight (lb/1000)
+* qsec = 1/4 mile time
+* vs = V/S
+* am = Transmission (0 = automatic, 1 = manual)
+* gear = Number of forward gears
+* carb Number of carburetors
+
+### Explore variables
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+mtcars %>% 
+  select(mpg, cyl, disp, hp) %>% 
+  explore_all()
+```
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+mtcars %>% 
+  select(drat, wt, qsec, vs) %>% 
+  explore_all()
+```
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+mtcars %>% 
+  select(am, gear, carb) %>% 
+  explore_all()
+```
+
+### Number of gears?
+
+Is there a difference between cars with 3,4 and 5 gears?
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+mtcars %>% 
+  explore(gear)
+```
+
+Most of the cars in the dataset have 3 or 4 gears. 15.6% have 5 gears.
+
+Now check relation between some of the variables and gear:
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+mtcars %>% 
+  select(gear, mpg, hp, cyl, am) %>% 
+  explore_all(target = gear)
+```
+
+We see that 100% of cars with am = 0 (automatic) have 3 gears. All cars with am = 1 (manual) have 5 gears.
+
+### High miles per gallon?
+
+Let's define an interesting target: 
+Cars that have mpg (miles per gallon) > 25
+
+We copy the data and create a new target variable 
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=3}
+data <- mtcars %>% 
+  mutate(highmpg = if_else(mpg > 25, 1, 0, 0)) %>% 
+  select(-mpg)
+
+data %>% explore(highmpg)
+```
+
+So, about 19% of all cars have mpg > 25.
+What else is special about them?
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+data %>% 
+  select(highmpg, cyl, disp, hp) %>% 
+  explore_all(target = highmpg)
+```
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+data %>% 
+  select(highmpg, drat, wt, qsec, vs) %>% 
+  explore_all(target = highmpg)
+```
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+data %>% 
+  select(highmpg, am, gear, carb) %>% 
+  explore_all(target = highmpg)
+```
+
+There are some strong differences between cars with / without "high mpg".
+
+Now let's grow a decision tree:
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+data %>% 
+  explain_tree(target = highmpg)
+```
+
+Growing a decision tree, shows that there seems to be a very strong correlation between wt (weight) and "high mpg". Cars with a low weight are much more likely to have "high mpg".
+
+Let's take a closer look to wt:
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+data %>% explore(wt, target = highmpg)
+```
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+data %>% explore(wt, target = highmpg, split = FALSE)
+```
+
+wt (weight) is a good predictor for high mpg.
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+mtcars %>% explore(wt, mpg)
+```
+
+There is a strong correlation between wt and mpg.
+
+If you want to have high miles per gallon (mpg), buy a car with low weight (wt)!
+
+### Horsepower?
+
+Is there a relation between horsepower and other variables like number of cylinder?
+
+Let's build a decision tree with horsepower as target:
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+mtcars %>% 
+  explain_tree(target = hp, minsplit=15)
+```
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+mtcars %>% 
+  select(hp, cyl, mpg) %>% 
+  explore_all(target = hp)
+```
+
+Cars with 8 cylinders have higher horsepower.
+
+Cars with low miles per gallon (mgp) have higher horsepower!

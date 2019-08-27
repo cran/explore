@@ -35,16 +35,28 @@ iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
 iris %>% select(-Species) %>% explain_tree(target = is_versicolor)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
+iris %>% explore_tbl()
+
+## ----message=FALSE, warning=FALSE----------------------------------------
+iris %>% describe_tbl()
+
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
 iris %>% explore(Species)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
 iris %>% explore(Sepal.Length)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
-iris %>% explore(Species, target = is_versicolor)
+iris %>% explore(Sepal.Length, target = is_versicolor)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
-iris %>% explore(Sepal.Length, target = is_versicolor)
+iris %>% explore(Sepal.Length, target = is_versicolor, split = FALSE)
+
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
+iris %>% explore(Sepal.Length, target = Species)
+
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
+iris %>% explore(Sepal.Length, target = Petal.Length)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
 iris %>% 
@@ -59,7 +71,17 @@ iris %>%
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
 iris %>% 
   select(Sepal.Length, Sepal.Width, is_versicolor) %>% 
-  explore_all(target = is_versicolor, density = FALSE)
+  explore_all(target = is_versicolor, split = FALSE)
+
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
+iris %>% 
+  select(Sepal.Length, Sepal.Width, Species) %>% 
+  explore_all(target = Species)
+
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
+iris %>% 
+  select(Sepal.Length, Sepal.Width, Petal.Length) %>% 
+  explore_all(target = Petal.Length)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
 iris %>% explore(Sepal.Length, Petal.Length)
@@ -71,7 +93,7 @@ iris %>% explore(Sepal.Length, Petal.Length, target = is_versicolor)
 iris %>% explore(Sepal.Length, min_val = 4.5, max_val = 7)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
-iris %>% explore(Sepal.Length, density = FALSE, auto_scale = FALSE)
+iris %>% explore(Sepal.Length, auto_scale = FALSE)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3-------------
 iris %>% describe()
