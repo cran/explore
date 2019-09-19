@@ -1,22 +1,34 @@
-# explore
+# explore  <img src="man/figures/hex_explore.png" align="right" width="130" height="150"/>
 
 [![CRAN Version](http://www.r-pkg.org/badges/version/explore)](https://cran.r-project.org/package=explore)
 [![Downloads](http://cranlogs.r-pkg.org/badges/explore)](https://cran.r-project.org/package=explore)
 [![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/explore)](https://cran.r-project.org/package=explore)
 
-Simplifies Exploratory Data Analysis. There are two ways to use the eplore package:
+Simplifies Exploratory Data Analysis. 
 
-**Interactive data exploration**
+## Why this package?
 
-Launch an interactive shiny-app to explore data. You can inspect individual attributes, explore their relation to a binary target or create a fully automated report of all attributes with a few "mouseclicks".
+* **Faster insights with less code** for experienced R users. Exploring a fresh new dataset is exciting. Instead of searching for syntax at Stackoverflow, use all your attention searching for interesting patterns in your data, using just a handful easy to remember functions. Your code is easy to understand - even for non R users.
 
-**Functions for reproducible data science**
+* **Instant success** for new R users. It is said that R has a steep learning curve, especially if you come from a GUI for your statistical analysis. Instead of learning a lot of R syntax before you can explore data, the explore package enables you to have instant success. You can start with just one function - explore() - and learn other R syntax later step by step.
 
-Use the functions behind the shiny app for "tidy EDA". There are basically four "verbs" to remember:
-* explore - if you want to explore an attribute or the relationship between an attribute and a binary target. The output of these functions is a plot.
-* describe - if you want to describe a dataset or an attribute (number of na, unique values, ...) The output of these functions is a text.
-* explain - to create a simple model that explains a target
-* report - to generate an automated report of all variables
+## How to use it
+
+There are three ways to use the package:
+
+* **Interactive data exploration** (univariat, bivariat, multivariat) limited to a binary target (in DEV version you can use binary / categorical / numerical). 
+
+* Generate an **Automated Report** with one line of code. The target can be binary, categorical or numeric.
+
+* **Manual exploration** using a easy to remember set of tidy functions. There are basically four "verbs" to remember:
+
+  * **explore** - if you want to explore a table, a variable or the relationship between a variable and a target (binary, categorical or numeric). The output of these functions is a plot.
+
+  * **describe** - if you want to describe a dataset or a variable (number of na, unique values, ...) The output of these functions is a text.
+
+  * **explain** - to create a simple model that explains a target. explain_tree() for a decision tree, explain_logreg() for a logistic regression.
+
+  * **report** - to generate an automated report of all variables. A target can be defined (binary, categorical or numeric)
 
 The explore package automatically checks if an attribute is categorial or numerical, chooses the best plot-type and handles outliers (autosacling).
 
@@ -52,7 +64,9 @@ if (!require(devtools)) install.packages("devtools")
 devtools::install_local(path = <path of local package>, force = TRUE)
 ```
 
-## Interactive data exploration
+## Examples
+
+### Interactive data exploration
 
 Example how to use the explore package to explore the iris dataset
 
@@ -60,33 +74,44 @@ Example how to use the explore package to explore the iris dataset
 # load package
 library(explore)
 
-# define a target (is Species setosa?)
-iris$is_setosa <- ifelse(iris$Species == "setosa", 1, 0)
+# define a target (is Species versicolor?)
+iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
 
 # explore interactive
 explore(iris)
 ```
 
-### Explore attributes
+Explore variables
 
-<img src="https://github.com/rolkra/explore/blob/master/explore_shiny_iris.png" alt="example interactive exploration" width="800">
+<img src="https://github.com/rolkra/explore/blob/master/man/figures/explore_shiny_iris.png" alt="example interactive exploration" width="800">
 
-### Explain target
+Explain target
 
-<img src="https://github.com/rolkra/explore/blob/master/explore_shiny_iris_tree.png" alt="example interactive exploration" width="800">
+<img src="https://github.com/rolkra/explore/blob/master/man/figures/explore_shiny_iris_tree.png" alt="example interactive exploration" width="800">
 
-### Report of attributes
+### Automated Report
 
-Create a report by clicking the "report all" button (if no target is defined)
+Create a report by clicking the "report all" button or use the report() function.
+If no target is defined, the report shows all variables. If a target is defined, the report shows the relation between all variables and the target.
 
-<img src="https://github.com/rolkra/explore/blob/master/report_attributes.png" alt="example report attributes" width="400">
+Report of all variables
+```r
+iris %>% report(output_dir = tempdir())
+```
 
-### Report of correlations with target
-Create a report by clicking the "report all" button (if target is defined)
+<img src="https://github.com/rolkra/explore/blob/master/man/figures/report_attributes.png" alt="example report attributes" width="400">
 
-<img src="https://github.com/rolkra/explore/blob/master/report_target.png" alt="example report attributes" width="400">
+Report with defined target (binary target, split = FALSE)
+```r
+iris %>% report(output_dir = tempdir(),
+                target = is_versicolor,
+                split = FALSE)
+```
 
-## Functions for reproducible data science
+<img src="https://github.com/rolkra/explore/blob/master/man/figures/report_target.png" alt="example report attributes" width="400">
+
+
+### Manual exploration
 
 Example how to use the functions of the explore package to explore the iris dataset
 
@@ -110,6 +135,9 @@ iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
 # explore relationship between Sepal.Length and the target
 iris %>% explore(Sepal.Length, target = is_versicolor)
 
+# explore relationship between all variables and the target
+Iris %>% explore_all(target = is_versicolor)
+
 # explore correlation between Sepal.Length and Petal.Length
 iris %>% explore(Sepal.Length, Petal.Length)
 
@@ -125,4 +153,7 @@ iris %>% describe(Species)
 # explain target using a decision tree
 iris$Species <- NULL
 iris %>% explain_tree(target = is_versicolor)
+
+# explain target using a logistic regression
+iris %>% explain_logreg(target = is_versicolor)
 ```

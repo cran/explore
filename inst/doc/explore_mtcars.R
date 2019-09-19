@@ -14,19 +14,8 @@ mtcars %>% explore_tbl()
 ## ----message=FALSE, warning=FALSE----------------------------------------
 mtcars %>% describe()
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4-------------
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(mtcars, size = 2.5)----
 mtcars %>% 
-  select(mpg, cyl, disp, hp) %>% 
-  explore_all()
-
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4-------------
-mtcars %>% 
-  select(drat, wt, qsec, vs) %>% 
-  explore_all()
-
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4-------------
-mtcars %>% 
-  select(am, gear, carb) %>% 
   explore_all()
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4-------------
