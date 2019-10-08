@@ -16,7 +16,7 @@ Simplifies Exploratory Data Analysis.
 
 There are three ways to use the package:
 
-* **Interactive data exploration** (univariat, bivariat, multivariat) limited to a binary target (in DEV version you can use binary / categorical / numerical). 
+* **Interactive data exploration** (univariat, bivariat, multivariat). A target can be defined (binary / categorical / numerical). 
 
 * Generate an **Automated Report** with one line of code. The target can be binary, categorical or numeric.
 
@@ -74,18 +74,24 @@ Example how to use the explore package to explore the iris dataset
 # load package
 library(explore)
 
-# define a target (is Species versicolor?)
-iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
-
 # explore interactive
 explore(iris)
 ```
 
 Explore variables
 
-<img src="https://github.com/rolkra/explore/blob/master/man/figures/explore_shiny_iris.png" alt="example interactive exploration" width="800">
+<img src="https://github.com/rolkra/explore/blob/master/man/figures/explore_shiny_iris_target_species.png" alt="example interactive exploration" width="800">
 
-Explain target
+Explain target (is Species a versicolor?)
+
+```r
+# define a target (is Species versicolor?)
+iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
+iris$Species <- NULL
+
+# explore interactive
+explore(iris)
+```
 
 <img src="https://github.com/rolkra/explore/blob/master/man/figures/explore_shiny_iris_tree.png" alt="example interactive exploration" width="800">
 

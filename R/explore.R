@@ -1323,6 +1323,7 @@ guess_cat_num <- function(var)  {
     warning("no variable to guess")
     return("?")
   }
+
   # all factors are cat
   if (is.factor(var)) {
     return("cat")
@@ -1420,9 +1421,14 @@ total_fig_height <- function(data, target, nvar = NA, ncol = 2, size = 3)  {
 
 describe_num <- function(data, var, out = "text", margin = 0) {
 
-  # error if no data
-  if (missing(data)) {
-    stop("provide data to describe")
+  # data table available?
+  if (missing(data))  {
+    stop("expect a data table to explore")
+  }
+
+  # data type data.frame?
+  if (!is.data.frame(data))  {
+    stop("expect a table of type data.frame")
   }
 
   # parameter var
@@ -1431,6 +1437,11 @@ describe_num <- function(data, var, out = "text", margin = 0) {
     var_txt <- quo_name(var_quo)[[1]]
   } else {
     stop("provide variable to describe")
+  }
+
+  # check if var in data
+  if(!var_txt %in% names(data)) {
+    stop("variable not found in table")
   }
 
   # error if var is a factor
@@ -1473,22 +1484,27 @@ describe_num <- function(data, var, out = "text", margin = 0) {
                      mean = var_mean)
 
   if (out == "text")  {
+
+    txt <- ""
+
     spc <- paste(rep(" ", margin), collapse = "")
-    cat(paste0(spc, "variable ="), var_name, "\n")
+    txt <- paste0(txt, spc, "variable = ", var_name, "\n")
     #cat("type     =", paste0(var_type, " (cat/num = ", var_guess,")\n"))
-    cat(paste0(spc, "type     ="), var_type,"\n")
-    cat(paste0(spc, "na       ="), paste0(format_num_auto(var_na)," of ",format_num_space(var_obs)," (",format_num_auto(var_na_pct),"%)\n"))
-    cat(paste0(spc, "unique   ="), paste0(format_num_auto(var_unique),"\n"))
-    cat(paste0(spc, "min|max  ="), paste0(format_num_auto(var_min), " | ", format_num_auto(var_max), "\n"))
-    cat(paste0(spc, "q05|q95  ="), paste0(format_num_auto(var_quantile["5%"]), " | ", format_num_auto(var_quantile["95%"]), "\n"))
-    cat(paste0(spc, "q25|q75  ="), paste0(format_num_auto(var_quantile["25%"]), " | ", format_num_auto(var_quantile["75%"]), "\n"))
+    txt <- paste0(txt, spc, "type     = ", var_type,"\n")
+    txt <- paste0(txt, spc, "na       = ", format_num_auto(var_na)," of ",format_num_space(var_obs)," (",format_num_auto(var_na_pct),"%)\n")
+    txt <- paste0(txt, spc, "unique   = ", format_num_auto(var_unique),"\n")
+    txt <- paste0(txt, spc, "min|max  = ", format_num_auto(var_min, digits=6), " | ", format_num_auto(var_max,digits=4), "\n")
+    txt <- paste0(txt, spc, "q05|q95  = ", format_num_auto(var_quantile["5%"],digits=6), " | ", format_num_auto(var_quantile["95%"],digits=6), "\n")
+    txt <- paste0(txt, spc, "q25|q75  = ", format_num_auto(var_quantile["25%"],digits=6), " | ", format_num_auto(var_quantile["75%"],digits=6), "\n")
     if(var_type == "date")  {
-      cat(paste0(spc, "median   ="), as.character(var_median), "\n")
-      cat(paste0(spc, "mean     ="), as.character(var_mean), "\n")
+      txt <- paste0(txt, spc, "median   = ", as.character(var_median), "\n")
+      txt <- paste0(txt, spc, "mean     = ", as.character(var_mean), "\n")
     } else {
-      cat(paste0(spc, "median   ="), format_num_auto(var_median), "\n")
-      cat(paste0(spc, "mean     ="), format_num_auto(var_mean), "\n")
+      txt <- paste0(txt, spc, "median   = ", format_num_auto(var_median), "\n")
+      txt <- paste0(txt, spc, "mean     = ", format_num_auto(var_mean,digits=6), "\n")
     }
+    # print text output
+    cat(txt)
 
   } else {
     result_num
@@ -1515,13 +1531,26 @@ describe_num <- function(data, var, out = "text", margin = 0) {
 
 describe_cat <- function(data, var, max_cat = 10, out = "text", margin = 0) {
 
-  if (missing(data)) stop("provide data to describe")
+  # data table available?
+  if (missing(data))  {
+    stop("expect a data table to explore")
+  }
+
+  # data type data.frame?
+  if (!is.data.frame(data))  {
+    stop("expect a table of type data.frame")
+  }
 
   if(!missing(var))  {
     var_quo <- enquo(var)
     var_txt <- quo_name(var_quo)[[1]]
   } else {
     stop("provide variable to describe")
+  }
+
+  # check if var in data
+  if(!var_txt %in% names(data)) {
+    stop("variable not found in table")
   }
 
   var_name = var_txt
@@ -1550,8 +1579,12 @@ describe_cat <- function(data, var, max_cat = 10, out = "text", margin = 0) {
       mutate(pct = n / sum(n) * 100) %>%
       mutate(cat_len = nchar(as.character(grp)))
 
-    # limit len of catnames
-    max_cat_len <- max(var_frequency$cat_len, na.rm = TRUE)
+    # limit len of catnames (if not all NA)
+    max_cat_len <- 7
+    if(nrow(var_frequency) > 0 & !is.na(var_frequency[1,"grp"]))  {
+       max_cat_len <- max(var_frequency$cat_len, na.rm = TRUE)
+    }
+
     if(max_cat_len < 7)  {
       max_cat_len = 7
     }
@@ -1574,27 +1607,33 @@ describe_cat <- function(data, var, max_cat = 10, out = "text", margin = 0) {
   # result as text
   if (out == "text")  {
 
+    txt <- ""
+
     spc <- paste(rep(" ", margin), collapse = "")
-    cat(paste0(spc, "variable ="), var_name, "\n")
+    txt <- paste0(txt, spc, "variable = ", var_name, "\n")
     #cat(paste0(spc, "type     ="), paste0(var_type, " (cat/num = ", var_guess,")\n"))
-    cat(paste0(spc, "type     ="), paste0(var_type,"\n"))
-    cat(paste0(spc, "na       ="), paste0(format_num_space(var_na)," of ",format_num_space(var_obs)," (",format_num_space(var_na_pct),"%)\n"))
-    cat(paste0(spc, "unique   ="), paste0(format_num_space(var_unique),"\n"))
+    txt <- paste0(txt, spc, "type     = ", var_type,"\n")
+    txt <- paste0(txt, spc, "na       = ", format_num_space(var_na)," of ",format_num_space(var_obs)," (",format_num_space(var_na_pct),"%)\n")
+    txt <- paste0(txt, spc, "unique   = ", format_num_space(var_unique),"\n")
 
     # show frequency for each category (maximum max_cat)
     if (var_obs > 0)  {
       for (i in seq(min(var_unique, max_cat)))  {
         var_name = format(var_frequency[[i, 1]], width = max_cat_len, justify = "left")
-        cat(paste0(spc, " ", var_name,
+        txt <- paste0(txt, spc, " ", var_name,
                    " = ", format_num_space(var_frequency[[i, 2]]), " (",
-                   format_num_space(var_frequency[[i,3]]),"%)\n" ))
+                   format_num_space(var_frequency[[i,3]]),"%)\n" )
       } # for
     } # if
 
     # if more categories than displayed, show "..."
     if (var_unique > max_cat)  {
-      cat(paste0(spc, " ..."))
+      txt <- paste0(txt, spc, " ...")
     }
+
+    # print text output
+    cat(txt)
+
   } else {
     result_cat
   }
@@ -1615,6 +1654,16 @@ describe_cat <- function(data, var, max_cat = 10, out = "text", margin = 0) {
 #' @export
 
 describe_all <- function(data = NA, out = "large") {
+
+  # data table available?
+  if (missing(data))  {
+    stop("expect a data table to explore")
+  }
+
+  # data type data.frame?
+  if (!is.data.frame(data))  {
+    stop("expect a table of type data.frame")
+  }
 
   # define variables for package check
   variable <- NULL
@@ -1659,7 +1708,9 @@ describe_all <- function(data = NA, out = "large") {
     var_unique = length(unique(data[[var_name]]))
 
     if (var_obs > 0 &
-        get_type(data[[var_name]]) %in% c("logical","integer","double") & !is.factor(data[[var_name]]))  {
+        get_type(data[[var_name]]) %in% c("logical","integer","double") &
+        !is.factor(data[[var_name]]) &
+        var_na < var_obs)  {
       var_min = min(data[[var_name]], na.rm = TRUE)
       var_mean = mean(data[[var_name]], na.rm = TRUE)
       var_max = max(data[[var_name]], na.rm = TRUE)
@@ -1718,6 +1769,16 @@ describe_all <- function(data = NA, out = "large") {
 #' @export
 
 describe_tbl <- function(data, target, out = "text")  {
+
+  # data table available?
+  if (missing(data))  {
+    stop("expect a data table to explore")
+  }
+
+  # data type data.frame?
+  if (!is.data.frame(data))  {
+    stop("expect a table of type data.frame")
+  }
 
   if(!missing(target))  {
     target <- enquo(target)
@@ -1835,10 +1896,26 @@ describe_tbl <- function(data, target, out = "text")  {
 
 describe <- function(data, var, target, out = "text", ...)  {
 
+  # data table available?
+  if (missing(data))  {
+    stop("expect a data table to explore")
+  }
+
+  # data type data.frame?
+  if (!is.data.frame(data))  {
+    stop("expect a table of type data.frame")
+  }
+
   # parameter var
   if(!missing(var))  {
     var_quo <- enquo(var)
     var_txt <- quo_name(var_quo)[[1]]
+
+    # check if var in data
+    if(!var_txt %in% names(data)) {
+      stop("variable not found in table")
+    }
+
   } else {
     var_txt = NA
   }
@@ -2092,6 +2169,11 @@ explain_tree <- function(data, target, max_cat = 10, max_target_cat = 5, maxdept
   type <- NULL
   variable <- NULL
 
+  # parameter data
+  if(missing(data))  {
+    stop(paste0("data missing"))
+  }
+
   # parameter target
   if(!missing(target))  {
     target_quo <- enquo(target)
@@ -2111,6 +2193,18 @@ explain_tree <- function(data, target, max_cat = 10, max_target_cat = 5, maxdept
 
   # minimum 2 variables left?
   if (ncol(data) < 2) {
+    p <- plot_text("can't grow decision tree")
+    return(invisible(p))
+  }
+
+  # observations?
+  if(nrow(data) == 0) {
+    p <- plot_text("can't grow decision tree")
+    return(invisible(p))
+  }
+
+  # target all NA?
+  if (all(is.na(data[[target_txt]])))  {
     p <- plot_text("can't grow decision tree")
     return(invisible(p))
   }
@@ -2183,6 +2277,11 @@ explain_tree <- function(data, target, max_cat = 10, max_target_cat = 5, maxdept
 #' @export
 
 explain_logreg <- function(data, target, ...)  {
+
+  # parameter data
+  if(missing(data))  {
+    stop(paste0("data missing"))
+  }
 
   # parameter target
   if(!missing(target))  {
@@ -2264,7 +2363,6 @@ explore_cor <- function(data, x, y, target, bins = 8, min_val = NA, max_val = NA
     p <- data %>% plot_var_info(!!x_quo, "no observations")
     return(p)
   }
-
 
   # parameter target
   if(!missing(target))  {
@@ -2477,6 +2575,11 @@ explore_tbl <- function(data)  {
     stop("expect a data table to explore")
   }
 
+  # data type data.frame?
+  if (!is.data.frame(data))  {
+    stop("expect a table of type data.frame")
+  }
+
   # describe data
   d <- describe_all(data)
 
@@ -2484,28 +2587,35 @@ explore_tbl <- function(data)  {
   n_var <- nrow(d)
 
   # prepare "all variables"
-  bar1 <- d %>% count(type)
-  bar1$measure <- "all"
-  bar1$n_pct <- bar1$n / n_var * 100
+  bar1 <- d %>%
+    count(type) %>%
+    mutate(
+      measure = "all",
+      n_pct = n / n_var * 100
+    )
 
   # prepare "no variance"
   suppressWarnings(
     bar2 <- d %>%
       filter(type != "oth") %>%
       filter(unique == 1) %>%
-      count(type)
+      count(type) %>%
+      mutate(
+        measure = "no variance",
+        n_pct = n / n_var * 100
+      )
   )
-  bar2$measure <- "no variance"
-  bar2$n_pct <- bar2$n / n_var * 100
 
   # prepare "with NA"
   suppressWarnings(
     bar3 <- d %>%
       filter(na > 0) %>%
-      count(type)
+      count(type) %>%
+      mutate(
+        measure = "with NA",
+        n_pct = n / n_var * 100
+      )
   )
-  bar3$measure <- "with NA"
-  bar3$n_pct <- bar3$n / n_var * 100
 
   # prepare plot
   bar <- bind_rows(bar1, bar2, bar3)
@@ -2794,6 +2904,21 @@ explore_shiny <- function(data, target)  {
 #' @export
 
 explore <- function(data, var, var2, target, split, min_val = NA, max_val = NA, auto_scale = TRUE, na = NA, ...)  {
+
+  # data table available?
+  if (missing(data))  {
+    stop("expect a data table to explore")
+  }
+
+  # data type data.frame?
+  if (!is.data.frame(data))  {
+    stop("expect a table of type data.frame")
+  }
+
+  # observations?
+  if(nrow(data) == 0) {
+    stop("data has 0 observations")
+  }
 
   # parameter var
   if (!missing(var)) {

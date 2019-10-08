@@ -1,3 +1,16 @@
+## explore 0.5.1 (2019-10-07)
+
+Prepare for new dplyr 0.8.4
+Bug Fixes
+
+* prepare explore_tbl() for dplyr 0.8.4
+* describe_num() with default digits=6
+* describe_cat() bugfix variable with all NA
+* describe_all() bugfix variable with all NA
+* explain_tree() bugfix dataframe with 0 rows
+* improve speed describe() text output (RMarkdown)
+* explore() now checks if data is a data.frame
+
 ## explore 0.5.0 (2019-09-19)
 
 Interactive data exploration now accept categorical and numerical targets (next to a binary target).
