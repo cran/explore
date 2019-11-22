@@ -1,7 +1,7 @@
 Package: explore
 Type: Package
 Title: Simplifies Exploratory Data Analysis
-Version: 0.5.1
+Version: 0.5.2
 Author: Roland Krasser
 Maintainer: Roland Krasser <roland.krasser@gmail.com>
 Description: Interactive data exploration with one line of code or use an easy to remember set of tidy functions for exploratory data analysis. Introduces three main verbs. explore() to graphically explore a variable or table, describe() to describe a variable or table and report() to create an automated report.
@@ -10,12 +10,12 @@ Encoding: UTF-8
 LazyData: true
 URL: http://github.com/rolkra/explore
 Imports: broom, dplyr, DBI, DT, forcats, ggplot2 (>= 3.0.0), gridExtra,
-        magrittr, MASS, odbc, rlang, rpart, rpart.plot, shiny,
+        magrittr, MASS, odbc, rlang, rpart, rpart.plot, shiny, stringr,
         rmarkdown
 RoxygenNote: 6.1.1
 Suggests: knitr
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2019-10-08 13:10:57 UTC; uJQB7LF
+Packaged: 2019-11-21 09:09:46 UTC; ujqb7lf
 Repository: CRAN
-Date/Publication: 2019-10-08 13:40:02 UTC
+Date/Publication: 2019-11-22 09:00:08 UTC
