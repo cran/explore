@@ -270,6 +270,7 @@ target_explore_num <- function(data, var, target = "target_ind", min_val = NA, m
 #' @param target target (can have more than 2 levels)
 #' @param flip Should plot be flipped? (change of x and y)
 #' @param title Title of the plot (if empty var name)
+#' @param numeric Display variable as numeric (not category)
 #' @param max_cat Maximum number of categories to be plotted
 #' @param max_target_cat Maximum number of categories to be plotted for target (except NA)
 #' @param legend_position Position of the legend ("bottom"|"top"|"none")
@@ -282,17 +283,17 @@ target_explore_num <- function(data, var, target = "target_ind", min_val = NA, m
 #' @import ggplot2
 #' @export
 
-explore_bar <- function(data, var, target, flip = TRUE, title = "", max_cat = 30, max_target_cat = 5, legend_position = "right", label, label_size = 2.7)  {
+explore_bar <- function(data, var, target, flip = NA, title = "", numeric = NA, max_cat = 30, max_target_cat = 5, legend_position = "right", label, label_size = 2.7)  {
 
   # define variables for CRAN-package check
   na_ind <- NULL
   target_n <- NULL
   pct <- NULL
 
-  # parameter data
-  if(missing(data))  {
-    stop(paste0("data missing"))
-  }
+  # check parameter data
+  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
+  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
+  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
 
   # parameter var
   if(!missing(var))  {
@@ -328,16 +329,36 @@ explore_bar <- function(data, var, target, flip = TRUE, title = "", max_cat = 30
     n_target_cat <- length(unique(data[[target_txt]]))
   }
 
-  # number of levels of var
+  # number of levels of var (if not numeric)
   var_cat <- data %>% count(!!var_quo) %>% pull(!!var_quo)
-  if (length(var_cat) > max_cat)  {
+  if ( (missing(numeric) | (!missing(numeric) & (numeric == FALSE))) &
+      length(var_cat) > max_cat)  {
     data <- data %>% filter(!!var_quo %in% var_cat[1:max_cat])
+    warning(paste("number of bars limited to", max_cat, "by parameter max_cat"))
   }
 
-  # use a factor for var if low number of cats
-  if (guess_cat_num(data[[var_txt]]) == "cat") {
+  # numeric? of use a factor for var if low number of cats
+  if (!missing(numeric) & numeric == TRUE)  {
+    data[[var_txt]] <- as.numeric(data[[var_txt]])
+    if (missing(flip)) {
+      flip <- FALSE
+    }
+  } else if ((!missing(numeric) & numeric == FALSE) |
+             guess_cat_num(data[[var_txt]]) == "cat") {
     data[[var_txt]] <- factor(data[[var_txt]])
     data[[var_txt]] <- forcats::fct_explicit_na(data[[var_txt]], na_level = ".NA")
+    if (missing(flip)) {
+      flip <- TRUE
+    }
+  } # if
+
+  # guess flip
+  if (missing(flip)) {
+    if(is.numeric(data[[var_txt]])) {
+      flip <- FALSE
+    } else {
+      flip <- TRUE
+    }
   }
 
   # use a factor for target so that fill works
@@ -518,10 +539,10 @@ explore_bar <- function(data, var, target, flip = TRUE, title = "", max_cat = 30
 
 explore_density <- function(data, var, target, title = "", min_val = NA, max_val = NA, color = "grey", auto_scale = TRUE, max_target_cat = 5, ...)   {
 
-  # parameter data
-  if(missing(data))  {
-    stop(paste0("data missing"))
-  }
+  # check parameter data
+  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
+  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
+  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
 
   # parameter var
   if(!missing(var))  {
@@ -655,6 +676,11 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
 
 explore_all <- function(data, target, ncol = 2, split = TRUE)  {
 
+  # check parameter data
+  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
+  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
+  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
+
   # parameter target
   if(!missing(target))  {
     target_quo <- enquo(target)
@@ -764,10 +790,10 @@ explore_all <- function(data, target, ncol = 2, split = TRUE)  {
 
 explore_cor <- function(data, x, y, target, bins = 8, min_val = NA, max_val = NA, auto_scale = TRUE, title = NA, color = "grey", ...)  {
 
-  # parameter data
-  if(missing(data))  {
-    stop(paste0("data missing"))
-  }
+  # check parameter data
+  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
+  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
+  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
 
   # parameter x
   if(!missing(x))  {
@@ -900,15 +926,10 @@ explore_tbl <- function(data)  {
   na <- NULL
   measure <- NULL
 
-  # data table available?
-  if (missing(data))  {
-    stop("expect a data table to explore")
-  }
-
-  # data type data.frame?
-  if (!is.data.frame(data))  {
-    stop("expect a table of type data.frame")
-  }
+  # check parameter data
+  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
+  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
+  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
 
   # describe data
   d <- describe_all(data)
@@ -1234,20 +1255,10 @@ explore_shiny <- function(data, target)  {
 
 explore <- function(data, var, var2, target, split, min_val = NA, max_val = NA, auto_scale = TRUE, na = NA, ...)  {
 
-  # data table available?
-  if (missing(data))  {
-    stop("expect a data table to explore")
-  }
-
-  # data type data.frame?
-  if (!is.data.frame(data))  {
-    stop("expect a table of type data.frame")
-  }
-
-  # observations?
-  if(nrow(data) == 0) {
-    stop("data has 0 observations")
-  }
+  # check parameter data
+  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
+  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
+  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
 
   # parameter var
   if (!missing(var)) {
@@ -1380,3 +1391,101 @@ explore <- function(data, var, var2, target, split, min_val = NA, max_val = NA, 
   } # if
 
 } # explore
+
+
+#============================================================================
+#  Function: explore_targetpct
+#============================================================================
+#' Explore variable + binary target (values 0/1)
+#'
+#' Create a plot to explore relation between a variable and a binary target
+#' as target percent. The target variable is choosen automatically
+#' if possible (name starts with 'target')
+#'
+#' @param data A dataset
+#' @param var Numerical variable
+#' @param target Target variable (0/1 or FALSE/TRUE)
+#' @param title Title of the plot
+#' @param min_val All values < min_val are converted to min_val
+#' @param max_val All values > max_val are converted to max_val
+#' @param auto_scale Use 0.2 and 0.98 quantile for min_val and max_val (if min_val and max_val are not defined)
+#' @param na Value to replace NA
+#' @param flip Flip plot? (for categorical variables)
+#' @param ... Further arguments
+#' @return Plot object
+#' @examples
+#' iris$target01 <- ifelse(iris$Species == "versicolor",1,0)
+#' explore_targetpct(iris)
+#' @importFrom magrittr "%>%"
+#' @import rlang
+#' @export
+
+explore_targetpct <- function(data, var, target = NULL, title = NULL, min_val = NA, max_val = NA, auto_scale = TRUE, na = NA, flip = NA, ...) {
+
+  # check parameter data
+  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
+  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
+  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
+
+  # parameter var
+  if (!missing(var)) {
+    var_quo <- enquo(var)
+    var_text <- quo_name(var_quo)[[1]]
+    if (!var_text %in% names(data))  {
+      stop(paste0("variable '", var_text, "' not found"))
+    }
+  } else {
+    var_quo <- NA
+    var_text <- NA
+  }
+
+  # intelligent guessing if num or cat
+  # based on postfix and type of variable names
+  if (!is.na(var_text))  {
+    var_type <- guess_cat_num(data[[var_text]])
+  } else {
+    var_type = "?"
+  }
+
+  # guessing of target
+  if (missing(target)) {
+    var_names <- names(data)
+    target_pos <- stringr::str_detect(var_names, "target*")
+    target_var <- var_names[target_pos == TRUE]
+
+    if (length(target_var) == 1) {
+      target_quo <- sym(target_var[1])
+    } else {
+      stop("target not defined, guessing not possible")
+    }
+  } else {
+    target_quo <- enquo(target)
+  }
+
+  if (var_type == "num") {
+    p <- target_explore_num(data,
+                            var = !!var_quo,
+                            target = !!target_quo,
+                            title = title,
+                            min_val = min_val, max_val = max_val,
+                            auto_scale = auto_scale,
+                            na = na,
+                            flip = flip,
+                            ...)
+  } else if (var_type == "cat") {
+    p <- target_explore_cat(data,
+                            var = !!var_quo,
+                            target = !!target_quo,
+                            title = title,
+                            min_val = min_val, max_val = max_val,
+                            na = na,
+                            flip = flip,
+                            ...)
+  } else {
+    p <- plot_var_info(!!var_quo, info="can't plot\ntyype not supported")
+  }
+
+  p
+
+} # explore_targetpct
+

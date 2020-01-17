@@ -1,3 +1,15 @@
+## explore 0.5.3 (2020-01-17)
+
+* explore_bar(): add parameter numeric
+* describe_all() returns a tibble
+* describe_all(): column 'variable' is character (not factor)
+* report() split = TRUE as default
+* add rescale01()
+* add parameter rescale01 to clean_var()
+* add function count_pct()
+* add out='tibble' to describe_cat()
+* add function explore_targetpct()
+
 ## explore 0.5.2 (2019-11-21)
 
 * split scource-code file into multiple files

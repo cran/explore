@@ -107,7 +107,7 @@ describe_num <- function(data, var, out = "text", margin = 0) {
 } # describe_num
 
 #============================================================================
-#  describe_cat (out = text | list)
+#  describe_cat (out = text | list | tibble)
 #============================================================================
 #' Describe categorial variable
 #'
@@ -148,6 +148,13 @@ describe_cat <- function(data, var, max_cat = 10, out = "text", margin = 0) {
     stop("variable not found in table")
   }
 
+  # out = tibble
+  if (out %in% c("tibble","df","tbl"))  {
+    d <- data %>% count_pct(!!var_quo)
+    return(d)
+  }
+
+  # out = list | text
   var_name = var_txt
   var_type = ifelse(is.factor(data[[var_name]]),
                     "factor",
@@ -242,7 +249,7 @@ describe_cat <- function(data, var, max_cat = 10, out = "text", margin = 0) {
 #'
 #' @param data A dataset
 #' @param out Output format ("small"|"large")
-#' @return Dataset
+#' @return Dataset (tibble)
 #' @import dplyr
 #' @examples
 #' describe_all(iris)
@@ -271,7 +278,7 @@ describe_all <- function(data = NA, out = "large") {
   max <- NULL
 
   # define result data.frame
-  result <- data.frame(variable = character(),
+  result <- tibble::tibble(variable = character(),
                        type = character(),
                        na = integer(),
                        na_pct = double(),
@@ -322,7 +329,7 @@ describe_all <- function(data = NA, out = "large") {
     } # if
 
     result <- rbind(result,
-                    data.frame(variable = var_name,
+                    tibble::tibble(variable = var_name,
                                type = var_type,
                                na = var_na,
                                na_pct = var_na_pct,
