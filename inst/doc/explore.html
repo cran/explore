@@ -12,7 +12,7 @@
 
 <meta name="author" content="Roland Krasser" />
 
-<meta name="date" content="2020-02-09" />
+<meta name="date" content="2020-04-06" />
 
 <title>explore</title>
 
@@ -95,7 +95,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">explore</h1>
 <h4 class="author">Roland Krasser</h4>
-<h4 class="date">2020-02-09</h4>
+<h4 class="date">2020-04-06</h4>
 
 
 
@@ -109,7 +109,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>explore package on Github: <a href="https://github.com/rolkra/explore" class="uri">https://github.com/rolkra/explore</a></p>
 <p>As the explore-functions fits well into the tidyverse, we load the dplyr-package as well.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
-<span class="kw">library</span>(explore)</code></pre></div>
+<span class="kw">library</span>(explore)
+<span class="kw">library</span>(tibble)
+iris &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(iris)</code></pre></div>
 <div id="interactive-data-exploration" class="section level3">
 <h3>Interactive data exploration</h3>
 <p>Explore your dataset (in this case the iris dataset) in one line of code:</p>

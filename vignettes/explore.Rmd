@@ -33,6 +33,8 @@ As the explore-functions fits well into the tidyverse, we load the dplyr-package
 ```{r message=FALSE, warning=FALSE}
 library(dplyr)
 library(explore)
+library(tibble)
+iris <- as_tibble(iris)
 ```
 
 ### Interactive data exploration

@@ -7,6 +7,8 @@ knitr::opts_chunk$set(
 ## ----message=FALSE, warning=FALSE----------------------------------------
 library(dplyr)
 library(explore)
+library(tibble)
+iris <- as_tibble(iris)
 
 ## ----eval=FALSE, echo=TRUE-----------------------------------------------
 #  explore(iris)
