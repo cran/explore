@@ -4,13 +4,25 @@
 \alias{explain_tree}
 \title{Explain a target using a simple decision tree (classification or regression)}
 \usage{
-explain_tree(data, target, max_cat = 10, max_target_cat = 5,
-  maxdepth = 3, minsplit = 20, cp = 0, size = 0.7, ...)
+explain_tree(
+  data,
+  target,
+  n,
+  max_cat = 10,
+  max_target_cat = 5,
+  maxdepth = 3,
+  minsplit = nrow(data)/10,
+  cp = 0,
+  size = 0.7,
+  ...
+)
 }
 \arguments{
 \item{data}{A dataset}
 
 \item{target}{Target variable}
+
+\item{n}{weigths (for count data)}
 
 \item{max_cat}{Drop categorical variables with higher number of levels}
 
@@ -18,7 +30,7 @@ explain_tree(data, target, max_cat = 10, max_target_cat = 5,
 
 \item{maxdepth}{Maximal depth of the tree (rpart-parameter)}
 
-\item{minsplit}{The minimum number of observations that must exist in a node in order for a split to be attempted (rpart-parameter)}
+\item{minsplit}{The minimum number of observations that must exist in a node to split.}
 
 \item{cp}{Complexity parameter (rpart-parameter)}
 

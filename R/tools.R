@@ -404,12 +404,13 @@ get_type <- function(var)  {
 #' Guess if variable is categorial or numerical based on name, type and values of variable
 #'
 #' @param var A vector (dataframe column)
+#' @param descr A description of the variable (optional)
 #' @return "cat" (categorial), "num" (numerical) or "oth" (other)
 #' @examples
 #' guess_cat_num(iris$Species)
 #' @export
 
-guess_cat_num <- function(var)  {
+guess_cat_num <- function(var, descr)  {
   # if var is missing, return "?"
   if (missing(var))  {
     warning("no variable to guess")
@@ -426,13 +427,18 @@ guess_cat_num <- function(var)  {
   } else {
     return("oth")
   }
-  ## intelligent guessing if num or cat (based on postfix of variable names)
-  var_type <- typeof(var)
-  # num with limited number of unique values is cat
-  var_unique <- length(unique(var))
-  # return result
 
-  # treate Date always as cat
+  # variable type
+  var_type <- typeof(var)
+
+  # number of unique values
+  if (missing(descr))  {
+    var_unique <- length(unique(var))
+  } else {
+    var_unique <- descr$unique
+  }
+
+  # treat Date always as cat
   if (var_class == "Date")  {
     return("cat")
   }
@@ -478,6 +484,7 @@ get_nrow <- function(varnames, exclude = 0, ncol = 2)  {
 #' Get fig.height for RMarkdown-junk using explore_all()
 #'
 #' @param data A dataset
+#' @param n Weights variable for count data
 #' @param target Target variable
 #' @param nvar Number of variables to plot
 #' @param ncol Number of columns (default = 2)
@@ -489,16 +496,18 @@ get_nrow <- function(varnames, exclude = 0, ncol = 2)  {
 #' total_fig_height(nvar = 5)
 #' @export
 
-total_fig_height <- function(data, target, nvar = NA, ncol = 2, size = 3)  {
+total_fig_height <- function(data, n, target, nvar = NA, ncol = 2, size = 3)  {
 
   if (!is.na(nvar)) {
     n_var <- nvar
-    n <- n_var - ifelse(missing(target), 0, 1)
   } else {
     n_var <- ncol(data)
-    n <- n_var - ifelse(missing(target), 0, 1)
   }
-  result <- ceiling(n / ncol) * size
+
+  n_var <- n_var - ifelse(missing(target), 0, 1)
+  n_var <- n_var - ifelse(missing(n), 0, 1)
+
+  result <- ceiling(n_var / ncol) * size
   result
 }
 
@@ -767,7 +776,7 @@ count_pct <- function(data, ...)  {
   d <- data %>%
     dplyr::count(...)
 
-  names(d) <- c("value", "n")
+ #names(d) <- c("value", "n")
 
   d <- d %>%
     dplyr::mutate(total = sum(n),
