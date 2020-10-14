@@ -6,11 +6,12 @@ knitr::opts_chunk$set(
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
 library(dplyr)
+library(tibble)
 library(explore)
-titanic <- as.data.frame(Titanic)
+titanic <- as_tibble(Titanic)
 
 ## -----------------------------------------------------------------------------
-titanic %>% describe_tbl(n = Freq)
+titanic %>% describe_tbl(n = n)
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
 titanic %>% describe()
@@ -19,32 +20,32 @@ titanic %>% describe()
 titanic %>% head(10)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic %>% explore(Class, n = Freq)
+titanic %>% explore(Class, n = n)
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
-titanic %>% describe(Class, n = Freq)
+titanic %>% describe(Class, n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(titanic, n = Freq)----
-titanic %>% explore_all(n = Freq)
+titanic %>% explore_all(n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic %>% explore(Class, target = Survived, n = Freq, split = FALSE)
+titanic %>% explore(Class, target = Survived, n = n, split = FALSE)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic %>% explore(Class, target = Survived, n = Freq, split = TRUE)
+titanic %>% explore(Class, target = Survived, n = n, split = TRUE)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic %>% explore(Sex, target = Survived, n = Freq)
+titanic %>% explore(Sex, target = Survived, n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic %>% explore(Age, target = Survived, n = Freq)
+titanic %>% explore(Age, target = Survived, n = n)
 
 ## -----------------------------------------------------------------------------
-titanic %>% explain_tree(target = Survived, n = Freq)
+titanic %>% explain_tree(target = Survived, n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic %>% explore(Age, target = Class, n = Freq)
+titanic %>% explore(Age, target = Class, n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic %>% explore(Sex, target = Class, n = Freq)
+titanic %>% explore(Sex, target = Class, n = n)
 

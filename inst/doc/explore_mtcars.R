@@ -66,6 +66,13 @@ mtcars %>% explore(wt, mpg)
 mtcars %>% 
   explain_tree(target = hp, minsplit=15)
 
+## ----fig.height=4, fig.width=6, message=FALSE, warning=FALSE, include=FALSE----
+model <- mtcars %>% 
+  explain_tree(target = hp, minsplit=15, out = "model")
+
+## ----echo=TRUE, fig.height=4, fig.width=6, message=FALSE, warning=FALSE-------
+model
+
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4------------------
 mtcars %>% 
   select(hp, cyl, mpg) %>% 

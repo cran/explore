@@ -1,7 +1,7 @@
 Package: explore
 Type: Package
 Title: Simplifies Exploratory Data Analysis
-Version: 0.6.1
+Version: 0.6.2
 Author: Roland Krasser
 Maintainer: Roland Krasser <roland.krasser@gmail.com>
 Description: Interactive data exploration with one line of code or use an easy to remember set of tidy functions for exploratory data analysis. Introduces three main verbs. explore() to graphically explore a variable or table, describe() to describe a variable or table and report() to create an automated report.
@@ -16,6 +16,6 @@ RoxygenNote: 7.1.1
 Suggests: knitr, palmerpenguins
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2020-09-04 05:41:28 UTC; rolkra
+Packaged: 2020-10-13 17:12:18 UTC; rolkra
 Repository: CRAN
-Date/Publication: 2020-09-04 06:32:09 UTC
+Date/Publication: 2020-10-14 18:50:02 UTC

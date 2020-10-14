@@ -1,3 +1,18 @@
+## explore 0.6.2 (2020-10-13)
+
+* Bugfix explore_bar(): NA in plot
+* explore_count(): convert target into factor
+* explore_count(): add default title (cat name)
+* explore_count(): add parameter numeric, max_cat, max_target_cat
+* explain_tree(): convert character variables into factors (count data)
+* explain_tree(): parameter out ("plot" | "model")
+* explain_logreg(): parameter out ("tibble" | "model")
+* vignette "explore_titanic": change to tibble
+* vignette "explore_mtcars": add explanations
+* change theme_minimal to theme_light
+* dwh_fastload(): add parameters overwrite and append
+* update README.md
+
 ## explore 0.6.1 (2020-09-04)
 
 * change URL: http://github.com to https://github.com
