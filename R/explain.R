@@ -6,12 +6,14 @@
 #'
 #' @param data A dataset
 #' @param target Target variable
-#' @param n weigths (for count data)
+#' @param n weigths variable (for count data)
 #' @param max_cat Drop categorical variables with higher number of levels
 #' @param max_target_cat Maximum number of categories to be plotted for target (except NA)
 #' @param maxdepth Maximal depth of the tree (rpart-parameter)
 #' @param minsplit The minimum number of observations that must exist in a node to split.
 #' @param cp Complexity parameter (rpart-parameter)
+#' @param weights Vector containing weight of each observation (rpart-parameter). Can
+#' not be used in combination with parameter n (variable containing weight for count-data)
 #' @param size Textsize of plot
 #' @param out Output of function: "plot" | "model"
 #' @param ... Further arguments
@@ -24,7 +26,9 @@
 #' explain_tree(data, target = is_versicolor)
 #' @export
 
-explain_tree <- function(data, target, n, max_cat = 10, max_target_cat = 5, maxdepth = 3, minsplit = nrow(data)/10, cp = 0, size = 0.7, out = "plot", ...)  {
+explain_tree <- function(data, target, n, max_cat = 10, max_target_cat = 5, maxdepth = 3,
+                         minsplit = NA, cp = 0, weights = NA,
+                         size = 0.7, out = "plot", ...)  {
 
   # define variables to pass CRAN-checks
   type <- NULL
@@ -35,7 +39,7 @@ explain_tree <- function(data, target, n, max_cat = 10, max_target_cat = 5, maxd
     stop(paste0("data missing"))
   }
 
-  # parameter n
+  # parameter n, uncount
   if(!missing(n))  {
     n_quo <- enquo(n)
     n_txt <- quo_name(n_quo)[[1]]
@@ -55,6 +59,21 @@ explain_tree <- function(data, target, n, max_cat = 10, max_target_cat = 5, maxd
   } else {
     target_txt = NA
     return(NULL)
+  }
+
+  # no obs-weights for count-data
+  if (!missing(n)) {
+    weights <- NA
+  }
+
+  # default obs-weights
+  if (!is.vector(weights) | length(weights) < nrow(data)) {
+    weights <- rep(1, nrow(data))
+  }
+
+  # parameter minsplit
+  if(is.na(minsplit)) {
+    minsplit <- sum(weights)/10
   }
 
   # drop variables, that are not usable
@@ -98,6 +117,7 @@ explain_tree <- function(data, target, n, max_cat = 10, max_target_cat = 5, maxd
     mod <- rpart::rpart(formula_txt,
                         data = data,
                         method = "class",
+                        weights = weights,
                         control = rpart::rpart.control(maxdepth=maxdepth, minsplit=minsplit, cp=cp))
 
   } else {
@@ -105,6 +125,7 @@ explain_tree <- function(data, target, n, max_cat = 10, max_target_cat = 5, maxd
     # create tree num
     mod <- rpart::rpart(formula_txt,
                         data = data,
+                        weights = weights,
                         method = "anova",  #"class",
                         control = rpart::rpart.control(maxdepth=maxdepth, minsplit=minsplit, cp=cp))
 
@@ -124,6 +145,7 @@ explain_tree <- function(data, target, n, max_cat = 10, max_target_cat = 5, maxd
                            box.palette = 'Blues',    # colors for nodes
                            shadow.col = 0,           # color of shadow, 0 = none
                            cex = size,
+                           left = FALSE,
                            ...)
   } else {
 

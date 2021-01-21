@@ -11,8 +11,9 @@ explain_tree(
   max_cat = 10,
   max_target_cat = 5,
   maxdepth = 3,
-  minsplit = nrow(data)/10,
+  minsplit = NA,
   cp = 0,
+  weights = NA,
   size = 0.7,
   out = "plot",
   ...
@@ -23,7 +24,7 @@ explain_tree(
 
 \item{target}{Target variable}
 
-\item{n}{weigths (for count data)}
+\item{n}{weigths variable (for count data)}
 
 \item{max_cat}{Drop categorical variables with higher number of levels}
 
@@ -34,6 +35,9 @@ explain_tree(
 \item{minsplit}{The minimum number of observations that must exist in a node to split.}
 
 \item{cp}{Complexity parameter (rpart-parameter)}
+
+\item{weights}{Vector containing weight of each observation (rpart-parameter). Can
+not be used in combination with parameter n (variable containing weight for count-data)}
 
 \item{size}{Textsize of plot}
 

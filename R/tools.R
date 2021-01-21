@@ -106,6 +106,63 @@ balance_target <- function(data, target, min_prop = 0.1) {
 } # balance_target
 
 #============================================================================
+#  weight_target
+#============================================================================
+#' Weight target variable
+#'
+#' Create weights for the target variable in your dataset
+#' so that are equal weiths for target = 0 and target = 1.
+#' Target must be 0/1, FALSE/TRUE ore no/yes
+#'
+#' @param data A dataset
+#' @param target Target variable (0/1, TRUE/FALSE, yes/no)
+#' @return Weights for each observation (as a vector)
+#' @import rlang
+#' @import dplyr
+#' @examples
+#' iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
+#' weights <- weight_target(iris, target = is_versicolor)
+#' summary(weights)
+#' @export
+
+weight_target <- function(data, target) {
+
+  # check if parameters are missing
+  if (missing(data))  {
+    stop("data is missing")
+  }
+
+  if (missing(target))  {
+    stop("target is missing")
+  }
+
+  # tidy eval for target
+  target_quo <- enquo(target)
+  target_txt <- quo_name(target_quo)[[1]]
+
+  # check levels of target
+  target_levels <- length(unique(data[[target_txt]]))
+  if (target_levels > 2)  {
+    stop(paste("target has", target_levels, "levels, expected 2"))
+  }
+
+  # weight
+  observed_prop   <- data %>%
+    dplyr::pull(!!target_quo) %>%
+    table()
+  minClass        <- min(observed_prop)
+  names(minClass) <- names(which(observed_prop == minClass))
+
+  weights = ifelse(data[[target_txt]] == names(minClass),
+                     max(observed_prop)/min(observed_prop), 1)
+
+  # return weigthts
+  return(weights)
+
+  } # weight_target
+
+
+#============================================================================
 #  plot_text
 #============================================================================
 #' Plot a text
@@ -165,6 +222,34 @@ plot_var_info <- function(data, var, info = "")  {
           axis.ticks.y=element_blank(),
           plot.margin = unit(c(0.1,0.1,0.5,1), "cm")) #t,r,b,l
 } # plot_var_info
+
+#============================================================================
+#  plot_legend_targetpct()
+#============================================================================
+#' Plots a legend that can be used for explore_all with a binary target
+#'
+#' @param border Draw a border?
+#' @return Base plot
+#''@importFrom graphics legend par plot
+#' @examples
+#' plot_legend_targetpct(border = TRUE)
+#' @export
+
+plot_legend_targetpct <- function(border = TRUE) {
+
+  graphics::par(mar=c(0,0,0,0))
+  plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
+  graphics::legend(0.5,0.5,
+         legend = c("00-05%", "06-20%", "21-40%","41+%"),
+         fill =c("#ECEFF1", "#CFD8DC", "#B0BEC5", "#90A4AE"),
+         horiz = TRUE,
+         xjust = 0.5,
+         yjust = 0.5,
+         border = TRUE,
+         box.lty = ifelse(border, 1, 0))
+
+} # plot_legend_targetpct
+
 
 #============================================================================
 #  format_num_spcace

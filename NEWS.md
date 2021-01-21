@@ -1,3 +1,13 @@
+## explore 0.7.0 (2021-01-21)
+
+* add weights parameter to explain_tree()
+* flip no/yes label in rpart.plot
+* fix minsplit for count-data
+* add weight_target()
+* add plot_legend_targetpct()
+* add legend in targetpct rmarkdown-template
+* add unit testing (testthat)
+
 ## explore 0.6.2 (2020-10-13)
 
 * Bugfix explore_bar(): NA in plot
