@@ -1,3 +1,11 @@
+## explore 0.7.1 (2021-06-03)
+
+* change theme_light() into individual theme() so that set_theme works.
+* add rmarkdown to Suggests in DESCRIPTION
+* fix URL in DESCRIPTION
+* drop LazyData in DESCRIPTION
+* format DESCRIPTION
+
 ## explore 0.7.0 (2021-01-21)
 
 * add weights parameter to explain_tree()
