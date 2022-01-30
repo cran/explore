@@ -4,14 +4,21 @@
 \alias{total_fig_height}
 \title{Get fig.height for RMarkdown-junk using explore_all()}
 \usage{
-total_fig_height(data, n, target, nvar = NA, ncol = 2, size = 3)
+total_fig_height(
+  data,
+  var_name_n,
+  var_name_target,
+  nvar = NA,
+  ncol = 2,
+  size = 3
+)
 }
 \arguments{
 \item{data}{A dataset}
 
-\item{n}{Weights variable for count data}
+\item{var_name_n}{Weights variable for count data? (TRUE / MISSING)}
 
-\item{target}{Target variable}
+\item{var_name_target}{Target variable (TRUE / MISSING)}
 
 \item{nvar}{Number of variables to plot}
 
@@ -27,6 +34,6 @@ Get fig.height for RMarkdown-junk using explore_all()
 }
 \examples{
 total_fig_height(iris)
-total_fig_height(iris, target = Species)
+total_fig_height(iris, var_name_target = "Species")
 total_fig_height(nvar = 5)
 }

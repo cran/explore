@@ -20,7 +20,7 @@ data <- penguins %>%
 data %>% 
   explore_all()
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(data, target = species, size = 2.2)----
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(data, var_name_target = "species", size = 2.2)----
 data %>% 
   explore_all(target = species)
 

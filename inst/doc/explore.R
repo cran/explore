@@ -90,7 +90,7 @@ data(iris)
 iris %>% 
   explore_all()
 
-## ----message=FALSE, warning=FALSE, fig.width=7, fig.height=total_fig_height(iris, target = Species, size=2.5)----
+## ----message=FALSE, warning=FALSE, fig.width=7, fig.height=total_fig_height(iris, var_name_target = "Species", size=2.5)----
 iris %>% explore_all(target = Species)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3------------------
@@ -145,28 +145,4 @@ iris %>%
             na = 5.8, 
             name = "sepal_length") %>% 
   describe()
-
-## ----eval=FALSE, echo=TRUE----------------------------------------------------
-#  # connect to a dwh(odbc DSN must be defined)
-#  dwh <- dwh_connect("DWH_DSN")
-#  
-#  # if you need to pass user and password
-#  dwh <- dwh_connect("DWH_DSN",
-#                      user = "myuser",
-#                      pwd = rstudioapi::askForPassword()
-#                    )
-#  
-#  # read table from a dwh
-#  data <- dwh_read_table(dwh, "db.tablename")
-#  
-#  # read data from a dwh using sql
-#  data <- dwh_read_data(dwh, sql = "select * from db.tablename")
-#  
-#  # disconnect from dwh
-#  dwh_disconnect(dwh)
-#  
-
-## ----eval=FALSE, echo=TRUE----------------------------------------------------
-#  # connect to a dwh(odbc DSN must be defined)
-#  data  %>% dwh_fastload("DWH_DSN", "db.tablename")
 

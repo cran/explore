@@ -1,6 +1,3 @@
-#============================================================================
-#  Function: Encrypt (Passwort)
-#============================================================================
 #' encrypt text
 #'
 #' @param text A text (character)
@@ -17,9 +14,6 @@ encrypt<-function (text, codeletters=c(toupper(letters),letters,0:9), shift=18) 
   return (chartr(old,new,text))
 }
 
-#============================================================================
-#  Function: Decrypt (Passwort)
-#============================================================================
 #' decrypt text
 #'
 #' @param text A text (character)
@@ -36,9 +30,6 @@ decrypt<-function (text, codeletters=c(toupper(letters),letters,0:9), shift=18) 
   return (chartr(new,old,text))
 }
 
-#============================================================================
-#  balance_target
-#============================================================================
 #' Balance target variable
 #'
 #' Balances the target variable in your dataset.
@@ -105,9 +96,6 @@ balance_target <- function(data, target, min_prop = 0.1) {
   }
 } # balance_target
 
-#============================================================================
-#  weight_target
-#============================================================================
 #' Weight target variable
 #'
 #' Create weights for the target variable in your dataset
@@ -154,17 +142,14 @@ weight_target <- function(data, target) {
   names(minClass) <- names(which(observed_prop == minClass))
 
   weights = ifelse(data[[target_txt]] == names(minClass),
-                     max(observed_prop)/min(observed_prop), 1)
+                   max(observed_prop)/min(observed_prop), 1)
 
   # return weigthts
   return(weights)
 
-  } # weight_target
+} # weight_target
 
 
-#============================================================================
-#  plot_text
-#============================================================================
 #' Plot a text
 #'
 #' Plots a text (base plot) and let you choose text-size and color
@@ -183,9 +168,6 @@ plot_text <- function(text="hello world", size=1.2, color="black")  {
   text(x = 0.5, y = 0.5, text, cex = size, col = color)
 }
 
-#============================================================================
-#  plot_var_info
-#============================================================================
 #' Plot a variable info
 #'
 #' Creates a ggplot with the variable-name as title and a text
@@ -223,9 +205,6 @@ plot_var_info <- function(data, var, info = "")  {
           plot.margin = unit(c(0.1,0.1,0.5,1), "cm")) #t,r,b,l
 } # plot_var_info
 
-#============================================================================
-#  plot_legend_targetpct()
-#============================================================================
 #' Plots a legend that can be used for explore_all with a binary target
 #'
 #' @param border Draw a border?
@@ -240,20 +219,17 @@ plot_legend_targetpct <- function(border = TRUE) {
   graphics::par(mar=c(0,0,0,0))
   plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
   graphics::legend(0.5,0.5,
-         legend = c("00-05%", "06-20%", "21-40%","41+%"),
-         fill =c("#ECEFF1", "#CFD8DC", "#B0BEC5", "#90A4AE"),
-         horiz = TRUE,
-         xjust = 0.5,
-         yjust = 0.5,
-         border = TRUE,
-         box.lty = ifelse(border, 1, 0))
+                   legend = c("00-05%", "06-20%", "21-40%","41+%"),
+                   fill =c("#ECEFF1", "#CFD8DC", "#B0BEC5", "#90A4AE"),
+                   horiz = TRUE,
+                   xjust = 0.5,
+                   yjust = 0.5,
+                   border = TRUE,
+                   box.lty = ifelse(border, 1, 0))
 
 } # plot_legend_targetpct
 
 
-#============================================================================
-#  format_num_spcace
-#============================================================================
 #' Format number as character string (space as big.mark)
 #'
 #' Formats a big number using space as big.mark (1000 = 1 000)
@@ -280,9 +256,6 @@ format_num_space <- function(number = 0, digits = 1)   {
 
 } # format_num_space
 
-#============================================================================
-#  format_num_kMB
-#============================================================================
 #' Format number as character string (kMB)
 #'
 #' Formats a big number as k (1 000), M (1 000 000) or B (1 000 000 000)
@@ -316,9 +289,6 @@ format_num_kMB <- function(number = 0, digits = 1)   {
 }
 
 
-#============================================================================
-#  format_num_auto
-#============================================================================
 #' Format number as character string (auto)
 #'
 #' Formats a number depending on the value as number with space, scientific or
@@ -353,9 +323,6 @@ format_num_auto <- function(number = 0, digits = 1)   {
 
 } # format_num_auto
 
-#============================================================================
-#  format_target
-#============================================================================
 #' Format target
 #'
 #' Formats a target as a 0/1 variable. If target is numeric, 1 = above average.
@@ -383,9 +350,6 @@ format_target <- function(target)   {
   }
 } # format_target
 
-#============================================================================
-#  Function: replace_na_with
-#============================================================================
 #' Replace NA
 #'
 #' Replace NA values of a variable in a dataframe
@@ -408,9 +372,6 @@ replace_na_with <- function(data, var_name, with)  {
   return(data)
 }
 
-#============================================================================
-#  format_type
-#============================================================================
 #' Format type description
 #'
 #' Format type description of varable to 3 letters (int|dbl|lgl|chr|dat)
@@ -439,9 +400,6 @@ format_type <- function(type) {
   return("oth")
 } # format_type
 
-#============================================================================
-#  get_type
-#============================================================================
 #' Return type of variable
 #'
 #' Return value of typeof, except if variable contains <hide>, then return "other"
@@ -481,9 +439,6 @@ get_type <- function(var)  {
 } # get_type
 
 
-#============================================================================
-#  guess_cat_num
-#============================================================================
 #' Return if variable is categorial or nomerical
 #'
 #' Guess if variable is categorial or numerical based on name, type and values of variable
@@ -541,9 +496,6 @@ guess_cat_num <- function(var, descr)  {
 } # guess_cat_num
 
 
-#============================================================================
-#  get_nrow()
-#============================================================================
 #' Get number of rows for a grid plot (deprecated, use total_fig_height() instead)
 #'
 #' @param varnames List of variables to be plotted
@@ -563,25 +515,23 @@ get_nrow <- function(varnames, exclude = 0, ncol = 2)  {
   result
 }
 
-#============================================================================
-#  total_fig_height()
-#============================================================================
 #' Get fig.height for RMarkdown-junk using explore_all()
 #'
 #' @param data A dataset
-#' @param n Weights variable for count data
-#' @param target Target variable
+#' @param var_name_n Weights variable for count data? (TRUE / MISSING)
+#' @param var_name_target Target variable (TRUE / MISSING)
 #' @param nvar Number of variables to plot
 #' @param ncol Number of columns (default = 2)
 #' @param size fig.height of 1 plot (default = 3)
 #' @return Number of rows
 #' @examples
 #' total_fig_height(iris)
-#' total_fig_height(iris, target = Species)
+#' total_fig_height(iris, var_name_target = "Species")
 #' total_fig_height(nvar = 5)
 #' @export
 
-total_fig_height <- function(data, n, target, nvar = NA, ncol = 2, size = 3)  {
+total_fig_height <- function(data, var_name_n, var_name_target,
+                             nvar = NA, ncol = 2, size = 3)  {
 
   if (!is.na(nvar)) {
     n_var <- nvar
@@ -589,17 +539,75 @@ total_fig_height <- function(data, n, target, nvar = NA, ncol = 2, size = 3)  {
     n_var <- ncol(data)
   }
 
-  n_var <- n_var - ifelse(missing(target), 0, 1)
-  n_var <- n_var - ifelse(missing(n), 0, 1)
+  n_var <- n_var - ifelse(missing(var_name_target), 0, 1)
+  n_var <- n_var - ifelse(missing(var_name_n), 0, 1)
 
   result <- ceiling(n_var / ncol) * size
   result
 }
 
+#' Put variables into "buckets" to create a set of plots instead one large plot
+#'
+#' @param data A dataset
+#' @param bucket_size Maximum number of variables in one bucket
+#' @param var_name_target Name of the target variable (if defined)
+#' @param var_name_n Name of the weight (n) variable (if defined)
+#' @return Buckets as a list
+#' @examples
+#' get_var_buckets(iris)
+#' get_var_buckets(iris, bucket_size = 2)
+#' get_var_buckets(iris, bucket_size = 2, var_name_target = "Species")
+#' @export
 
-#============================================================================
-#  Function: data_dict_md
-#============================================================================
+get_var_buckets <- function(data, bucket_size = 100,
+                            var_name_target = NA, var_name_n = NA) {
+
+  target_defined <- !is.na(var_name_target)
+  n_defined <- !is.na(var_name_n)
+
+  # get variable names that can be used in explore-plots
+  # if target or n is used, drop them
+  names <- names(data)
+  if (target_defined) {
+    names <- names[names != var_name_target]
+  }
+  if (n_defined) {
+    names <- names[names != var_name_n]
+  }
+
+  # initialize
+  n_var <- length(names)
+  n_bucket <- ceiling(length(names) / bucket_size)
+  bucket_size_plot <- ceiling(n_var / n_bucket)
+
+  bucket_var <- vector(mode = "list", length = n_bucket)
+
+  # create buckets
+  for (i in seq_len(n_bucket))  {
+
+    start <- (i-1) * bucket_size_plot + 1
+    end <- start + bucket_size_plot - 1
+    if (end > n_var) {end <- n_var}
+
+    bucket_var[[i]] <- names[start:end]
+
+    if (target_defined) {
+      bucket_var[[i]] <- c(bucket_var[[i]], var_name_target)
+    }
+
+    if (n_defined) {
+      bucket_var[[i]] <- c(bucket_var[[i]], var_name_n)
+    }
+
+
+  } #for
+
+  # return buckets
+  bucket_var
+
+} # get_var_buckets
+
+
 #' Create a data dictionary Markdown file
 #'
 #' @param data A dataframe (data dictionary for all variables)
@@ -678,9 +686,6 @@ data_dict_md <- function(data, title = "", description = NA, output_file = "data
 } # data_dict_md
 
 
-#============================================================================
-#  Function: simplify_text
-#============================================================================
 #' Simplifies a text string
 #'
 #' A text string is converted into a simplified version by
@@ -714,9 +719,6 @@ simplify_text <- function(text)  {
     stringr::str_replace_all("\\s+", " ")
 }
 
-#============================================================================
-#  Function: rescale01
-#============================================================================
 #' Rescales a numeric variable into values between 0 and 1
 #'
 #' @param x numeric vector (to be rescaled)
@@ -729,16 +731,13 @@ simplify_text <- function(text)  {
 rescale01 <- function(x)  {
 
   # rescale
-    y <- x / ( max(x) - min(x) )
-    y <- y - min(y)
+  y <- x / ( max(x) - min(x) )
+  y <- y - min(y)
 
   # return
   y
 } # rescale
 
-#============================================================================
-#  clean_var
-#============================================================================
 #' Clean variable
 #'
 #' Clean variable (replace NA values, set min_val and max_val)
@@ -840,9 +839,6 @@ clean_var <- function(data, var, na = NA, min_val = NA, max_val = NA, max_cat = 
   data
 } # clean_var
 
-#============================================================================
-#  count_pct
-#============================================================================
 #' Adds percentage to dplyr::count()
 #'
 #' Adds variables total and
@@ -861,7 +857,7 @@ count_pct <- function(data, ...)  {
   d <- data %>%
     dplyr::count(...)
 
- #names(d) <- c("value", "n")
+  #names(d) <- c("value", "n")
 
   d <- d %>%
     dplyr::mutate(total = sum(n),
@@ -871,3 +867,253 @@ count_pct <- function(data, ...)  {
 } # count_pct
 
 
+#' Add a random variable to dataset
+#'
+#' @param data A dataset
+#' @param name Name of new variable (as string)
+#' @param min_val Minimum random integers
+#' @param max_val Maximum random integers
+#' @param overwrite Can new random variable overwrite an existing variable in dataset?
+#' @return Dataset containing new random variable
+#' @examples
+#' add_random_var(iris)
+#' add_random_var(iris, name = "random_var")
+#' add_random_var(iris, min_val = 1, max_val = 10)
+#' add_random_var(iris, min_val = 1, max_val = 100, overwrite = FALSE)
+#' @export
+
+add_random_var <- function(data, name = "random",
+                           min_val = 0, max_val = 1,
+                           overwrite = TRUE) {
+
+  if (name %in% names(data) & !overwrite) {
+    stop("Variable ", name, " already exists!")
+  }
+
+  # possible integer values
+  values <- seq(from = min_val, to = max_val)
+
+  # add random variable
+  data[[name]] <- sample(values, nrow(data), replace = TRUE)
+
+  # return data
+  data
+
+} #add_random_var
+
+
+#' Create fake data
+#'
+#' Fake data that can be used for unit-testing or demonstration
+#'
+#' @param obs Number of observations
+#' @param target_name Variable name of target
+#' @param factorise_target Should target variable be factorised?
+#' (from 0/1 to facotr no/yes)?
+#' @param target1_prob Probability that buy = 1
+#' @param add_extreme Add an obervation with extreme values?
+#' @param flip_gender Should Male/Female be flipped in data?
+#' @param add_id Add an id-variable to data?
+#' @param seed Seed for randomization
+#'
+#' @return A dataframe
+#' @export
+#'
+#' @md
+#' @details
+#' Variables in dataset:
+#' * id = Identifier
+#' * period = Year & Month (YYYYMM)
+#' * city_ind = Indicating if customer is residing in a city (1 = yes, 0 = no)
+#' * female_ind = Gender of customer is female (1 = yes, 0 = no)
+#' * fixedvoice_ind = Customer has a fixed voice product (1 = yes, 0 = no)
+#' * fixeddata_ind = Customer has a fixed data product (1 = yes, 0 = no)
+#' * fixedtv_ind = Customer has a fixed tv product (1 = yes, 0 = no)
+#' * mobilevoice_ind = Customer has a mobile voice product (1 = yes, 0 = no)
+#' * mobiledata_ind = Customer has a mobile data product (1 = yes, 0 = no)
+#' * bbi_speed_ind = Customer has a Broadband Internet (BBI) with speed
+#' * bbi_usg_gb = Broadband Internet (BBI) usage in Gigabyte (GB) last month
+#' * hh_single = Expected to be a Single Household (1 = yes, 0 = no)
+#'
+#' Target in dataset:
+#' * target_ind (may be renamed) = Did customer buy a new product in next month?
+#' (1 = yes, 0 = no)
+
+
+create_fake_data = function(obs = 1000,
+                            target_name = "target_ind",
+                            factorise_target = FALSE,
+                            target1_prob = 0.5,
+                            add_extreme = TRUE,
+                            flip_gender = FALSE,
+                            add_id = FALSE,
+                            seed = 123) {
+
+  # define variables for CRAN-package check
+  target_ind <- NULL
+  age <- NULL
+  city_ind <- NULL
+
+  # set seed (randomization)
+  set.seed(seed)
+
+  # create basic dataset
+  data <- data.frame(
+    id = seq(from = 1, to = obs),
+    period = rep(202012, obs),
+    target_ind = sample(c(0, 1),
+                        obs,
+                        prob = c(1 - target1_prob, target1_prob),
+                        replace = TRUE)
+  )
+
+  # add features
+  data <- data %>%
+    dplyr::mutate(
+      age = round(ifelse(target_ind == 1,
+                         stats::rnorm(obs, mean = 45, sd = 10),
+                         stats::rnorm(obs, mean = 60, sd = 10)
+      ), 0),
+      city_ind = ifelse(target_ind == 1,
+                        sample(c(0, 1), obs, replace = TRUE, prob = c(0.4, 0.6)),
+                        sample(c(0, 1), obs, replace = TRUE, prob = c(0.6, 0.4))
+      ),
+      female_ind = ifelse(target_ind == 1,
+                          sample(c(0, 1), obs, replace = TRUE, prob = c(0.3, 0.7)),
+                          sample(c(0, 1), obs, replace = TRUE, prob = c(0.7, 0.3))
+      ),
+      fixedvoice_ind = ifelse(age > 70,
+                              sample(c(0, 1), obs, replace = TRUE, prob = c(0.3, 0.7)),
+                              sample(c(0, 1), obs, replace = TRUE, prob = c(0.95, 0.05))
+      ),
+      fixeddata_ind = 1,
+      fixedtv_ind = ifelse(target_ind == 1,
+                           sample(c(0, 1), obs, replace = TRUE, prob = c(0.4, 0.6)),
+                           sample(c(0, 1), obs, replace = TRUE, prob = c(0.8, 0.2))
+      ),
+      mobilevoice_ind = sample(c(0, 1), obs, replace = TRUE, prob = c(0.4, 0.6)),
+      mobiledata_ind = sample(c("NO","MOBILE STICK", "BUSINESS"), obs, replace = TRUE, prob = c(0.5, 0.3, 0.2)),
+      bbi_speed_ind = ifelse(age > 60,
+                             sample(c(0, 1), obs, replace = TRUE, prob = c(0.9, 0.1)),
+                             sample(c(0, 1), obs, replace = TRUE, prob = c(0.2, 0.8))
+      ),
+      bbi_usg_gb = ifelse(age > 75,
+                          round(stats::rnorm(obs, mean = 10, sd = 1)),
+                          round(stats::rnorm(obs, mean = 50, sd = 10))
+      ) + city_ind * 20 + target_ind * 10,
+      hh_single = ifelse(age < 35 & city_ind == 1,
+                         sample(c(0, 1), obs, replace = TRUE, prob = c(0.2, 0.8)),
+                         sample(c(0, 1), obs, replace = TRUE, prob = c(0.7, 0.3))
+      )
+    ) # mutate
+
+  # factorise target?
+  if (factorise_target) {
+    data$buy <- factor(data$buy,
+                       levels = c(0, 1),
+                       labels = c("no", "yes"))
+  }
+
+  # add extreme values?
+  if (add_extreme) {
+    extreme <- data[nrow(data), ]
+    extreme$bbi_usg_gb <- 100000
+    extreme$target_ind <- 0
+    data[nrow(data), ] <- extreme[1, ]
+  }
+
+  # rename target?
+  if (target_name != "target_ind") {
+    data[[target_name]] <- data$target_ind
+    data$target_ind <- NULL
+  }
+
+  # flip gender?
+  if (flip_gender) {
+    data[["female_ind"]] <- ifelse(data[["female_ind"]] == 1, 0, 1)
+  }
+
+  # add id?
+  if (!add_id)  {
+    data$id <- NULL
+  }
+
+  # return data
+  data
+
+} # fakedata
+
+#' Create random data
+#'
+#' Random data that can be used for unit-testing or demonstration
+#'
+#' @param obs Number of observations
+#' @param vars Number of variables
+#' @param target_name Variable name of target
+#' @param factorise_target Should target variable be factorised?
+#' (from 0/1 to facotr no/yes)?
+#' @param target1_prob Probability that buy = 1
+#' @param add_id Add an id-variable to data?
+#' @param seed Seed for randomization
+#'
+#' @return A dataframe
+#' @export
+#'
+#' @md
+#' @details
+#' Variables in dataset:
+#' * id = Identifier
+#' * var_X = variable containing values between 0 and 100
+#'
+#' Target in dataset:
+#' * target_ind (may be renamed) = random values (1 = yes, 0 = no)
+
+
+create_random_data = function(obs = 1000, vars = 10,
+                              target_name = "target_ind",
+                              factorise_target = FALSE,
+                              target1_prob = 0.5,
+                              add_id = TRUE,
+                              seed = 123) {
+
+  # set seed (randomization)
+  set.seed(seed)
+
+  # create basic dataset
+  data <- data.frame(
+    id = seq(from = 1, to = obs),
+    target_ind = sample(c(0, 1),
+                        obs,
+                        prob = c(1 - target1_prob, target1_prob),
+                        replace = TRUE)
+  )
+
+  # add features
+  for (i in seq_len(vars)) {
+    data[[paste0("var_",i)]] <- as.integer(
+      round(stats::runif(obs)*100,0))
+  }
+
+
+  # factorise target?
+  if (factorise_target) {
+    data$buy <- factor(data$buy,
+                       levels = c(0, 1),
+                       labels = c("no", "yes"))
+  }
+
+  # rename target?
+  if (target_name != "target_ind") {
+    data[[target_name]] <- data$target_ind
+    data$target_ind <- NULL
+  }
+
+  # add id?
+  if (!add_id)  {
+    data$id <- NULL
+  }
+
+  # return data
+  data
+
+} # randomdata

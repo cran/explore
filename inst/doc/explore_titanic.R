@@ -25,7 +25,7 @@ titanic %>% explore(Class, n = n)
 ## ----message=FALSE, warning=FALSE---------------------------------------------
 titanic %>% describe(Class, n = n)
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(titanic, n = Freq)----
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(titanic, var_name_n = "n")----
 titanic %>% explore_all(n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
