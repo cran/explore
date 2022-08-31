@@ -11,7 +11,7 @@ explain_tree(
   max_cat = 10,
   max_target_cat = 5,
   maxdepth = 3,
-  minsplit = NA,
+  minsplit = 20,
   cp = 0,
   weights = NA,
   size = 0.7,
