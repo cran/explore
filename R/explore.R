@@ -345,7 +345,7 @@ explore_bar <- function(data, var, target, flip = NA, title = "", numeric = NA, 
   if ( (missing(numeric) | (!missing(numeric) & (numeric == FALSE))) &
       length(var_cat) > max_cat)  {
     data <- data %>% filter(!!var_quo %in% var_cat[1:max_cat])
-    warning(paste("number of bars limited to", max_cat, "by parameter max_cat"))
+    #warning(paste("number of bars limited to", max_cat, "by parameter max_cat"))
   }
 
   # numeric? of use a factor for var if low number of cats
@@ -560,7 +560,6 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
     return(p)
   }
 
-
   # parameter target
   if(!missing(target))  {
     target_quo <- enquo(target)
@@ -582,6 +581,13 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
     n_target_cat = 1
   } else {
     n_target_cat <- length(unique(data[[target_txt]]))
+  }
+
+  # mean
+  show_mean_var <- FALSE
+  if (is.na(min_val) & is.na(max_val) & missing(target)) {
+    mean_var <- mean(data[[var_txt]])
+    show_mean_var <- TRUE
   }
 
   # count NA
@@ -615,6 +621,14 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
         panel.grid.major = element_line("grey85"),
         panel.grid.minor = element_line("grey85"),
         panel.border = element_rect(fill = NA, color = "lightgrey"))
+
+    if (show_mean_var) {
+      if ((auto_scale == FALSE) | (mean_var <= max_val)) {
+        p <- p + geom_vline(xintercept = mean_var,
+                            color = "#7f7f7f", alpha = 0.5,
+                            linetype = "dashed", size = 1)
+      }
+    }
 
   } else {
 
@@ -671,6 +685,7 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
 #' @param n Weights variable (only for count data)
 #' @param target Target variable (0/1 or FALSE/TRUE)
 #' @param ncol Layout of plots (number of columns)
+#' @param targetpct Plot variable as target% (FALSE/TRUE)
 #' @param split Split by target (TRUE|FALSE)
 #' @return Plot
 #' @import rlang
@@ -682,7 +697,7 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
 #' explore_all(iris, target = is_virginica)
 #' @export
 
-explore_all <- function(data, n, target, ncol = 2, split = TRUE)  {
+explore_all <- function(data, n, target, ncol = 2, targetpct, split = TRUE)  {
 
   # check parameter data
   assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
@@ -705,6 +720,15 @@ explore_all <- function(data, n, target, ncol = 2, split = TRUE)  {
     n_txt <- quo_name(n_quo)[[1]]
   } else {
     n_txt = NA
+  }
+
+  # parameter targetpct & split (set default value)
+  if (missing(targetpct)) {
+    if (missing(split)) {
+      split = TRUE
+    }
+  } else {
+    split = !targetpct
   }
 
   # variable name of target
@@ -1022,6 +1046,7 @@ explore_tbl <- function(data, n)  {
   type <- NULL
   na <- NULL
   measure <- NULL
+  group <- NULL
 
   # check parameter data
   assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
@@ -1056,54 +1081,38 @@ explore_tbl <- function(data, n)  {
   # number of variables in data
   n_var <- nrow(d)
 
-  # prepare "all variables"
-  bar1 <- d %>%
-    count(type) %>%
-    mutate(
-      measure = "all",
-      n_pct = n / n_var * 100
-    )
+  # prepare bars
+  bar <- d |>
+    mutate(group = case_when(
+      na > 0 ~ "with NA",
+      unique == 1 ~ "no variance",
+      TRUE ~ "ok"
+    )) |>
+    count(type, group)
 
-  # prepare "no variance"
-  suppressWarnings(
-    bar2 <- d %>%
-      filter(type != "oth") %>%
-      filter(unique == 1) %>%
-      count(type) %>%
-      mutate(
-        measure = "no variance",
-        n_pct = n / n_var * 100
-      )
-  )
+  bar$group <- factor(
+    bar$group,
+    levels = c("with NA", "no variance", "ok"),
+    ordered = TRUE)
 
-  # prepare "with NA"
-  suppressWarnings(
-    bar3 <- d %>%
-      filter(na > 0) %>%
-      count(type) %>%
-      mutate(
-        measure = "with NA",
-        n_pct = n / n_var * 100
-      )
-  )
+  bar_all = bar |>
+    group_by(group) |>
+    summarise(n = sum(n)) |>
+    ungroup() |>
+    mutate(type = "variables (all)")
 
   # prepare plot
-  bar <- bind_rows(bar1, bar2, bar3)
-  type_default <- min(as.character(bar$type), na.rm = TRUE)
-  bar <- bar %>% clean_var(type, na = type_default)
-  bar$type <- factor(bar$type, levels = c("lgl","int","dbl","fct","chr","dat","oth"))
+  bar <- bind_rows(bar, bar_all)
+  #type_default <- min(as.character(bar$type), na.rm = TRUE)
+  #bar <- bar %>% clean_var(type, na = type_default)
 
   # define colors
-  color_mapping <- c("lgl" = "blue",
-                     "int" = "cornflowerblue",
-                     "dbl" = "cyan",
-                     "fct" = "yellow",
-                     "chr" = "orange",
-                     "dat" = "brown",
-                     "oth" = "red")
+  color_mapping <- c("no variance" = "lightblue",
+                     "with NA" = "coral",
+                     "ok" = "grey")
   # plot
   bar %>%
-    ggplot(aes(measure, n, fill = type)) +
+    ggplot(aes(type, n, fill = group)) +
     geom_col() +
     scale_fill_manual(values = color_mapping) +
     #geom_text(aes(measure, n, group = type, label = as.character(n)), size = 2.5) +
@@ -1121,7 +1130,7 @@ explore_tbl <- function(data, n)  {
       panel.grid.minor = element_line("grey85"),
       panel.border = element_rect(fill = NA, color = "lightgrey"))
 
-} # explore_tbl
+ } # explore_tbl
 
 #' Explore dataset interactive
 #'
@@ -1198,7 +1207,7 @@ explore_shiny <- function(data, target)  {
                            choices = names(data),
                            selected = "disp"),
         shiny::checkboxInput(inputId = "auto_scale", label="auto scale", value=TRUE),
-        shiny::checkboxInput(inputId = "split", label="split by target", value=TRUE),
+        shiny::checkboxInput(inputId = "targetpct", label="% target (0/1)", value=FALSE),
         shiny::hr(),
         shiny::actionButton(inputId = "report", "report all")
         , width = 3),  #sidebarPanel
@@ -1250,7 +1259,7 @@ explore_shiny <- function(data, target)  {
         rmarkdown::render(input = input_file, output_file = output_file, output_dir = output_dir)
 
         # report target with split
-      } else if(input$split == TRUE)  {
+      } else if(input$targetpct == FALSE)  {
         input_file <- ifelse(run_explore_package,
                              system.file("extdata", "template_report_target_split.Rmd", package="explore"),
                              "C:/R/template_report_target_split.Rmd")
@@ -1273,7 +1282,7 @@ explore_shiny <- function(data, target)  {
 
     output$graph_target <- shiny::renderPlot({
       if(input$target != "<no target>" & input$var != input$target)  {
-        data %>% explore(!!sym(input$var), target = !!sym(input$target), auto_scale = input$auto_scale, split = input$split)
+        data %>% explore(!!sym(input$var), target = !!sym(input$target), auto_scale = input$auto_scale, split = !input$targetpct)
       }
     }) # renderPlot graph_target
 
@@ -1753,7 +1762,7 @@ explore_count <- function(data, cat, n, target, pct = FALSE, split = TRUE, title
   if ( (missing(numeric) | (!missing(numeric) & (numeric == FALSE))) &
        length(var_cat) > max_cat)  {
     data <- data %>% filter(!!cat_quo %in% var_cat[1:max_cat])
-    warning(paste("number of bars limited to", max_cat, "by parameter max_cat"))
+    #warning(paste("number of bars limited to", max_cat, "by parameter max_cat"))
   }
 
   # numeric? of use a factor for var if low number of cats

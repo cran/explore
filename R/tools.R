@@ -32,7 +32,7 @@ decrypt<-function (text, codeletters=c(toupper(letters),letters,0:9), shift=18) 
 
 #' Balance target variable
 #'
-#' Balances the target variable in your dataset.
+#' Balances the target variable in your dataset using downsampling.
 #' Target must be 0/1, FALSE/TRUE ore no/yes
 #'
 #' @param data A dataset
@@ -400,6 +400,8 @@ format_type <- function(type) {
     return("num")
   } else if (type == "integer")  {
     return("int")
+  } else if (type == "integer64")  {
+    return("int")
   } else if (type == "double")  {
     return("dbl")
   } else if (type == "logical")  {
@@ -431,7 +433,7 @@ get_type <- function(var)  {
     return("factor")
   }
 
-  if (var_class %in% c("numeric", "integer", "logical"))  {
+  if (var_class %in% c("numeric", "integer", "integer64", "logical"))  {
     return(typeof(var))
   }
 
@@ -475,7 +477,7 @@ guess_cat_num <- function(var, descr)  {
     return("cat")
   }
   # for unsupported classes return "oth"
-  if (class(var)[1] %in% c("numeric", "integer", "character", "logical", "Date", "POSIXct"))  {
+  if (class(var)[1] %in% c("numeric", "integer", "integer64", "character", "logical", "Date", "POSIXct"))  {
     var_class <- class(var)[1]
   } else {
     return("oth")
@@ -497,7 +499,7 @@ guess_cat_num <- function(var, descr)  {
   }
 
   # Decide on type and number of unique values
-  if (var_type %in% c("integer", "double")) {
+  if (var_type %in% c("integer", "integer64", "double")) {
     if (var_unique < 10)  {
       return("cat")
     } else {

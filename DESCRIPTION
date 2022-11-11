@@ -1,7 +1,7 @@
 Package: explore
 Type: Package
 Title: Simplifies Exploratory Data Analysis
-Version: 0.9.0
+Version: 1.0.0
 Author: Roland Krasser
 Maintainer: Roland Krasser <roland.krasser@gmail.com>
 Description: Interactive data exploration with one line of code or use an easy 
@@ -12,13 +12,13 @@ Description: Interactive data exploration with one line of code or use an easy
 License: GPL-3
 Encoding: UTF-8
 URL: https://github.com/rolkra/explore/
-Imports: assertthat, broom, dplyr, DT, forcats, ggplot2 (>= 3.0.0),
-        gridExtra, magrittr, MASS, rlang, rmarkdown, rpart, rpart.plot,
-        shiny, stats, stringr, tibble, tidyr
-RoxygenNote: 7.1.2
+Imports: assertthat, broom, dplyr, DT (>= 0.3.0), forcats, ggplot2 (>=
+        3.0.0), gridExtra, magrittr, MASS, rlang, rmarkdown, rpart,
+        rpart.plot, shiny, stats, stringr, tibble, tidyr
+RoxygenNote: 7.2.1
 Suggests: knitr, palmerpenguins, testthat
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2022-08-31 09:38:52 UTC; rolkra
+Packaged: 2022-11-11 15:12:18 UTC; rolkra
 Repository: CRAN
-Date/Publication: 2022-08-31 12:20:02 UTC
+Date/Publication: 2022-11-11 15:50:02 UTC

@@ -10,23 +10,23 @@ library(dplyr)
 library(explore)
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
-penguins %>% describe()
+penguins |> describe()
 
 ## -----------------------------------------------------------------------------
-data <- penguins %>% 
+data <- penguins |> 
   filter(flipper_length_mm > 0)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(data, size = 2.5)----
-data %>% 
+data |> 
   explore_all()
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(data, var_name_target = "species", size = 2.2)----
-data %>% 
+data |> 
   explore_all(target = species)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4------------------
-data %>% explain_tree(target = species)
+data |> explain_tree(target = species)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3------------------
-data %>% explore(flipper_length_mm, bill_length_mm, target = species)
+data |> explore(flipper_length_mm, bill_length_mm, target = species)
 

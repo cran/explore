@@ -1,3 +1,20 @@
+## explore 1.0.0 (2022-11-11)
+
+* Dependency DT (>= 0.3.0)
+* Use native pipe in README.md
+* Improve documentation
+* Add function create_data_app()
+* Add support for integer64
+* Bugfix report() >100 variables
+* No warning-message in explore_count()
+* Redesign explore_tbl()
+* Add mean to explore_density() plot
+* Enrich README.md
+* Add create_data_churn()
+* Add add_var_random_moon()
+* Vignettes: switch from %>% to |>
+* Add create_notebook_explore()
+
 ## explore 0.9.0 (2022-08-31)
 
 * rename create_x_data() to create_data_x()

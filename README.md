@@ -41,14 +41,6 @@ You can use {explore} with **tidy data** (each row is an observation) or with **
 install.packages("explore")
 ```
 
-To install the explore package on Debian / Ubuntu, you may need to install some additional dependencies first (explore 0.7.1 or below):
-
-```
-sudo apt install unixodbc unixodbc-dev
-install.packages("odbc")
-install.packages("explore")
-```
-
 ### DEV version (github)
 ```r
 # install from github
@@ -80,22 +72,17 @@ library(explore)
 explore(iris)
 ```
 
-Explore variables
+#### Explore variables
 
-<img src="man/figures/explore_shiny_iris_target_species.png" alt="example interactive exploration" width="800">
+<img src="man/figures/explore-shiny-iris.png" alt="example interactive exploration" width="600">
 
-Explain target (is Species a versicolor?)
+#### Explore variables with target
 
-```r
-# define a target (is Species versicolor?)
-iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
-iris$Species <- NULL
+<img src="man/figures/explore-shiny-iris-target-species.png" alt="example interactive exploration" width="600">
 
-# explore interactive
-explore(iris)
-```
+#### Explain target (Decision Tree)
 
-<img src="man/figures/explore_shiny_iris_tree.png" alt="example interactive exploration" width="800">
+<img src="man/figures/explore-shiny-iris-tree.png" alt="example interactive exploration" width="600">
 
 ### Automated Report
 
@@ -104,19 +91,35 @@ If no target is defined, the report shows all variables. If a target is defined,
 
 Report of all variables
 ```r
-iris %>% report(output_dir = tempdir())
+iris |> report(output_dir = tempdir())
 ```
 
-<img src="man/figures/report_attributes.png" alt="example report attributes" width="400">
+<img src="man/figures/report-attributes.png" alt="example report attributes" width="400">
 
-Report with defined target (binary target, split = FALSE)
+To create a report that shows all variables in relation to a target, just add the
+target parameter
+
 ```r
-iris %>% report(output_dir = tempdir(),
-                target = is_versicolor,
-                split = FALSE)
+iris |> report(output_dir = tempdir(), target = Species)
 ```
 
-<img src="man/figures/report_target.png" alt="example report attributes" width="400">
+<img src="man/figures/report-target-split.png" alt="example report attributes" width="400">
+
+To create a report with a binary target you can use the parameter targetpct = TRUE
+(or split = FALSE)
+
+```r
+# define a target (is Species versicolor?)
+iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
+iris$Species <- NULL
+
+# create report
+iris |> report(output_dir = tempdir(),
+                target = is_versicolor,
+                targetpct = TRUE)
+```
+
+<img src="man/figures/report-target.png" alt="example report attributes" width="400">
 
 
 ### Manual exploration
@@ -126,44 +129,43 @@ Example how to use the functions of the explore package to explore tidy data (ea
 ```r
 # load packages
 library(explore)
-library(magrittr)  # to use the pipe operator %>%
 
 # use iris dataset
 data(iris)
 
 # explore Species
-iris %>% explore(Species)
+iris |> explore(Species)
 
 # explore Sepal.Length
-iris %>% explore(Sepal.Length)
+iris |> explore(Sepal.Length)
 
 # define a target (is Species versicolor?)
 iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
 
 # explore relationship between Sepal.Length and the target
-iris %>% explore(Sepal.Length, target = is_versicolor)
+iris |> explore(Sepal.Length, target = is_versicolor)
 
 # explore relationship between all variables and the target
-Iris %>% explore_all(target = is_versicolor)
+iris |> explore_all(target = is_versicolor)
 
 # explore correlation between Sepal.Length and Petal.Length
-iris %>% explore(Sepal.Length, Petal.Length)
+iris |> explore(Sepal.Length, Petal.Length)
 
 # explore correlation between Sepal.Length, Petal.Length and a target
-iris %>% explore(Sepal.Length, Petal.Length, target = is_versicolor)
+iris |> explore(Sepal.Length, Petal.Length, target = is_versicolor)
 
 # describe dataset
 describe(iris)
 
 # describe Species
-iris %>% describe(Species)
+iris |> describe(Species)
 
 # explain target using a decision tree
 iris$Species <- NULL
-iris %>% explain_tree(target = is_versicolor)
+iris |> explain_tree(target = is_versicolor)
 
 # explain target using a logistic regression
-iris %>% explain_logreg(target = is_versicolor)
+iris |> explain_logreg(target = is_versicolor)
 ```
 
 Example how to use the functions of the explore package to explore count-data (each row is a group of observations):
@@ -171,7 +173,6 @@ Example how to use the functions of the explore package to explore count-data (e
 
 ```r
 # load packages
-library(dplyr)
 library(tibble)
 library(explore)
 
@@ -183,18 +184,59 @@ titanic <- as_tibble(Titanic)
 describe(titanic)
 
 # describe Class
-titanic %>% describe(Class, n = n)
+titanic |> describe(Class, n = n)
 
 # explore Class
-titanic %>% explore(Class, n = n)
+titanic |> explore(Class, n = n)
 
 # explore relationship between Class and the target
-titanic %>% explore(Class, n = n, target = Survived)
+titanic |> explore(Class, n = n, target = Survived)
 
 # explore relationship between all variables and the target
-titanic %>% explore_all(n = n, target = Survived)
+titanic |> explore_all(n = n, target = Survived)
 
 # explain target using a decision tree
-titanic %>% explain_tree(n = n, target = Survived)
+titanic |> explain_tree(n = n, target = Survived)
+
+```
+
+Some other useful functions:
+
+```r
+# create dataset and explore it
+data <- create_data_app(obs = 1000)
+explore(data)
+
+data <- create_data_buy(obs = 1000)
+explore(data)
+
+data <- create_data_churn(obs = 1000)
+explore(data)
+
+data <- create_data_person(obs = 1000)
+explore(data)
+
+# create random dataset with 100 observarions and 5 random variables
+# and explore it
+data <- create_data_random(obs = 100, vars = 5)
+explore(data)
+
+# create your own random dataset and explore it
+data <- create_data_empty(obs = 1000) |> 
+  add_var_random_01("target") |> 
+  add_var_random_dbl("age", min_val = 18, max_val = 80) |> 
+  add_var_random_cat("gender", 
+                     cat = c("male", "female", "other"), 
+                     prob = c(0.4, 0.4, 0.2)) |> 
+  add_var_random_starsign() |> 
+  add_var_random_moon()
+  
+explore(data)
+
+# create an RMarkdown template to explore your own data
+# set output_dir (existing file may be overwritten)
+create_notebook_explore(
+  output_dir = tempdir(),
+  output_file = "notebook-explore.Rmd")
 
 ```

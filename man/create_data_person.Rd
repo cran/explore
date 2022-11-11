@@ -4,10 +4,12 @@
 \alias{create_data_person}
 \title{Create data person}
 \usage{
-create_data_person(obs = 1000, seed = 123)
+create_data_person(obs = 1000, add_id = FALSE, seed = 123)
 }
 \arguments{
 \item{obs}{Number of observations}
+
+\item{add_id}{Add an id}
 
 \item{seed}{Seed for randomization (integer)}
 }
