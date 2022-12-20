@@ -11,41 +11,41 @@ library(explore)
 titanic <- as_tibble(Titanic)
 
 ## -----------------------------------------------------------------------------
-titanic |> describe_tbl(n = n)
+titanic %>% describe_tbl(n = n)
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
-titanic |> describe()
+titanic %>% describe()
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
-titanic |> head(10)
+titanic %>% head(10)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic |> explore(Class, n = n)
+titanic %>% explore(Class, n = n)
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
-titanic |> describe(Class, n = n)
+titanic %>% describe(Class, n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(titanic, var_name_n = "n")----
-titanic |> explore_all(n = n)
+titanic %>% explore_all(n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic |> explore(Class, target = Survived, n = n, split = FALSE)
+titanic %>% explore(Class, target = Survived, n = n, split = FALSE)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic |> explore(Class, target = Survived, n = n, split = TRUE)
+titanic %>% explore(Class, target = Survived, n = n, split = TRUE)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic |> explore(Sex, target = Survived, n = n)
+titanic %>% explore(Sex, target = Survived, n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic |> explore(Age, target = Survived, n = n)
+titanic %>% explore(Age, target = Survived, n = n)
 
 ## -----------------------------------------------------------------------------
-titanic |> explain_tree(target = Survived, n = n)
+titanic %>% explain_tree(target = Survived, n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic |> explore(Age, target = Class, n = n)
+titanic %>% explore(Age, target = Class, n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------
-titanic |> explore(Sex, target = Class, n = n)
+titanic %>% explore(Sex, target = Class, n = n)
 
