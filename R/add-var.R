@@ -77,7 +77,7 @@ add_var_random_01 <- function(data, name = "random_01", prob = c(0.5, 0.5), over
 
   data <- add_var_random_cat(data,
                              name = name,
-                             cat = c(0, 1),
+                             cat = c(0L, 1L),
                              prob = prob,
                              overwrite = overwrite,
                              seed = seed)
@@ -199,7 +199,7 @@ add_var_random_dbl <- function(data, name = "random_dbl",
 add_var_random_moon <- function(data, name = "random_moon", overwrite = TRUE, seed) {
 
   # add starsign
-  moons <- c("New ( )   ", "Waxing  (+)", "Full (O)", "Waning  (-) ")
+  moons <- c("New ( )", "Waxing (+)", "Full (O)", "Waning (-)")
   data <- add_var_random_cat(data,
                              cat = moons,
                              name = name,

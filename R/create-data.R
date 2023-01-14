@@ -2,25 +2,143 @@
 #'
 #' @param obs Number of observations
 #' @param add_id Add an id
+#' @param seed Seed for randomization (integer)
 #' @return Dataset
 #' @examples
 #' create_data_empty()
 #' @export
 
-create_data_empty <- function(obs = 1000, add_id = FALSE) {
+create_data_empty <- function(obs = 1000, add_id = FALSE, seed = 123) {
 
+  # checks
+  assertthat::assert_that(is.numeric(obs))
+  assertthat::assert_that(obs > 0)
+  assertthat::assert_that(is.logical(add_id))
+  assertthat::assert_that(is.numeric(seed))
+
+  # reproducible random numbers
+  set.seed(seed)
+
+  # create empty data frame
   data <- data.frame(
     row.names = seq(1, obs)
   )
 
+  # add if
   if (add_id)  {
     data[["id"]] <- seq(1, obs)
   }
 
+  # return data
   data
 
 } # create_data_empty
 
+#' Create data app
+#'
+#' Artificial data that can be used for unit-testing or teaching
+#'
+#' @param obs Number of observations
+#' @param add_id Add an id-variable to data?
+#' @param seed Seed for randomization (integer)
+#'
+#' @return A dataframe
+#' @export
+
+create_data_app = function(obs = 1000,
+                           add_id = FALSE,
+                           seed = 123) {
+  # checks
+  assertthat::assert_that(is.numeric(obs))
+  assertthat::assert_that(obs > 0)
+  assertthat::assert_that(is.logical(add_id))
+  assertthat::assert_that(is.numeric(seed))
+
+  # set seed (randomization)
+  set.seed(seed)
+
+  data <- create_data_empty(obs = obs) %>%
+    add_var_id(name = "id")
+
+  data <- data %>%
+    add_var_random_cat("os", c("iOS", "Android", "Other"), prob = c(0.4, 0.5, 0.1)) %>%
+    add_var_random_01("free", prob = c(0.4, 0.6)) %>%
+    add_var_random_int("downloads", min_val = 0, max_val = 7500) %>%
+    add_var_random_cat("rating", c(1L,2L,3L,4L,5L), prob = c(0.15, 0.1, 0.05, 0.5, 0.2)) %>%
+    add_var_random_cat("type", c("Games", "Connect", "Work", "Learn", "Media", "Shopping", "Tools", "Kids", "Travel", "Other"), prob = c(0.15,0.05,0.05,0.1,0.1,0.1,0.1,0.1,0.1,0.15)) %>%
+    add_var_random_int("updates", min_val = 0, max_val = 100) %>%
+    add_var_random_int("screen_sizes", min_val = 1, max_val = 5)
+
+  set.seed(123) # to make it reproducible
+
+  # add effect free
+  prob <- 0.7
+  size <- 5000
+  data$downloads <- ifelse(stats::runif(nrow(data)) <= prob,
+                           data$downloads + (data$free * stats::runif(nrow(data)) * size),
+                           data$downloads)
+
+  # add effect rating
+  prob <- 0.8
+  size <- 1000
+  data$downloads <- ifelse(stats::runif(nrow(data)) <= prob,
+                           data$downloads + (data$rating * stats::runif(nrow(data)) * size),
+                           data$downloads)
+
+  # add effect type=GAME
+  prob <- 0.4
+  size <- 3000
+  data$downloads <- ifelse(stats::runif(nrow(data)) <= prob,
+                           data$downloads + ifelse(data$type == "Games", stats::runif(nrow(data)) * size, 0),
+                           data$downloads)
+
+  # add effect os=iOS
+  data$rating <- ifelse(data$os == "iOS" & data$rating == 1 & stats::runif(nrow(data)) > 0.6,
+                        5,
+                        data$rating)
+  data$downloads <- ifelse(data$os == "Android",
+                           data$downloads * 1.3,
+                           data$downloads)
+
+
+  # add effect os=Other
+  data$downloads <- ifelse(data$os == "Other",
+                           data$downloads/2,
+                           data$downloads)
+  data$updates <- ifelse(data$os == "Other",
+                         data$updates/3,
+                         data$updates)
+  data$rating <- ifelse(data$os == "Other" & data$rating >= 3 & stats::runif(nrow(data)) > 0.3,
+                        1,
+                        data$rating)
+
+  # add effect iOS screen-size <= 2 (iOs/iPad)
+  data$screen_sizes <- ifelse(data$os == "iOS" & data$screen_sizes > 2,
+                              2,
+                              data$screen_size)
+
+  # add effect Other screen-size
+  data$screen_sizes <- ifelse(data$os == "Android" & data$screen_sizes <= 2 & stats::runif(nrow(data)) > 0.2,
+                              3,
+                              data$screen_size)
+
+  # add effect Other screen-size
+  data$screen_sizes <- ifelse(data$os == "Other" & data$screen_sizes > 1,
+                              1,
+                              data$screen_size)
+
+  # make downloads int again
+  data$downloads <- as.integer(data$downloads)
+
+  # add id?
+  if (!add_id)  {
+    data$id <- NULL
+  }
+
+  # return data
+  data
+
+} # create_data_app
 
 #' Create data person
 #'
@@ -34,6 +152,12 @@ create_data_empty <- function(obs = 1000, add_id = FALSE) {
 #' @export
 
 create_data_person <- function(obs = 1000, add_id = FALSE, seed = 123) {
+
+  # checks
+  assertthat::assert_that(is.numeric(obs))
+  assertthat::assert_that(obs > 0)
+  assertthat::assert_that(is.logical(add_id))
+  assertthat::assert_that(is.numeric(seed))
 
   # reproducible random numbers
   set.seed(seed)
@@ -102,7 +226,7 @@ create_data_person <- function(obs = 1000, add_id = FALSE, seed = 123) {
 #' * fixeddata_ind = Customer has a fixed data product (1 = yes, 0 = no)
 #' * fixedtv_ind = Customer has a fixed tv product (1 = yes, 0 = no)
 #' * mobilevoice_ind = Customer has a mobile voice product (1 = yes, 0 = no)
-#' * mobiledata_ind = Customer has a mobile data product (1 = yes, 0 = no)
+#' * mobiledata_prd = Customer has a mobile data product (NO/MOBILE STICK/BUSINESS)
 #' * bbi_speed_ind = Customer has a Broadband Internet (BBI) with extra speed
 #' * bbi_usg_gb = Broadband Internet (BBI) usage in Gigabyte (GB) last month
 #' * hh_single = Expected to be a Single Household (1 = yes, 0 = no)
@@ -114,7 +238,7 @@ create_data_person <- function(obs = 1000, add_id = FALSE, seed = 123) {
 #' @param target_name Variable name of target
 #' @param factorise_target Should target variable be factorised?
 #' (from 0/1 to facotr no/yes)?
-#' @param target1_prob Probability that buy = 1
+#' @param target1_prob Probability that target = 1
 #' @param add_extreme Add an obervation with extreme values?
 #' @param flip_gender Should Male/Female be flipped in data?
 #' @param add_id Add an id-variable to data?
@@ -131,6 +255,14 @@ create_data_buy = function(obs = 1000,
                            flip_gender = FALSE,
                            add_id = FALSE,
                            seed = 123) {
+
+  # checks
+  assertthat::assert_that(is.numeric(obs))
+  assertthat::assert_that(obs > 0)
+  assertthat::assert_that(is.numeric(target1_prob))
+  assertthat::assert_that(target1_prob >= 0 & target1_prob <= 1)
+  assertthat::assert_that(is.logical(add_id))
+  assertthat::assert_that(is.numeric(seed))
 
   # define variables for CRAN-package check
   target_ind <- NULL
@@ -176,7 +308,7 @@ create_data_buy = function(obs = 1000,
                            sample(c(0L, 1L), obs, replace = TRUE, prob = c(0.8, 0.2))
       ),
       mobilevoice_ind = sample(c(0L, 1L), obs, replace = TRUE, prob = c(0.4, 0.6)),
-      mobiledata_ind = sample(c("NO","MOBILE STICK", "BUSINESS"), obs, replace = TRUE, prob = c(0.5, 0.3, 0.2)),
+      mobiledata_prd = sample(c("NO","MOBILE STICK", "BUSINESS"), obs, replace = TRUE, prob = c(0.5, 0.3, 0.2)),
       bbi_speed_ind = ifelse(age > 60,
                              sample(c(0L, 1L), obs, replace = TRUE, prob = c(0.9, 0.1)),
                              sample(c(0L, 1L), obs, replace = TRUE, prob = c(0.2, 0.8))
@@ -227,112 +359,14 @@ create_data_buy = function(obs = 1000,
 } # create_data_buy
 
 
-#' Create data app
-#'
-#' Artificial data that can be used for unit-testing or teaching
-#'
-#' @param obs Number of observations
-#' @param add_id Add an id-variable to data?
-#' @param seed Seed for randomization (integer)
-#'
-#' @return A dataframe
-#' @export
-
-create_data_app = function(obs = 1000,
-                           add_id = FALSE,
-                           seed = 123) {
-
-  # set seed (randomization)
-  set.seed(seed)
-
-  data <- create_data_empty(obs = obs) %>%
-    add_var_id(name = "id")
-
-  data <- data %>%
-    add_var_random_cat("os", c("iOS", "Android", "Other"), prob = c(0.4, 0.5, 0.1)) %>%
-    add_var_random_01("free", prob = c(0.4, 0.6)) %>%
-    add_var_random_int("downloads", min_val = 0, max_val = 7500) %>%
-    add_var_random_cat("rating", c(1L,2L,3L,4L,5L), prob = c(0.15, 0.1, 0.05, 0.5, 0.2)) %>%
-    add_var_random_cat("type", c("Games", "Connect", "Work", "Learn", "Media", "Shopping", "Tools", "Kids", "Travel", "Other"), prob = c(0.15,0.05,0.05,0.1,0.1,0.1,0.1,0.1,0.1,0.15)) %>%
-    add_var_random_int("updates", min_val = 0, max_val = 100) %>%
-    add_var_random_int("screen_sizes", min_val = 1, max_val = 5)
-
-  set.seed(123) # to make it reproducible
-
-  # add effect free
-  prob <- 0.7
-  size <- 5000
-  data$downloads <- ifelse(stats::runif(nrow(data)) <= prob,
-                           data$downloads + (data$free * stats::runif(nrow(data)) * size),
-                           data$downloads)
-
-  # add effect rating
-  prob <- 0.8
-  size <- 1000
-  data$downloads <- ifelse(stats::runif(nrow(data)) <= prob,
-                           data$downloads + (data$rating * stats::runif(nrow(data)) * size),
-                           data$downloads)
-
-  # add effect type=GAME
-  prob <- 0.4
-  size <- 3000
-  data$downloads <- ifelse(stats::runif(nrow(data)) <= prob,
-                           data$downloads + ifelse(data$type == "Games", stats::runif(nrow(data)) * size, 0),
-                           data$downloads)
-
-  # add effect os=iOS
-  data$rating <- ifelse(data$os == "iOS" & data$rating == 1 & stats::runif(nrow(data)) > 0.6,
-                           5,
-                           data$rating)
-  data$downloads <- ifelse(data$os == "Android",
-                           data$downloads * 1.3,
-                           data$downloads)
-
-
-  # add effect os=Other
-  data$downloads <- ifelse(data$os == "Other",
-                           data$downloads/2,
-                           data$downloads)
-  data$updates <- ifelse(data$os == "Other",
-                           data$updates/3,
-                           data$updates)
-  data$rating <- ifelse(data$os == "Other" & data$rating >= 3 & stats::runif(nrow(data)) > 0.3,
-                        1,
-                        data$rating)
-
-  # add effect iOS screen-size <= 2 (iOs/iPad)
-  data$screen_sizes <- ifelse(data$os == "iOS" & data$screen_sizes > 2,
-                              2,
-                              data$screen_size)
-
-  # add effect Other screen-size
-  data$screen_sizes <- ifelse(data$os == "Android" & data$screen_sizes <= 2 & stats::runif(nrow(data)) > 0.2,
-                              3,
-                              data$screen_size)
-
-  # add effect Other screen-size
-  data$screen_sizes <- ifelse(data$os == "Other" & data$screen_sizes > 1,
-                              1,
-                              data$screen_size)
-
-  # make downloads int again
-  data$downloads <- as.integer(data$downloads)
-
-  # add id?
-  if (!add_id)  {
-    data$id <- NULL
-  }
-
-  # return data
-  data
-
-} # create_data_app
-
 #' Create data churn
 #'
 #' Artificial data that can be used for unit-testing or teaching
 #'
 #' @param obs Number of observations
+#' @param target_name Variable name of target
+#' @param factorise_target Should target variable be factorised?
+#' @param target1_prob Probability that target = 1
 #' @param add_id Add an id-variable to data?
 #' @param seed Seed for randomization (integer)
 #'
@@ -340,8 +374,19 @@ create_data_app = function(obs = 1000,
 #' @export
 
 create_data_churn = function(obs = 1000,
+                             target_name = "churn",
+                             factorise_target = FALSE,
+                             target1_prob = 0.4,
                              add_id = FALSE,
                              seed = 123) {
+
+  # checks
+  assertthat::assert_that(is.numeric(obs))
+  assertthat::assert_that(obs > 0)
+  assertthat::assert_that(is.numeric(target1_prob))
+  assertthat::assert_that(target1_prob >= 0 & target1_prob <= 1)
+  assertthat::assert_that(is.logical(add_id))
+  assertthat::assert_that(is.numeric(seed))
 
   # set seed (randomization)
   set.seed(seed)
@@ -358,7 +403,7 @@ create_data_churn = function(obs = 1000,
     add_var_random_01("newsletter", prob = c(0.5, 0.5)) %>%
     add_var_random_cat("language", c("en", "sp", "de", "fr"), prob = c(0.5, 0.3, 0.1, 0.1)) %>%
     add_var_random_int("duration", min_val = 0, max_val = 100) %>%
-    add_var_random_01("churn", prob = c(0.6, 0.4))
+    add_var_random_01("churn", prob = c(1 - target1_prob, target1_prob))
 
 
   set.seed(123) # to make it reproducible
@@ -399,6 +444,18 @@ create_data_churn = function(obs = 1000,
     data$shared == 1
   data$churn[change] <- 0
 
+  # factorise target?
+  if (factorise_target) {
+    data$churn <- factor(data$churn,
+                              levels = c(0, 1),
+                              labels = c("no", "yes"))
+  }
+
+  # rename target?
+  if (target_name != "churn") {
+    names(data)[[grep("churn", names(data))]] <- target_name
+  }
+
   # add id?
   if (!add_id)  {
     data$id <- NULL
@@ -409,84 +466,14 @@ create_data_churn = function(obs = 1000,
 
 } # create_data_churn
 
-
-#' Create data random
-#'
-#' Random data that can be used for unit-testing or teaching
-#'
-#' Variables in dataset:
-#' * id = Identifier
-#' * var_X = variable containing values between 0 and 100
-#'
-#' Target in dataset:
-#' * target_ind (may be renamed) = random values (1 = yes, 0 = no)
-#'
-#' @param obs Number of observations
-#' @param vars Number of variables
-#' @param target_name Variable name of target
-#' @param factorise_target Should target variable be factorised?
-#' (from 0/1 to facotr no/yes)?
-#' @param target1_prob Probability that buy = 1
-#' @param add_id Add an id-variable to data?
-#' @param seed Seed for randomization
-#'
-#' @return A dataframe
-#' @export
-
-create_data_random = function(obs = 1000, vars = 10,
-                              target_name = "target_ind",
-                              factorise_target = FALSE,
-                              target1_prob = 0.5,
-                              add_id = TRUE,
-                              seed = 123) {
-
-  # set seed (randomization)
-  set.seed(seed)
-
-  # create basic dataset
-  data <- data.frame(
-    id = seq(from = 1, to = obs),
-    target_ind = sample(c(0L, 1L),
-                        obs,
-                        prob = c(1 - target1_prob, target1_prob),
-                        replace = TRUE)
-  )
-
-  # add features
-  for (i in seq_len(vars)) {
-    data[[paste0("var_",i)]] <- as.integer(
-      round(stats::runif(obs)*100,0))
-  }
-
-
-  # factorise target?
-  if (factorise_target) {
-    data$buy <- factor(data$buy,
-                       levels = c(0, 1),
-                       labels = c("no", "yes"))
-  }
-
-  # rename target?
-  if (target_name != "target_ind") {
-    data[[target_name]] <- data$target_ind
-    data$target_ind <- NULL
-  }
-
-  # add id?
-  if (!add_id)  {
-    data$id <- NULL
-  }
-
-  # return data
-  data
-
-} # create_data_random
-
 #' Create data unfair
 #'
 #' Artificial data that can be used for unit-testing or teaching
 #' (fairness & AI bias)
 #' @param obs Number of observations
+#' @param target_name Variable name of target
+#' @param factorise_target Should target variable be factorised?
+#' @param target1_prob Probability that target = 1
 #' @param add_id Add an id-variable to data?
 #' @param seed Seed for randomization (integer)
 #'
@@ -494,8 +481,18 @@ create_data_random = function(obs = 1000, vars = 10,
 #' @export
 
 create_data_unfair = function(obs = 1000,
+                              target_name = "target_ind",
+                              factorise_target = FALSE,
+                              target1_prob = 0.25,
                               add_id = FALSE,
                               seed = 123) {
+  # checks
+  assertthat::assert_that(is.numeric(obs))
+  assertthat::assert_that(obs > 0)
+  assertthat::assert_that(is.numeric(target1_prob))
+  assertthat::assert_that(target1_prob >= 0 & target1_prob <= 1)
+  assertthat::assert_that(is.logical(add_id))
+  assertthat::assert_that(is.numeric(seed))
 
   # set seed (randomization)
   set.seed(seed)
@@ -537,7 +534,7 @@ create_data_unfair = function(obs = 1000,
   data$internet_gb <- ifelse(data$internet_gb < 0, 0, data$internet_gb)
   # add target
   data <- data %>%
-    add_var_random_01(name = "target", prob = c(0.75, 0.25), seed = 1)
+    add_var_random_01(name = "target", prob = c(1 - target1_prob, target1_prob))
 
   # add pattern for target
   data$target <- ifelse(data$age <= 20 & data$handset == "Apple" & stats::runif(nrow(data)) > 0.6, 1, data$target)
@@ -549,8 +546,100 @@ create_data_unfair = function(obs = 1000,
   data$target <- ifelse(data$credit_card == "Other" & stats::runif(nrow(data)) > 0.8, 1, data$target)
   data$target <- as.integer(data$target)
 
+  # factorise target?
+  if (factorise_target) {
+    data$target <- factor(data$target,
+                              levels = c(0, 1),
+                              labels = c("no", "yes"))
+  }
+
+  # rename target?
+  if (target_name != "target") {
+    data[[target_name]] <- data$target
+    data$target <- NULL
+  }
+
   # return data
   data
 
 } # create_data_unfair()
+
+#' Create data random
+#'
+#' Random data that can be used for unit-testing or teaching
+#'
+#' Variables in dataset:
+#' * id = Identifier
+#' * var_X = variable containing values between 0 and 100
+#'
+#' Target in dataset:
+#' * target_ind (may be renamed) = random values (1 = yes, 0 = no)
+#'
+#' @param obs Number of observations
+#' @param vars Number of variables
+#' @param target_name Variable name of target
+#' @param factorise_target Should target variable be factorised?
+#' (from 0/1 to facotr no/yes)?
+#' @param target1_prob Probability that target = 1
+#' @param add_id Add an id-variable to data?
+#' @param seed Seed for randomization
+#'
+#' @return A dataframe
+#' @export
+
+create_data_random = function(obs = 1000, vars = 10,
+                              target_name = "target_ind",
+                              factorise_target = FALSE,
+                              target1_prob = 0.5,
+                              add_id = TRUE,
+                              seed = 123) {
+  # checks
+  assertthat::assert_that(is.numeric(obs))
+  assertthat::assert_that(obs > 0)
+  assertthat::assert_that(is.numeric(target1_prob))
+  assertthat::assert_that(target1_prob >= 0 & target1_prob <= 1)
+  assertthat::assert_that(is.logical(add_id))
+  assertthat::assert_that(is.numeric(seed))
+
+  # set seed (randomization)
+  set.seed(seed)
+
+  # create basic dataset
+  data <- data.frame(
+    id = seq(from = 1, to = obs),
+    target_ind = sample(c(0L, 1L),
+                        obs,
+                        prob = c(1 - target1_prob, target1_prob),
+                        replace = TRUE)
+  )
+
+  # add features
+  for (i in seq_len(vars)) {
+    data[[paste0("var_",i)]] <- as.integer(
+      round(stats::runif(obs)*100,0))
+  }
+
+
+  # factorise target?
+  if (factorise_target) {
+    data$target_ind <- factor(data$target_ind,
+                              levels = c(0, 1),
+                              labels = c("no", "yes"))
+  }
+
+  # rename target?
+  if (target_name != "target_ind") {
+    data[[target_name]] <- data$target_ind
+    data$target_ind <- NULL
+  }
+
+  # add id?
+  if (!add_id)  {
+    data$id <- NULL
+  }
+
+  # return data
+  data
+
+} # create_data_random
 

@@ -586,8 +586,10 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
   # mean
   show_mean_var <- FALSE
   if (is.na(min_val) & is.na(max_val) & missing(target)) {
-    mean_var <- mean(data[[var_txt]])
-    show_mean_var <- TRUE
+    mean_var <- mean(data[[var_txt]], na.rm = TRUE)
+    if (!is.na(mean_var)) {
+     show_mean_var <- TRUE
+    }
   }
 
   # count NA
@@ -1082,12 +1084,12 @@ explore_tbl <- function(data, n)  {
   n_var <- nrow(d)
 
   # prepare bars
-  bar <- d |>
+  bar <- d %>%
     mutate(group = case_when(
       na > 0 ~ "with NA",
       unique == 1 ~ "no variance",
       TRUE ~ "ok"
-    )) |>
+    )) %>%
     count(type, group)
 
   bar$group <- factor(
@@ -1095,10 +1097,10 @@ explore_tbl <- function(data, n)  {
     levels = c("with NA", "no variance", "ok"),
     ordered = TRUE)
 
-  bar_all = bar |>
-    group_by(group) |>
-    summarise(n = sum(n)) |>
-    ungroup() |>
+  bar_all = bar %>%
+    group_by(group) %>%
+    summarise(n = sum(n)) %>%
+    ungroup() %>%
     mutate(type = "variables (all)")
 
   # prepare plot

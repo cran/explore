@@ -23,7 +23,7 @@ create_data_buy(
 \item{factorise_target}{Should target variable be factorised?
 (from 0/1 to facotr no/yes)?}
 
-\item{target1_prob}{Probability that buy = 1}
+\item{target1_prob}{Probability that target = 1}
 
 \item{add_extreme}{Add an obervation with extreme values?}
 
@@ -50,7 +50,7 @@ Variables in dataset:
 \item fixeddata_ind = Customer has a fixed data product (1 = yes, 0 = no)
 \item fixedtv_ind = Customer has a fixed tv product (1 = yes, 0 = no)
 \item mobilevoice_ind = Customer has a mobile voice product (1 = yes, 0 = no)
-\item mobiledata_ind = Customer has a mobile data product (1 = yes, 0 = no)
+\item mobiledata_prd = Customer has a mobile data product (NO/MOBILE STICK/BUSINESS)
 \item bbi_speed_ind = Customer has a Broadband Internet (BBI) with extra speed
 \item bbi_usg_gb = Broadband Internet (BBI) usage in Gigabyte (GB) last month
 \item hh_single = Expected to be a Single Household (1 = yes, 0 = no)
