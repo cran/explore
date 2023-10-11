@@ -5,9 +5,11 @@ knitr::opts_chunk$set(
 )
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
-library(palmerpenguins)
 library(dplyr)
 library(explore)
+penguins <- explore::use_data_penguins()
+# equivalent to 
+# penguins <- palmerpenguins::penguins
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
 penguins %>% describe()

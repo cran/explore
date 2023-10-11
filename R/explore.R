@@ -15,13 +15,10 @@
 #' @param max_cat Maximum numbers of categories to be plotted
 #' @param legend_position Position of legend ("right"|"bottom"|"non")
 #' @return Plot object
-#' @importFrom magrittr "%>%"
-#' @importFrom utils head
-#' @import dplyr
-#' @import ggplot2
 
 target_explore_cat <- function(data, var, target = "target_ind", min_val = NA, max_val = NA, flip = TRUE, num2char = TRUE, title = NA, auto_scale = TRUE, na = NA, max_cat = 30, legend_position = "bottom") {
 
+  rlang::check_required(data)
   # definitions for CRAN package check
   n_target <- NULL
   n_pct <- NULL
@@ -38,7 +35,7 @@ target_explore_cat <- function(data, var, target = "target_ind", min_val = NA, m
   }
 
   # parameter target
-  if(!missing(target))  {
+  if (!missing(target))  {
     target_quo <- enquo(target)
     target_txt <- quo_name(target_quo)[[1]]
   } else {
@@ -47,7 +44,7 @@ target_explore_cat <- function(data, var, target = "target_ind", min_val = NA, m
 
   # rename variables, to use it (lazy evaluation)
   data_bar <- data %>%
-    select(!!var_quo, !!target_quo)
+    dplyr::select(!!var_quo, !!target_quo)
   names(data_bar) <- c("cat", "target")
 
   # replace na value
@@ -68,10 +65,11 @@ target_explore_cat <- function(data, var, target = "target_ind", min_val = NA, m
   # calculate percentage
   data_bar <- data_bar %>%
     group_by(cat) %>%
-    summarise(n = n(), n_target = sum(target)) %>%
-    ungroup() %>%
-    mutate(n_pct = n / sum(n)*100) %>%
-    mutate(target_pct = n_target/n*100)
+    summarise(n = n(), n_target = sum(target), .groups = "drop") %>%
+    mutate(
+      n_pct = n / sum(n)*100,
+      target_pct = n_target/n*100
+      )
 
   # calculate mean
   target_mean <- sum(data_bar$n_target) / sum(data_bar$n) * 100
@@ -83,7 +81,7 @@ target_explore_cat <- function(data, var, target = "target_ind", min_val = NA, m
 
   # convert to character
   if(num2char)  {
-    data_bar <- data_bar %>% mutate(cat = as.character(cat))
+    data_bar$cat <- as.character(data_bar$cat)
   }
 
   # define colors
@@ -93,7 +91,7 @@ target_explore_cat <- function(data, var, target = "target_ind", min_val = NA, m
 
   # limit number of categories
   if(nrow(data_bar) > max_cat)  {
-    data_bar <- head(data_bar, max_cat)
+    data_bar <- utils::head(data_bar, n = max_cat)
   }
 
   # maximum percent value to be displayed
@@ -164,9 +162,6 @@ target_explore_cat <- function(data, var, target = "target_ind", min_val = NA, m
 #' @param na Value to replace NA
 #' @param legend_position Position of legend ("right"|"bottom"|"non")
 #' @return Plot object
-#' @importFrom magrittr "%>%"
-#' @import dplyr
-#' @import ggplot2
 
 target_explore_num <- function(data, var, target = "target_ind", min_val = NA, max_val = NA, flip = TRUE, title = NA, auto_scale = TRUE, na = NA, legend_position = "bottom") {
 
@@ -176,7 +171,7 @@ target_explore_num <- function(data, var, target = "target_ind", min_val = NA, m
   explore_cat <- NULL
 
   # parameter var
-  if(!missing(var))  {
+  if (!missing(var))  {
     var_quo <- enquo(var)
     var_txt <- quo_name(var_quo)[[1]]
   } else {
@@ -184,7 +179,7 @@ target_explore_num <- function(data, var, target = "target_ind", min_val = NA, m
   }
 
   # parameter target
-  if(!missing(target))  {
+  if (!missing(target)) {
     target_quo <- enquo(target)
     target_txt <- quo_name(target_quo)[[1]]
   } else {
@@ -193,7 +188,7 @@ target_explore_num <- function(data, var, target = "target_ind", min_val = NA, m
 
   # rename variables, to use it (lazy evaluation)
   data_bar <- data %>%
-    select(!!var_quo, !!target_quo)
+    dplyr::select(!!var_quo, !!target_quo)
   names(data_bar) <- c("num", "target")
 
   if (!is.na(na)) {
@@ -226,17 +221,17 @@ target_explore_num <- function(data, var, target = "target_ind", min_val = NA, m
 
   # cut only when more then 1 different value in data
   if (min_val != max_val)  {
-    data_bar <- data_bar %>% mutate(explore_cat  = cut(num, 10))
+    data_bar <- dplyr::mutate(data_bar, explore_cat = cut(num, 10))
   } else {
     data_bar <- data_bar %>% mutate(explore_cat = min_val)
   }
 
   cat_labels <- data_bar %>%
-    group_by(explore_cat) %>%
-    summarize(cat_label = max(num), n = n())
+    dplyr::group_by(explore_cat) %>%
+    dplyr::summarize(cat_label = max(num), n = n())
 
   data_bar <- data_bar %>%
-    inner_join(y = cat_labels, by = "explore_cat")
+    dplyr::inner_join(y = cat_labels, by = "explore_cat")
 
   #result <- data_bar
 
@@ -273,9 +268,6 @@ target_explore_num <- function(data, var, target = "target_ind", min_val = NA, m
 #' @param label_size Size of labels
 #' @param ... Further arguments
 #' @return Plot object (bar chart)
-#' @importFrom magrittr "%>%"
-#' @import dplyr
-#' @import ggplot2
 #' @export
 
 explore_bar <- function(data, var, target, flip = NA, title = "", numeric = NA, max_cat = 30, max_target_cat = 5, legend_position = "right", label, label_size = 2.7, ...)  {
@@ -286,20 +278,14 @@ explore_bar <- function(data, var, target, flip = NA, title = "", numeric = NA, 
   pct <- NULL
 
   # check parameter data
-  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
-  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
-  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
-
+  check_data_frame_non_empty(data)
+  rlang::check_required(var)
   # parameter var
-  if(!missing(var))  {
-    var_quo <- enquo(var)
-    var_txt <- quo_name(var_quo)[[1]]
-    if (!var_txt %in% names(data)) {
+  var_quo <- enquo(var)
+  var_txt <- quo_name(var_quo)[[1]]
+  if (!var_txt %in% names(data)) {
       stop(paste0("variable '", var_txt, "' not found"))
     }
-  } else {
-    stop(paste0("variable missing"))
-  }
 
   if(nrow(data) == 0) {
     p <- data %>% plot_var_info(!!var_quo, "no observations")
@@ -357,7 +343,7 @@ explore_bar <- function(data, var, target, flip = NA, title = "", numeric = NA, 
   } else if ((!missing(numeric) & numeric == FALSE) |
              guess_cat_num(data[[var_txt]]) == "cat") {
     data[[var_txt]] <- factor(data[[var_txt]])
-    data[[var_txt]] <- forcats::fct_explicit_na(data[[var_txt]], na_level = ".NA")
+    data[[var_txt]] <- forcats::fct_na_value_to_level(data[[var_txt]], level = ".NA")
     if (missing(flip)) {
       flip <- TRUE
     }
@@ -366,11 +352,11 @@ explore_bar <- function(data, var, target, flip = NA, title = "", numeric = NA, 
   # use a factor for target so that fill works
   if (n_target_cat > 1 && !is.factor(data[[target_txt]]))  {
     data[[target_txt]] <- factor(data[[target_txt]])
-    data[[target_txt]] <- forcats::fct_explicit_na(data[[target_txt]], na_level = ".NA")
+    data[[target_txt]] <- forcats::fct_na_value_to_level(data[[target_txt]], level = ".NA")
 
     # keep max. different levels
     if (n_target_cat > max_target_cat)  {
-      data[[target_txt]] <- forcats::fct_lump(data[[target_txt]],max_target_cat, other_level = ".OTHER")
+      data[[target_txt]] <- forcats::fct_lump_n(data[[target_txt]], n = max_target_cat, other_level = ".OTHER")
     }
     # recalculate number of levels in target
     n_target_cat <- length(levels(data[[target_txt]]))
@@ -527,10 +513,6 @@ explore_bar <- function(data, var, target, flip = NA, title = "", numeric = NA, 
 #' @param max_target_cat Maximum number of levels of target shown in the plot (except NA).
 #' @param ... Further arguments
 #' @return Plot object (density plot)
-#' @importFrom magrittr "%>%"
-#' @import rlang
-#' @import dplyr
-#' @import ggplot2
 #' @examples
 #' explore_density(iris, "Sepal.Length")
 #' iris$is_virginica <- ifelse(iris$Species == "virginica", 1, 0)
@@ -540,19 +522,14 @@ explore_bar <- function(data, var, target, flip = NA, title = "", numeric = NA, 
 explore_density <- function(data, var, target, title = "", min_val = NA, max_val = NA, color = "grey", auto_scale = TRUE, max_target_cat = 5, ...)   {
 
   # check parameter data
-  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
-  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
-  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
+  check_data_frame_non_empty(data)
 
   # parameter var
-  if(!missing(var))  {
-    var_quo <- enquo(var)
-    var_txt <- quo_name(var_quo)[[1]]
-    if (!var_txt %in% names(data)) {
-      stop(paste0("variable '", var_txt, "' not found"))
-    }
-  } else {
-    stop(paste0("variable missing"))
+  rlang::check_required(var)
+  var_quo <- enquo(var)
+  var_txt <- quo_name(var_quo)[[1]]
+  if (!var_txt %in% names(data)) {
+    stop(paste0("variable '", var_txt, "' not found"))
   }
 
   if(nrow(data) == 0) {
@@ -600,7 +577,7 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
   na_pct <- na_check[1,2]
 
   # autoscale (if mni_val and max_val not used)
-  if (auto_scale == TRUE & is.na(min_val) & is.na(max_val))  {
+  if (auto_scale && is.na(min_val) && is.na(max_val))  {
     r <- quantile(data[[var_txt]], c(0.02, 0.98), na.rm = TRUE)
     min_val = r[1]
     max_val = r[2]
@@ -628,7 +605,7 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
       if ((auto_scale == FALSE) | (mean_var <= max_val)) {
         p <- p + geom_vline(xintercept = mean_var,
                             color = "#7f7f7f", alpha = 0.5,
-                            linetype = "dashed", size = 1)
+                            linetype = "dashed", lwd = 1)
       }
     }
 
@@ -637,7 +614,7 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
     # factorise target
     if (!is.factor(data[[target_txt]]))  {
       data[[target_txt]] <- factor(data[[target_txt]])
-      data[[target_txt]] <- forcats::fct_explicit_na(data[[target_txt]], na_level = ".NA")
+      data[[target_txt]] <- forcats::fct_na_value_to_level(data[[target_txt]], level = ".NA")
       # keep max. different levels
       if (n_target_cat > max_target_cat)  {
         data[[target_txt]] <- forcats::fct_lump(data[[target_txt]],max_target_cat, other_level = ".OTHER")
@@ -690,8 +667,6 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
 #' @param targetpct Plot variable as target% (FALSE/TRUE)
 #' @param split Split by target (TRUE|FALSE)
 #' @return Plot
-#' @import rlang
-#' @importFrom gridExtra grid.arrange
 #' @examples
 #' explore_all(iris)
 #'
@@ -702,9 +677,7 @@ explore_density <- function(data, var, target, title = "", min_val = NA, max_val
 explore_all <- function(data, n, target, ncol = 2, targetpct, split = TRUE)  {
 
   # check parameter data
-  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
-  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
-  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
+  check_data_frame_non_empty(data)
 
   # parameter target
   if(!missing(target))  {
@@ -849,9 +822,7 @@ explore_all <- function(data, n, target, ncol = 2, targetpct, split = TRUE)  {
 explore_cor <- function(data, x, y, target, bins = 8, min_val = NA, max_val = NA, auto_scale = TRUE, title = NA, color = "grey", ...)  {
 
   # check parameter data
-  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
-  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
-  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
+  check_data_frame_non_empty(data)
 
   # parameter x
   if(!missing(x))  {
@@ -1036,14 +1007,11 @@ explore_cor <- function(data, x, y, target, bins = 8, min_val = NA, max_val = NA
 #'
 #' @param data A dataset
 #' @param n Weight variable for count data
-#' @importFrom magrittr "%>%"
-#' @import dplyr
 #' @examples
 #' explore_tbl(iris)
 #' @export
 
 explore_tbl <- function(data, n)  {
-
   # define variables to pass CRAN-checks
   type <- NULL
   na <- NULL
@@ -1051,9 +1019,7 @@ explore_tbl <- function(data, n)  {
   group <- NULL
 
   # check parameter data
-  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
-  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
-  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
+  check_data_frame_non_empty(data)
 
   # parameter n
   if (!missing(n)) {
@@ -1099,8 +1065,7 @@ explore_tbl <- function(data, n)  {
 
   bar_all = bar %>%
     group_by(group) %>%
-    summarise(n = sum(n)) %>%
-    ungroup() %>%
+    summarise(n = sum(n), .groups = "drop") %>%
     mutate(type = "variables (all)")
 
   # prepare plot
@@ -1114,18 +1079,17 @@ explore_tbl <- function(data, n)  {
                      "ok" = "grey")
   # plot
   bar %>%
-    ggplot(aes(type, n, fill = group)) +
+    ggplot(aes(n, type, fill = group)) +
     geom_col() +
     scale_fill_manual(values = color_mapping) +
     #geom_text(aes(measure, n, group = type, label = as.character(n)), size = 2.5) +
-    geom_text(aes(label = n, hjust = ifelse(n == 0, 0, 1)),
+    geom_text(aes(label = dplyr::na_if(n, 0)),na.rm = TRUE,
               position = "stack"
               ) +
     labs(title = paste(ncol(data), "variables"),
          subtitle = info_obs,
-         y = "variables",
-         x = "") +
-    coord_flip() +
+         x = "variables",
+         y = "") +
     theme(
       panel.background = element_rect("white"),
       panel.grid.major = element_line("grey85"),
@@ -1140,14 +1104,8 @@ explore_tbl <- function(data, n)  {
 #'
 #' @param data A dataset
 #' @param target Target variable (0/1 or FALSE/TRUE)
-#' @importFrom magrittr "%>%"
-#' @import rlang
-#' @import dplyr
-#' @import shiny
-#' @importFrom DT DTOutput renderDT
-#' @importFrom utils browseURL
-#' @import rmarkdown
 #' @examples
+#'
 #' # Only run examples in interactive R sessions
 #' if (interactive())  {
 #'    explore_shiny(iris)
@@ -1157,10 +1115,13 @@ explore_tbl <- function(data, n)  {
 explore_shiny <- function(data, target)  {
 
   # check if interactive session
-  if (!interactive()) stop("This function can only be used in an interactive R session")
+  if (!interactive()) {
+    warning("This function can only be used in an interactive R session")
+    return(invisible())
+  }
 
   # parameter target
-  if(!missing(target))  {
+  if (!missing(target))  {
     target_quo <- enquo(target)
     target_text <- quo_name(target_quo)[[1]]
   } else {
@@ -1183,8 +1144,8 @@ explore_shiny <- function(data, target)  {
   # guesstarget <- as.character(tbl_guesstarget[[1]])
 
    tbl_guesstarget <- describe(data) %>%
-     filter(type %in% c("lgl","int","dbl","num","fct","chr")) %>%
-     select(variable)
+     dplyr::filter(type %in% c("lgl","int","dbl","num","fct","chr")) %>%
+     dplyr::select(variable)
   guesstarget <- as.character(tbl_guesstarget[[1]])
 
   # check all variables if usable
@@ -1237,7 +1198,7 @@ explore_shiny <- function(data, target)  {
   # server: calculate statistics and generate plot
   server <- function(input, output, session) {
 
-    observeEvent(input$report, {
+    shiny::observeEvent(input$report, {
 
       # get name of selected target
       # rmarkdown templates uses variables data and var_name_target
@@ -1248,7 +1209,7 @@ explore_shiny <- function(data, target)  {
       output_file <- "report_explore.html"
 
       # show waiting-window
-      shiny::showModal(modalDialog("Generating report ... (this may take a while)", footer = NULL))
+      shiny::showModal(shiny::modalDialog("Generating report ... (this may take a while)", footer = NULL))
 
       # report only variables
       if(input$target == "<no target>")  {
@@ -1270,11 +1231,11 @@ explore_shiny <- function(data, target)  {
       shiny::removeModal()
 
       # show Report
-      browseURL(paste0("file://", file.path(output_dir, output_file)), browser = NULL)
+      utils::browseURL(paste0("file://", file.path(output_dir, output_file)), browser = NULL)
     })
 
     output$graph_target <- shiny::renderPlot({
-      if(input$target != "<no target>" & input$var != input$target)  {
+      if (input$target != "<no target>" & input$var != input$target)  {
         data %>% explore(!!sym(input$var), target = !!sym(input$target), auto_scale = input$auto_scale, split = !input$targetpct)
       }
     }) # renderPlot graph_target
@@ -1283,7 +1244,7 @@ explore_shiny <- function(data, target)  {
       if(input$target != "<no target>") {
         if (ncol(data) > 20) {
           # show waiting-window
-          shiny::showModal(modalDialog("Growing tree ... (this may take a while)", footer = NULL))
+          shiny::showModal(shiny::modalDialog("Growing tree ... (this may take a while)", footer = NULL))
           # grow decision tree
           data %>% explain_tree(target = !!sym(input$target), size=0.9)
           # ready
@@ -1344,7 +1305,6 @@ explore_shiny <- function(data, target)  {
 #' @param na Value to replace NA
 #' @param ... Further arguments (like flip = TRUE/FALSE)
 #' @return Plot object
-#' @import rlang
 #' @examples
 #' ## Launch Shiny app (in interactive R sessions)
 #' if (interactive())  {
@@ -1378,9 +1338,12 @@ explore_shiny <- function(data, target)  {
 explore <- function(data, var, var2, n, target, targetpct, split, min_val = NA, max_val = NA, auto_scale = TRUE, na = NA, ...)  {
 
   # check parameter data
-  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
-  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
-  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
+  if (missing(data) && missing(var) ) {
+    message("Demo: explore the palmer penguins dataset!")
+    data <- use_data_penguins()
+  } else {
+    check_data_frame_non_empty(data)
+  }
 
   # parameter var
   if (!missing(var)) {
@@ -1455,15 +1418,15 @@ explore <- function(data, var, var2, n, target, targetpct, split, min_val = NA, 
     explore_shiny(data)
 
     # count data
-  } else if (!is.na(n_text) & is.na(target_text))  {
+  } else if (!is.na(n_text) && is.na(target_text))  {
     explore_count(data[unique(c(var_text, n_text))], cat = !!var_quo, n = !!n_quo, split = split, pct = TRUE, ...)
 
     # count data + target
-  } else if (!is.na(n_text)  & !is.na(target_text))  {
+  } else if (!is.na(n_text)  && !is.na(target_text))  {
     explore_count(data[unique(c(var_text, n_text, target_text))], cat = !!var_quo, n = !!n_quo, target = !!target_quo, split = split, ...)
 
     # var + var2 -> correlation
-  } else if (!is.na(var_text) & !is.na(var2_text) & is.na(target_text))  {
+  } else if (!is.na(var_text) && !is.na(var2_text) & is.na(target_text))  {
     explore_cor(data[unique(c(var_text, var2_text))],
                 x = !!var_quo, y = !!var2_quo,
                 min_val = min_val, max_val = max_val,
@@ -1506,11 +1469,11 @@ explore <- function(data, var, var2, n, target, targetpct, split, min_val = NA, 
                     auto_scale = auto_scale, na = na, ...)
 
     # no target, cat
-  } else if (is.na(target_text) & (var_type == "cat")) {
+  } else if (is.na(target_text) && var_type == "cat") {
     explore_bar(data[var_text], !!var_quo, ...)
 
     # target, num, split
-  } else if (!is.na(target_text) & (var_type == "num") & (split == TRUE)) {
+  } else if (!is.na(target_text) && (var_type == "num") && (split == TRUE)) {
     explore_density(data[unique(c(var_text, target_text))],
                     var = !!var_quo, target = !!target_quo,
                     min_val = min_val, max_val = max_val,
@@ -1524,7 +1487,7 @@ explore <- function(data, var, var2, n, target, targetpct, split, min_val = NA, 
                        auto_scale = auto_scale, na = na, ...)
 
     # target, cat, split
-  } else if (!is.na(target_text) & (var_type == "cat") & (split == TRUE)) {
+  } else if (!is.na(target_text) && (var_type == "cat") && (split == TRUE)) {
     explore_bar(data[unique(c(var_text, target_text))],
                        !!var_quo, target = !!target_quo,
                        ...)
@@ -1558,16 +1521,12 @@ explore <- function(data, var, var2, n, target, targetpct, split, min_val = NA, 
 #' @examples
 #' iris$target01 <- ifelse(iris$Species == "versicolor",1,0)
 #' explore_targetpct(iris)
-#' @importFrom magrittr "%>%"
-#' @import rlang
 #' @export
 
-explore_targetpct <- function(data, var, target = NULL, title = NULL, min_val = NA, max_val = NA, auto_scale = TRUE, na = NA, flip = NA, ...) {
+explore_targetpct <- function(data, var, target = NULL, title = NA, min_val = NA, max_val = NA, auto_scale = TRUE, na = NA, flip = NA, ...) {
 
   # check parameter data
-  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
-  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
-  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
+  check_data_frame_non_empty(data)
 
   # parameter var
   if (!missing(var)) {
@@ -1669,8 +1628,6 @@ explore_targetpct <- function(data, var, target = NULL, title = NULL, min_val = 
 #' iris %>%
 #'   count(Species) %>%
 #'   explore_count(Species)
-#' @importFrom magrittr "%>%"
-#' @import rlang
 #' @export
 
 explore_count <- function(data, cat, n, target, pct = FALSE, split = TRUE, title = NA, numeric = FALSE, max_cat = 30, max_target_cat = 5, flip = NA)  {
@@ -1684,13 +1641,13 @@ explore_count <- function(data, cat, n, target, pct = FALSE, split = TRUE, title
   plot_n_tot <- NULL
 
   # check parameters
-  assertthat::assert_that(!missing(data), msg = "expect a data table to explore")
-  assertthat::assert_that(is.data.frame(data), msg = "expect a table of type data.frame")
-  assertthat::assert_that(nrow(data) > 0, msg = "data has 0 observations")
-  assertthat::assert_that(ncol(data) >= 2, msg = "explect at least 2 variables in data")
+  check_data_frame_non_empty(data)
+  if (ncol(data) < 2) {
+    stop("data must contain at least 2 variables.")
+  }
 
   # parameter var
-  if(!missing(cat))  {
+  if (!missing(cat))  {
     cat_quo <- enquo(cat)
     cat_txt <- quo_name(cat_quo)[[1]]
     if (!cat_txt %in% names(data)) {
@@ -1767,7 +1724,7 @@ explore_count <- function(data, cat, n, target, pct = FALSE, split = TRUE, title
   } else if ((!missing(numeric) & numeric == FALSE) |
              guess_cat_num(data[[cat_txt]]) == "cat") {
     data[[cat_txt]] <- factor(data[[cat_txt]])
-    data[[cat_txt]] <- forcats::fct_explicit_na(data[[cat_txt]], na_level = ".NA")
+    data[[cat_txt]] <- forcats::fct_na_value_to_level(data[[cat_txt]], level = ".NA")
     if (missing(flip)) {
       flip <- TRUE
     }
@@ -1776,7 +1733,7 @@ explore_count <- function(data, cat, n, target, pct = FALSE, split = TRUE, title
   # use a factor for target so that fill works
   if (n_target_cat > 1 && !is.factor(data[[target_txt]]))  {
     data[[target_txt]] <- factor(data[[target_txt]])
-    data[[target_txt]] <- forcats::fct_explicit_na(data[[target_txt]], na_level = ".NA")
+    data[[target_txt]] <- forcats::fct_na_value_to_level(data[[target_txt]],level = ".NA")
 
     # keep max. different levels
     if (n_target_cat > max_target_cat)  {

@@ -30,5 +30,7 @@ Dataset containing new random variable
 Add a random starsign variable to dataset
 }
 \examples{
-add_var_random_starsign(iris)
+library(magrittr)
+iris \%>\% add_var_random_starsign() \%>\% head()
+iris \%>\% add_var_random_starsign(lang = "de") \%>\% head()
 }

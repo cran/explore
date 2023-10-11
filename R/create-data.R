@@ -3,34 +3,34 @@
 #' @param obs Number of observations
 #' @param add_id Add an id
 #' @param seed Seed for randomization (integer)
-#' @return Dataset
+#' @return Dataset as tibble
 #' @examples
-#' create_data_empty()
+#' create_data_empty(obs = 100)
+#' create_data_empty(obs = 100, add_id = TRUE)
 #' @export
 
 create_data_empty <- function(obs = 1000, add_id = FALSE, seed = 123) {
 
   # checks
-  assertthat::assert_that(is.numeric(obs))
-  assertthat::assert_that(obs > 0)
-  assertthat::assert_that(is.logical(add_id))
-  assertthat::assert_that(is.numeric(seed))
+  check_number_whole(obs, min = 1)
+  check_bool(add_id)
+  check_number_decimal(seed)
 
   # reproducible random numbers
   set.seed(seed)
 
   # create empty data frame
   data <- data.frame(
-    row.names = seq(1, obs)
+    row.names = seq_len(obs)
   )
 
   # add if
   if (add_id)  {
-    data[["id"]] <- seq(1, obs)
+    data[["id"]] <- seq_len(obs)
   }
 
   # return data
-  data
+  tibble::as_tibble(data)
 
 } # create_data_empty
 
@@ -41,18 +41,18 @@ create_data_empty <- function(obs = 1000, add_id = FALSE, seed = 123) {
 #' @param obs Number of observations
 #' @param add_id Add an id-variable to data?
 #' @param seed Seed for randomization (integer)
-#'
-#' @return A dataframe
+#' @return A dataset as tibble
+#' @examples
+#' create_data_app()
 #' @export
 
 create_data_app = function(obs = 1000,
                            add_id = FALSE,
                            seed = 123) {
   # checks
-  assertthat::assert_that(is.numeric(obs))
-  assertthat::assert_that(obs > 0)
-  assertthat::assert_that(is.logical(add_id))
-  assertthat::assert_that(is.numeric(seed))
+  check_number_whole(obs, min = 1)
+  check_bool(add_id)
+  check_number_decimal(seed)
 
   # set seed (randomization)
   set.seed(seed)
@@ -136,7 +136,7 @@ create_data_app = function(obs = 1000,
   }
 
   # return data
-  data
+  tibble::as_tibble(data)
 
 } # create_data_app
 
@@ -147,17 +147,17 @@ create_data_app = function(obs = 1000,
 #' @param obs Number of observations
 #' @param add_id Add an id
 #' @param seed Seed for randomization (integer)
-#'
-#' @return A dataframe
+#' @return A dataset as tibble
+#' @examples
+#' create_data_person()
 #' @export
 
 create_data_person <- function(obs = 1000, add_id = FALSE, seed = 123) {
 
   # checks
-  assertthat::assert_that(is.numeric(obs))
-  assertthat::assert_that(obs > 0)
-  assertthat::assert_that(is.logical(add_id))
-  assertthat::assert_that(is.numeric(seed))
+  check_number_whole(obs, min = 1)
+  check_bool(add_id)
+  check_number_decimal(seed)
 
   # reproducible random numbers
   set.seed(seed)
@@ -169,7 +169,7 @@ create_data_person <- function(obs = 1000, add_id = FALSE, seed = 123) {
   data <- tibble::tibble(
     age = sample(16:95, nobs, replace = TRUE),
     gender = sample(c("Male","Female", "X"), prob = c(0.49, 0.49, 0.02), nobs, replace = TRUE),
-    eye_color = sample(c("Blue","Green","Brown"), nobs, replace = TRUE),
+    eye_color = sample(c("Blue","Green","Brown"), size = nobs, replace = TRUE),
     shoe_size = trunc(stats::rnorm(nobs, mean = 43, sd = 3)),
     iq = trunc(stats::rnorm(nobs, mean = 100, sd = 20)),
     education = sample(c(0:100), nobs, replace = TRUE),
@@ -179,7 +179,7 @@ create_data_person <- function(obs = 1000, add_id = FALSE, seed = 123) {
 
     pet = sample(c("Dog","Cat","Other","No"),
                  prob = c(0.23,0.22,0.11,0.35),
-                 nobs, replace = TRUE),
+                nobs, replace = TRUE),
 
     favorite_pizza = sample(c("Margaritha", "Carciofi","Pepperoni", "Hawai", "Quattro Statgioni", "Provenciale"), nobs, replace = TRUE),
     favorite_icecream = sample(c("Vanilla", "Chocolate","Strawberry", "Lemon", "Cookie", "Hazelnut","Apple"),
@@ -208,7 +208,7 @@ create_data_person <- function(obs = 1000, add_id = FALSE, seed = 123) {
   }
 
   # return data
-  data
+  tibble::as_tibble(data)
 
 } #create_data_person
 
@@ -224,7 +224,7 @@ create_data_person <- function(obs = 1000, add_id = FALSE, seed = 123) {
 #' * female_ind = Gender of customer is female (1 = yes, 0 = no)
 #' * fixedvoice_ind = Customer has a fixed voice product (1 = yes, 0 = no)
 #' * fixeddata_ind = Customer has a fixed data product (1 = yes, 0 = no)
-#' * fixedtv_ind = Customer has a fixed tv product (1 = yes, 0 = no)
+#' * fixedtv_ind = Customer has a fixed TV product (1 = yes, 0 = no)
 #' * mobilevoice_ind = Customer has a mobile voice product (1 = yes, 0 = no)
 #' * mobiledata_prd = Customer has a mobile data product (NO/MOBILE STICK/BUSINESS)
 #' * bbi_speed_ind = Customer has a Broadband Internet (BBI) with extra speed
@@ -237,14 +237,15 @@ create_data_person <- function(obs = 1000, add_id = FALSE, seed = 123) {
 #' @param obs Number of observations
 #' @param target_name Variable name of target
 #' @param factorise_target Should target variable be factorised?
-#' (from 0/1 to facotr no/yes)?
+#' (from 0/1 to factor no/yes)?
 #' @param target1_prob Probability that target = 1
-#' @param add_extreme Add an obervation with extreme values?
+#' @param add_extreme Add an observation with extreme values?
 #' @param flip_gender Should Male/Female be flipped in data?
 #' @param add_id Add an id-variable to data?
 #' @param seed Seed for randomization
-#'
-#' @return A dataframe
+#' @return A dataset as tibble
+#' @examples
+#' create_data_buy()
 #' @export
 
 create_data_buy = function(obs = 1000,
@@ -257,12 +258,10 @@ create_data_buy = function(obs = 1000,
                            seed = 123) {
 
   # checks
-  assertthat::assert_that(is.numeric(obs))
-  assertthat::assert_that(obs > 0)
-  assertthat::assert_that(is.numeric(target1_prob))
-  assertthat::assert_that(target1_prob >= 0 & target1_prob <= 1)
-  assertthat::assert_that(is.logical(add_id))
-  assertthat::assert_that(is.numeric(seed))
+  check_number_whole(obs, min = 1)
+  check_bool(add_id)
+  check_number_decimal(seed)
+  check_number_decimal(target1_prob, min = 0, max = 1)
 
   # define variables for CRAN-package check
   target_ind <- NULL
@@ -354,7 +353,7 @@ create_data_buy = function(obs = 1000,
   }
 
   # return data
-  data
+  tibble::as_tibble(data)
 
 } # create_data_buy
 
@@ -369,8 +368,9 @@ create_data_buy = function(obs = 1000,
 #' @param target1_prob Probability that target = 1
 #' @param add_id Add an id-variable to data?
 #' @param seed Seed for randomization (integer)
-#'
-#' @return A dataframe
+#' @return A dataset as tibble
+#' @examples
+#' create_data_churn()
 #' @export
 
 create_data_churn = function(obs = 1000,
@@ -381,12 +381,10 @@ create_data_churn = function(obs = 1000,
                              seed = 123) {
 
   # checks
-  assertthat::assert_that(is.numeric(obs))
-  assertthat::assert_that(obs > 0)
-  assertthat::assert_that(is.numeric(target1_prob))
-  assertthat::assert_that(target1_prob >= 0 & target1_prob <= 1)
-  assertthat::assert_that(is.logical(add_id))
-  assertthat::assert_that(is.numeric(seed))
+  check_number_whole(obs, min = 1)
+  check_bool(add_id)
+  check_number_decimal(seed)
+  check_number_decimal(target1_prob, min = 0, max = 1)
 
   # set seed (randomization)
   set.seed(seed)
@@ -462,9 +460,86 @@ create_data_churn = function(obs = 1000,
   }
 
   # return data
-  data
+  tibble::as_tibble(data)
 
 } # create_data_churn
+
+
+#' Create data newsletter
+#'
+#' Artificial data that can be used for unit-testing or teaching
+#' (fairness & AI bias)
+#' @param obs Number of observations
+#' @param add_id Add an id-variable to data?
+#' @param seed Seed for randomization (integer)
+#' @return A dataset as tibble
+#' @examples
+#' create_data_newsletter()
+#' @export
+
+create_data_newsletter = function(obs = 1000,
+                              add_id = FALSE,
+                              seed = 123) {
+  # checks
+  check_number_whole(obs, min = 1)
+  check_bool(add_id)
+  check_number_decimal(seed)
+
+  # define variables for CRAN-package check
+  sending_h <- NULL
+  message <- NULL
+  age <- NULL
+  send <- NULL
+  click <- NULL
+  buy <- NULL
+
+  # randomize
+  set.seed(seed)
+
+  # create dataframe and variables
+  data <- create_data_empty(obs) %>%
+      add_var_random_int("sending_h", min_val = 12, max_val = 16) %>%
+      add_var_random_cat("message", c("voucher", "news")) %>%
+      add_var_random_int("age", min_val = 16, max_val = 80) %>%
+      add_var_random_01("send", prob = c(0.05, 0.95)) %>%
+      add_var_random_01("click", prob = c(0.3, 0.7)) %>%
+      add_var_random_01("buy", prob = c(0.1, 0.9))
+
+  # click only if send, buy only if click
+  data <- data %>%
+      mutate(click = ifelse(send == 1, click, 0)) %>%
+      mutate(buy = ifelse(click == 1, buy, 0))
+
+  # higher age, higher click
+  data <- data %>%
+      mutate(click = ifelse(stats::runif(obs, min = 1, max = 100) + age > 80,
+                            click, 0))
+  # message news (not voucher), lower click
+  data <- data %>%
+    mutate(click = ifelse(stats::runif(obs, min = 1, max = 100) > 80 &
+                          message == "news",
+                          0, click))
+
+  # lower age, higher buy
+  data <- data %>%
+    mutate(buy = ifelse(stats::runif(obs, min = 1, max = 100) + age < 80,
+                        buy, 0))
+
+  # click only if send, buy only if click
+  data <- data %>%
+    mutate(click = ifelse(send == 1, click, 0)) %>%
+    mutate(buy = ifelse(click == 1, buy, 0))
+
+  # add an id?
+  if (add_id)  {
+    data <- data %>% add_var_id()
+  }
+
+  # return data
+  tibble::as_tibble(data)
+
+} # create_data_newsletter
+
 
 #' Create data unfair
 #'
@@ -476,8 +551,9 @@ create_data_churn = function(obs = 1000,
 #' @param target1_prob Probability that target = 1
 #' @param add_id Add an id-variable to data?
 #' @param seed Seed for randomization (integer)
-#'
-#' @return A dataframe
+#' @return A dataset as tibble
+#' @examples
+#' create_data_unfair()
 #' @export
 
 create_data_unfair = function(obs = 1000,
@@ -487,12 +563,10 @@ create_data_unfair = function(obs = 1000,
                               add_id = FALSE,
                               seed = 123) {
   # checks
-  assertthat::assert_that(is.numeric(obs))
-  assertthat::assert_that(obs > 0)
-  assertthat::assert_that(is.numeric(target1_prob))
-  assertthat::assert_that(target1_prob >= 0 & target1_prob <= 1)
-  assertthat::assert_that(is.logical(add_id))
-  assertthat::assert_that(is.numeric(seed))
+  check_number_whole(obs, min = 1)
+  check_bool(add_id)
+  check_number_decimal(seed)
+  check_number_decimal(target1_prob, min = 0, max = 1)
 
   # set seed (randomization)
   set.seed(seed)
@@ -560,7 +634,7 @@ create_data_unfair = function(obs = 1000,
   }
 
   # return data
-  data
+  tibble::as_tibble(data)
 
 } # create_data_unfair()
 
@@ -583,8 +657,9 @@ create_data_unfair = function(obs = 1000,
 #' @param target1_prob Probability that target = 1
 #' @param add_id Add an id-variable to data?
 #' @param seed Seed for randomization
-#'
-#' @return A dataframe
+#' @return A dataset as tibble
+#' @examples
+#' create_data_random(obs = 100, vars = 5)
 #' @export
 
 create_data_random = function(obs = 1000, vars = 10,
@@ -594,12 +669,10 @@ create_data_random = function(obs = 1000, vars = 10,
                               add_id = TRUE,
                               seed = 123) {
   # checks
-  assertthat::assert_that(is.numeric(obs))
-  assertthat::assert_that(obs > 0)
-  assertthat::assert_that(is.numeric(target1_prob))
-  assertthat::assert_that(target1_prob >= 0 & target1_prob <= 1)
-  assertthat::assert_that(is.logical(add_id))
-  assertthat::assert_that(is.numeric(seed))
+  check_number_whole(obs, min = 1)
+  check_bool(add_id)
+  check_number_decimal(seed)
+  check_number_decimal(target1_prob, min = 0, max = 1)
 
   # set seed (randomization)
   set.seed(seed)
@@ -639,7 +712,7 @@ create_data_random = function(obs = 1000, vars = 10,
   }
 
   # return data
-  data
+  tibble::as_tibble(data)
 
 } # create_data_random
 

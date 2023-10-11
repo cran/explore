@@ -27,9 +27,12 @@ create_data_unfair(
 \item{seed}{Seed for randomization (integer)}
 }
 \value{
-A dataframe
+A dataset as tibble
 }
 \description{
 Artificial data that can be used for unit-testing or teaching
 (fairness & AI bias)
+}
+\examples{
+create_data_unfair()
 }

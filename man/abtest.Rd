@@ -4,14 +4,16 @@
 \alias{abtest}
 \title{A/B testing}
 \usage{
-abtest(data, expr, target, sign_level = 0.05)
+abtest(data, expr, n, target, sign_level = 0.05)
 }
 \arguments{
-\item{data}{A dataset}
+\item{data}{A dataset. If no data is provided, a shiny app is launched}
 
-\item{expr}{Expression, that results in a FALSE/TRUE}
+\item{expr}{Logical expression, that return in a FALSE/TRUE}
 
-\item{target}{Target variable (must be 0/1 or FALSE/TRUE)}
+\item{n}{A Variable for number of observations (count data)}
+
+\item{target}{Target variable}
 
 \item{sign_level}{Significance Level (typical 0.01/0.05/0.10)}
 }
@@ -22,7 +24,13 @@ Plot that shows if difference is significant
 A/B testing
 }
 \examples{
+## Using chi2-test or t-test depending on target type
 data <- create_data_buy(obs = 100)
-abtest(data, female_ind == 1, target = buy)
-abtest(data, city_ind == 1, target = buy)
+abtest(data, female_ind == 1, target = buy)  # chi2 test
+abtest(data, city_ind == 1, target = age)    # t test
+
+## If small number of observations, Fisher's Exact test
+## is used for a binary target (if <= 5 observations in a subgroup)
+data <- create_data_buy(obs = 25, seed = 1)
+abtest(data, female_ind == 1, target = buy)  # Fisher's Exact test
 }

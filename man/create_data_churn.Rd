@@ -27,8 +27,11 @@ create_data_churn(
 \item{seed}{Seed for randomization (integer)}
 }
 \value{
-A dataframe
+A dataset as tibble
 }
 \description{
 Artificial data that can be used for unit-testing or teaching
+}
+\examples{
+create_data_churn()
 }

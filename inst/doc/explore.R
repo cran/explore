@@ -149,19 +149,6 @@ describe(data)
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3------------------
 data %>% select(random_starsign, random_moon) %>% explore_all()
 
-## ----eval=FALSE, echo=TRUE----------------------------------------------------
-#  iris  %>%  data_dict_md(output_dir = tempdir())
-
-## ----eval=FALSE, echo=TRUE----------------------------------------------------
-#  description <- data.frame(
-#                    variable = c("Species"),
-#                    description = c("Species of Iris flower"))
-#  data_dict_md(iris,
-#               title = "iris flower data set",
-#               description =  description,
-#               output_file = "data_dict_iris.md",
-#               output_dir = tempdir())
-
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3------------------
 iris %>% 
   clean_var(Sepal.Length, 

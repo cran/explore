@@ -8,10 +8,11 @@
 #' @param seed Seed for random number generation (integer)
 #' @return Dataset containing new random variable
 #' @examples
-#' add_var_random_cat(iris)
-#' add_var_random_cat(iris, name = "my_cat")
-#' add_var_random_cat(iris, cat = c("Version A", "Version B"))
-#' add_var_random_cat(iris, cat = c(1,2,3,4,5))
+#' library(magrittr)
+#' iris %>% add_var_random_cat() %>% head()
+#' iris %>% add_var_random_cat(name = "my_cat") %>% head()
+#' iris %>% add_var_random_cat(cat = c("Version A", "Version B")) %>% head()
+#' iris %>% add_var_random_cat(cat = c(1,2,3,4,5)) %>% head()
 #' @export
 
 add_var_random_cat <- function(data,
@@ -22,13 +23,7 @@ add_var_random_cat <- function(data,
                                seed) {
 
   # data table available?
-  if (missing(data))  {
-    stop("data is missing")
-  }
-
-  if (!is.data.frame(data)) {
-    stop("expect a table of type data.frame")
-  }
+  check_data_frame_non_empty(data)
 
   # check if var already exists
   if (name %in% names(data) & !overwrite) {
@@ -69,8 +64,9 @@ add_var_random_cat <- function(data,
 #' @param seed Seed for random number generation (integer)
 #' @return Dataset containing new random variable
 #' @examples
-#' add_var_random_01(iris)
-#' add_var_random_01(iris, name = "my_var")
+#' library(magrittr)
+#' iris %>% add_var_random_01() %>% head()
+#' iris %>% add_var_random_01(name = "my_var") %>% head()
 #' @export
 
 add_var_random_01 <- function(data, name = "random_01", prob = c(0.5, 0.5), overwrite = TRUE, seed) {
@@ -95,10 +91,10 @@ add_var_random_01 <- function(data, name = "random_01", prob = c(0.5, 0.5), over
 #' @param seed Seed for random number generation (integer)
 #' @return Dataset containing new random variable
 #' @examples
-#' add_var_random_int(iris)
-#' add_var_random_int(iris, name = "random_var")
-#' add_var_random_int(iris, min_val = 1, max_val = 10)
-#' add_var_random_int(iris, min_val = 1, max_val = 100, overwrite = FALSE)
+#' library(magrittr)
+#' iris %>% add_var_random_int() %>% head()
+#' iris %>% add_var_random_int(name = "random_var") %>% head()
+#' iris %>% add_var_random_int(min_val = 1, max_val = 10) %>% head()
 #' @export
 
 add_var_random_int <- function(data, name = "random_int",
@@ -107,13 +103,7 @@ add_var_random_int <- function(data, name = "random_int",
                                seed) {
 
   # data table available?
-  if (missing(data))  {
-    stop("data is missing")
-  }
-
-  if (!is.data.frame(data)) {
-    stop("expect a table of type data.frame")
-  }
+  check_data_frame_non_empty(data)
 
   if (name %in% names(data) & !overwrite) {
     stop("Variable ", name, " already exists!")
@@ -146,10 +136,10 @@ add_var_random_int <- function(data, name = "random_int",
 #' @param seed Seed for random number generation (integer)
 #' @return Dataset containing new random variable
 #' @examples
-#' add_var_random_dbl(iris)
-#' add_var_random_dbl(iris, name = "random_var")
-#' add_var_random_dbl(iris, min_val = 1, max_val = 10)
-#' add_var_random_dbl(iris, min_val = 1, max_val = 100, overwrite = FALSE)
+#' library(magrittr)
+#' iris %>% add_var_random_dbl() %>% head()
+#' iris %>% add_var_random_dbl(name = "random_var") %>% head()
+#' iris %>% add_var_random_dbl(min_val = 1, max_val = 10) %>% head()
 #' @export
 
 add_var_random_dbl <- function(data, name = "random_dbl",
@@ -158,14 +148,7 @@ add_var_random_dbl <- function(data, name = "random_dbl",
                                seed) {
 
   # data table available?
-  if (missing(data))  {
-    stop("data is missing")
-  }
-
-  # is it a data.frame?
-  if (!is.data.frame(data)) {
-    stop("expect a table of type data.frame")
-  }
+  check_data_frame_non_empty(data)
 
   # check variable name
   if (name %in% names(data) & !overwrite) {
@@ -193,7 +176,8 @@ add_var_random_dbl <- function(data, name = "random_dbl",
 #' @param seed Seed for random number generation (integer)
 #' @return Dataset containing new random variable
 #' @examples
-#' add_var_random_moon(iris)
+#' library(magrittr)
+#' iris %>% add_var_random_moon() %>% head()
 #' @export
 
 add_var_random_moon <- function(data, name = "random_moon", overwrite = TRUE, seed) {
@@ -220,7 +204,9 @@ add_var_random_moon <- function(data, name = "random_moon", overwrite = TRUE, se
 #' @param seed Seed for random number generation (integer)
 #' @return Dataset containing new random variable
 #' @examples
-#' add_var_random_starsign(iris)
+#' library(magrittr)
+#' iris %>% add_var_random_starsign() %>% head()
+#' iris %>% add_var_random_starsign(lang = "de") %>% head()
 #' @export
 
 add_var_random_starsign <- function(data, name = "random_starsign", lang = "en", overwrite = TRUE, seed) {
@@ -258,22 +244,16 @@ add_var_random_starsign <- function(data, name = "random_starsign", lang = "en",
 #' @param data A dataset
 #' @param name Name of new variable (as string)
 #' @param overwrite Can new id variable overwrite an existing variable in dataset?
-#' @return Dataset containing new id variable
+#' @return Data set containing new id variable
 #' @examples
-#' add_var_id(iris)
+#' library(magrittr)
+#' iris %>% add_var_id() %>% head()
+#' iris %>% add_var_id(name = "iris_nr") %>% head()
 #' @export
 
 add_var_id <- function(data, name = "id", overwrite = FALSE)  {
-
   # data table available?
-  if (missing(data))  {
-    stop("data is missing")
-  }
-
-  # is it a data.frame?
-  if (!is.data.frame(data)) {
-    stop("expect a table of type data.frame")
-  }
+  check_data_frame(data)
 
   # check variable name
   if (name %in% names(data) & !overwrite) {

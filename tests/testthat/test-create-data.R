@@ -1,6 +1,3 @@
-context("create_data")
-library(explore)
-
 # create_data_empty -------------------------------------------------------
 
 # create empty dataset with obs
@@ -157,6 +154,37 @@ test_that("create_data_churn()", {
   expect_equal(
     is.factor(d$target),
     TRUE
+  )
+})
+
+# create data newsletter ------------------------------------------------------
+
+# create dataset with obs
+test_that("create_data_newsletter()", {
+  expect_equal(
+    nrow(create_data_newsletter(obs = 100)),
+    100
+  )
+})
+
+# error if obs < 1
+test_that("create_data_newsletter()", {
+  expect_error(create_data_newsletter(obs = -1))
+})
+
+# create dataset is reproducible when using the same seed
+test_that("create_data_newsletter()", {
+  expect_equal(
+    create_data_newsletter(obs = 100, seed = 1),
+    create_data_newsletter(obs = 100, seed = 1)
+  )
+})
+
+# add_id works
+test_that("create_data_newsletter()", {
+  expect_true(
+    ncol(create_data_newsletter(obs = 100, add_id = TRUE)) ==
+      ncol(create_data_newsletter(obs = 100, add_id = FALSE)) + 1
   )
 })
 

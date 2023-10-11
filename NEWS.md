@@ -1,3 +1,18 @@
+## explore 1.1.0
+
+* add create_data_newsletter()
+* add use_data_*() functions
+* add explain_forest()
+* add predict_target()
+* abtest() now supports numeric target (t-test)
+* abtest_targetpct() with count data (parameter n)
+* allowed to run abtest() without data (shiny app)
+* allowed to run explore() without data 
+* drop use of `fct_explicit_na()` (deprecated) (#15)
+* reduce package dependencies
+* create_data use_data return data sets as tibble 
+* new vignettes
+
 ## explore 1.0.2 (2023-01-14)
 
 * add_var_random_01() creates variable of type integer
@@ -38,7 +53,7 @@
 
 * rename create_x_data() to create_data_x()
 * rename add_x_var() to add_var_x()
-* extend create_data funtions
+* extend create_data functions
 * extend add_var functions
 * explain_tree(): set default minsplit to 20
 * explain_tree(): set prior probabilities
@@ -48,7 +63,7 @@
 * fix variable type for create_data_x()
 * using md in roxygen
 
-## explore 0.8.0 (2022-01-29)
+## explore 0.8.0 (2022-01-30)
 
 * all dwh_ functions are no longer included in {explore}
   Alternative: source https://github.com/rolkra/dwh
@@ -60,7 +75,7 @@
 * code styling
 * report templates: add var buckets (to plot large number of variables)
 
-## explore 0.7.1 (2021-06-03)
+## explore 0.7.1 (2021-06-04)
 
 * change theme_light() into individual theme() so that set_theme works.
 * add rmarkdown to Suggests in DESCRIPTION
@@ -78,7 +93,7 @@
 * add legend in targetpct rmarkdown-template
 * add unit testing (testthat)
 
-## explore 0.6.2 (2020-10-13)
+## explore 0.6.2 (2020-10-14)
 
 * Bugfix explore_bar(): NA in plot
 * explore_count(): convert target into factor
@@ -119,7 +134,7 @@ Maintenance update:
 * fix breaking changes tibble 3.0.0
 
 
-## explore 0.5.4 (2020-02-10)
+## explore 0.5.4 (2020-02-09)
 
 Maintenance update:
 
@@ -139,17 +154,17 @@ Maintenance update:
 * add out='tibble' to describe_cat()
 * add function explore_targetpct()
 
-## explore 0.5.2 (2019-11-21)
+## explore 0.5.2 (2019-11-22)
 
-* split scource-code file into multiple files
+* split source-code file into multiple files
 * format_num_auto without brackets
 * treat Date variables as cat
-* report() fix automatic file extentison .html
+* report() fix automatic file extension .html
 * add simplify_text()
 * add parameter simplify_text to clean_var()
 * fix link in README.md
 
-## explore 0.5.1 (2019-10-07)
+## explore 0.5.1 (2019-10-08)
 
 Prepare for new dplyr 0.8.4
 Bug Fixes
@@ -182,7 +197,7 @@ Interactive data exploration now accept categorical and numerical targets (next 
 * add NEWS.md
 * add hex sticker
 
-## explore 0.4.4 (2019-08-30)
+## explore 0.4.4 (2019-08-27)
 
 Many functions now accept categorical and numerical targets (next to a binary target). If you want to force which geom is used for visualisation, you can use explore_bar() and explore_density(). New function explore_tbl() to visualise a dataframe/table (type of variables, number of NA, ...)
 
@@ -206,9 +221,9 @@ Many functions now accept categorical and numerical targets (next to a binary ta
 * parameter split: default = FALSE
 * allow numeric (num) target in explore_all & report
 * describe_tbl() -> fix target if not bin
-* desribe(): change out="vector" to out="list"
+* describe(): change out="vector" to out="list"
 
-## explore 0.4.3 (2019-06-20)
+## explore 0.4.3 (2019-06-17)
 
 * fix parameter in explore: auto_scale, na
 * fix number of NA in explore (move code before auto_scale)

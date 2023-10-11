@@ -6,31 +6,18 @@
 #' @param out Output format ("text"|"list")
 #' @param margin Left margin for text output (number of spaces)
 #' @return Description as text or list
-#' @import rlang
-#' @importFrom stats median quantile
 #' @examples
 #' describe_num(iris, Sepal.Length)
 #' @export
 
 describe_num <- function(data, var, n, out = "text", margin = 0) {
-
-  # data table available?
-  if (missing(data))  {
-    stop("expect a data table to explore")
-  }
-
   # data type data.frame?
-  if (!is.data.frame(data))  {
-    stop("expect a table of type data.frame")
-  }
+  check_data_frame_non_empty(data)
 
   # parameter var
-  if(!missing(var))  {
-    var_quo <- enquo(var)
-    var_txt <- quo_name(var_quo)[[1]]
-  } else {
-    stop("provide variable to describe")
-  }
+  rlang::check_required(var)
+  var_quo <- enquo(var)
+  var_txt <- quo_name(var_quo)[[1]]
 
   # check if var in data
   if(!var_txt %in% names(data)) {
@@ -43,12 +30,13 @@ describe_num <- function(data, var, n, out = "text", margin = 0) {
   }
 
   # check for count data
-  if(!missing(n))  {
+  if (!missing(n))  {
     n_quo <- enquo(n)
     n_txt <- quo_name(n_quo)[[1]]
+
     data <- data %>%
-      select(!!var_quo, !!n_quo) %>%
-      tidyr::uncount(weights = !!n_quo)
+      dplyr::select(!!var_quo, !!n_quo) %>%
+      uncount_compat(wt = !!n_quo)
   }
 
   var_name = var_txt
@@ -119,35 +107,23 @@ describe_num <- function(data, var, n, out = "text", margin = 0) {
 #' @param var Variable or variable name
 #' @param n Weights variable for count-data
 #' @param max_cat Maximum number of categories displayed
-#' @param out Output format ("text"|"list")
+#' @param out Output format ("text"|"list"|"tibble"|"df")
 #' @param margin Left margin for text output (number of spaces)
 #' @return Description as text or list
-#' @importFrom magrittr "%>%"
-#' @importFrom tidyr uncount
-#' @import rlang
-#' @import dplyr
 #' @examples
 #' describe_cat(iris, Species)
 #' @export
 
 describe_cat <- function(data, var, n, max_cat = 10, out = "text", margin = 0) {
-
   # data table available?
-  if (missing(data))  {
-    stop("expect a data table to explore")
-  }
-
+  check_data_frame_non_empty(data)
   # data type data.frame?
-  if (!is.data.frame(data))  {
-    stop("expect a table of type data.frame")
-  }
 
-  if(!missing(var))  {
-    var_quo <- enquo(var)
-    var_txt <- quo_name(var_quo)[[1]]
-  } else {
-    stop("provide variable to describe")
-  }
+  # var
+  rlang::check_required(var)
+  # non-standard evaluation.
+  var_quo <- enquo(var)
+  var_txt <- quo_name(var_quo)[[1]]
 
   # check if var in data
   if(!var_txt %in% names(data)) {
@@ -159,8 +135,8 @@ describe_cat <- function(data, var, n, max_cat = 10, out = "text", margin = 0) {
     n_quo <- enquo(n)
     n_txt <- quo_name(n_quo)[[1]]
     data <- data %>%
-      select(!!var_quo, !!n_quo) %>%
-      tidyr::uncount(weights = !!n_quo)
+      dplyr::select(!!var_quo, !!n_quo) %>%
+      uncount_compat(wt = !!n_quo)
   }
 
   # out = tibble
@@ -261,22 +237,13 @@ describe_cat <- function(data, var, n, max_cat = 10, out = "text", margin = 0) {
 #' @param data A dataset
 #' @param out Output format ("small"|"large")
 #' @return Dataset (tibble)
-#' @import dplyr
 #' @examples
 #' describe_all(iris)
 #' @export
 
-describe_all <- function(data = NA, out = "large") {
-
-  # data table available?
-  if (missing(data))  {
-    stop("expect a data table to explore")
-  }
-
-  # data type data.frame?
-  if (!is.data.frame(data))  {
-    stop("expect a table of type data.frame")
-  }
+describe_all <- function(data, out = "large") {
+  # data table available?  data type data.frame?
+  check_data_frame_non_empty(data)
 
   # define variables for package check
   variable <- NULL
@@ -367,29 +334,23 @@ describe_all <- function(data = NA, out = "large") {
 #' Describe table (e.g. number of rows and columns of dataset)
 #'
 #' @param data A dataset
-#' @param n Weigts variable for count-data
+#' @param n Weights variable for count-data
 #' @param target Target variable (binary)
 #' @param out Output format ("text"|"list")
 #' @return Description as text or list
-#' @import rlang
 #' @examples
 #' describe_tbl(iris)
 #'
-#' iris$is_virginica <- ifelse(iris$Species == "virginica", 1, 0)
-#' describe_tbl(iris, is_virginica)
+#' iris[1,1] <- NA
+#' describe_tbl(iris)
 #' @export
 
 describe_tbl <- function(data, n, target, out = "text")  {
 
   # data table available?
-  if (missing(data))  {
-    stop("expect a data table to explore")
-  }
+  check_data_frame_non_empty(data)
 
   # data type data.frame?
-  if (!is.data.frame(data))  {
-    stop("expect a table of type data.frame")
-  }
 
   # parameter target
   if(!missing(target))  {
@@ -513,7 +474,6 @@ describe_tbl <- function(data, n, target, out = "text")  {
 #' @param out Output format ("text"|"list") of variable description
 #' @param ... Further arguments
 #' @return Description as table, text or list
-#' @import rlang
 #' @examples
 #' # Load package
 #' library(magrittr)
@@ -527,16 +487,9 @@ describe_tbl <- function(data, n, target, out = "text")  {
 #' @export
 
 describe <- function(data, var, n, target, out = "text", ...)  {
-
   # data table available?
-  if (missing(data))  {
-    stop("expect a data table to explore")
-  }
+  check_data_frame_non_empty(data)
 
-  # data type data.frame?
-  if (!is.data.frame(data))  {
-    stop("expect a table of type data.frame")
-  }
 
   # parameter var
   if(!missing(var))  {

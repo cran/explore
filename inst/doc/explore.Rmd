@@ -16,15 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-The explore package simplifies Exploratory Data Analysis (EDA). Get faster insights with less code!
-
-There are three ways to use the package:
-
-* **Interactive data exploration** (univariat, bivariat, multivariat)
-
-* Generate an **Automated Report** with one line of code. The target can be binary, categorical or numeric. 
-
-* **Manual exploration** using a easy to remember set of tidy functions. Introduces four main verbs. **explore()** to grafically explore a variable or table, **describe()** to describe a variable or table, **explain_tree() **to create a simple decision tree that explains a target. **report()** to generate an automated report of all variables.
+The explore package simplifies Exploratory Data Analysis (EDA). Get faster insights with less code! There are three ways to use the package: **interactive data exploration**, generate an **automated report** or use low code for **manual exploration** (`explore()`, `describe()`, `explain_*()`, `report()` , `abtest()`, ...)  
 
 explore package on Github: [https://github.com/rolkra/explore](https://github.com/rolkra/explore)
 
@@ -37,17 +29,17 @@ library(explore)
 
 ### Interactive data exploration
 
-Explore your dataset (in this case the iris dataset) in one line of code:
+Explore your data set (in this case the iris data set) in one line of code:
 
 ```{R eval=FALSE, echo=TRUE}
 explore(iris)
 ```
 
-A shiny app is launched, you can inspect individual variable, explore their relation to a target (binary / categorical / numerical), grow a decision tree or create a fully automated report of all variables with a few "mouseclicks".
+A shiny app is launched, you can inspect individual variable, explore their relation to a target (binary / categorical / numerical), grow a decision tree or create a fully automated report of all variables with a few "mouse clicks".
  
 ![](../man/figures/explore-shiny-iris-target-species.png){width=600px}
 
-You can choose each variable containng as a target, that is binary (0/1, FALSE/TRUE or "no"/"yes"), categorical or numeric.
+You can choose each variable containing as a target, that is binary (0/1, FALSE/TRUE or "no"/"yes"), categorical or numeric.
 
 
 ### Report variables
@@ -73,7 +65,7 @@ iris %>%
 
 ```
 
-If you use a binary tharget, the parameter ***split = FALSE*** (or targetpct = TRUE) will give you a different view on the data.
+If you use a binary target, the parameter ***split = FALSE*** (or `targetpct = TRUE`) will give you a different view on the data.
 
 ![](../man/figures/report-target.png){width=600px}
 
@@ -217,7 +209,7 @@ You can add a target too:
 iris %>% explore(Sepal.Length, Petal.Length, target = Species)
 ```
 
-### Other options
+### Explore options
 
 If you use explore to explore a variable and want to set lower and upper limits for values, you can use the `min_val` and `max_val` parameters. All values below min_val will be set to min_val. All values above max_val will be set to max_val.
 
@@ -303,27 +295,6 @@ describe(data)
 
 ```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=3}
 data %>% select(random_starsign, random_moon) %>% explore_all()
-```
-
-### Data Dictionary
-
-Create a Data Dictionary of a dataset (Markdown File data_dict.md)
-
-```{R eval=FALSE, echo=TRUE}
-iris  %>%  data_dict_md(output_dir = tempdir())
-```
-
-Add title, detailed descriptions and change default filename
-
-```{R eval=FALSE, echo=TRUE}
-description <- data.frame(
-                  variable = c("Species"), 
-                  description = c("Species of Iris flower"))
-data_dict_md(iris, 
-             title = "iris flower data set", 
-             description =  description, 
-             output_file = "data_dict_iris.md",
-             output_dir = tempdir())
 ```
 
 ### Basic data cleaning

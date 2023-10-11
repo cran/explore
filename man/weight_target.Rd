@@ -16,11 +16,12 @@ Weights for each observation (as a vector)
 }
 \description{
 Create weights for the target variable in your dataset
-so that are equal weiths for target = 0 and target = 1.
+so that are equal weights for target = 0 and target = 1.
 Target must be 0/1, FALSE/TRUE ore no/yes
 }
 \examples{
 iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
 weights <- weight_target(iris, target = is_versicolor)
-summary(weights)
+versicolor <- iris$is_versicolor
+table(versicolor, weights)
 }
