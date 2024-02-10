@@ -490,14 +490,19 @@ guess_cat_num <- function(var, descr)  {
 } # guess_cat_num
 
 
-#' Get number of rows for a grid plot (deprecated, use total_fig_height() instead)
+#' Get number of rows for a grid plot
+#'
+#' This function is deprecated, please use [total_fig_height()] instead.
 #'
 #' @param varnames List of variables to be plotted
 #' @param exclude Number of variables that will be excluded from plot
 #' @param ncol Number of columns (default = 2)
 #' @return Number of rows
+#' @keywords internal
 #' @examples
+#' \dontrun{
 #' get_nrow(names(iris), ncol = 2)
+#' }
 #' @export
 
 get_nrow <- function(varnames, exclude = 0, ncol = 2)  {
