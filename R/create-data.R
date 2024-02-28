@@ -2,22 +2,17 @@
 #'
 #' @param obs Number of observations
 #' @param add_id Add an id
-#' @param seed Seed for randomization (integer)
 #' @return Dataset as tibble
 #' @examples
 #' create_data_empty(obs = 100)
 #' create_data_empty(obs = 100, add_id = TRUE)
 #' @export
 
-create_data_empty <- function(obs = 1000, add_id = FALSE, seed = 123) {
+create_data_empty <- function(obs = 1000, add_id = FALSE) {
 
   # checks
   check_number_whole(obs, min = 1)
   check_bool(add_id)
-  check_number_decimal(seed)
-
-  # reproducible random numbers
-  set.seed(seed)
 
   # create empty data frame
   data <- data.frame(
@@ -716,3 +711,61 @@ create_data_random = function(obs = 1000, vars = 10,
 
 } # create_data_random
 
+#' Create data esoteric
+#'
+#' Random data that can be used for unit-testing or teaching
+#'
+#' Variables in dataset:
+#' * id = Identifier
+#' * starsign = random starsign
+#' * chinese = random chinese zodiac
+#' * moon = random moon phase
+#' * blood = random blood type
+#' * fingers_crossed = random fingers crossed (1 = yes, 0 = no)
+#' * success = random success (1 = yes, 0 = no)
+#' @param obs Number of observations
+#' @param add_id Add an id-variable to data?
+#' @param seed Seed for randomization
+#' @return A dataset as tibble
+#' @examples
+#' create_data_esoteric(obs = 100)
+#' @export
+
+create_data_esoteric = function(obs = 1000, add_id = FALSE, seed = 123) {
+
+  # checks
+  check_number_whole(obs, min = 1)
+  check_bool(add_id)
+  check_number_decimal(seed)
+
+  # set seed (randomization)
+  set.seed(seed)
+
+  # create data
+  data <- create_data_empty(obs = obs) %>%
+    add_var_id() %>%
+    add_var_random_starsign("starsign") %>%
+    add_var_random_cat(
+      "chinese",
+      cat = c("Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat",
+              "Monkey", "Rooster", "Dog", "Pig"),
+      prob = rep(1/12, 12)
+    ) %>%
+    add_var_random_moon("moon") %>%
+    add_var_random_cat(
+      "blood",
+      cat = c("0+", "A+", "B+", "AB+", "A-", "0-", "B-", "AB-"),
+      prob = c(0.35, 0.37, 0.09, 0.04, 0.06, 0.06, 0.02, 0.01)
+    ) %>%
+    add_var_random_01("fingers_crossed", prob = c(0.8, 0.2)) %>%
+    add_var_random_01("success")
+
+  # add id?
+  if (!add_id)  {
+    data$id <- NULL
+  }
+
+  # return data
+  tibble::as_tibble(data)
+
+} # create_data_esoteric

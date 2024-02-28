@@ -125,6 +125,9 @@ iris %>% describe(Species)
 iris %>% describe(Sepal.Length)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3------------------
+use_data_beer() %>% describe()
+
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3------------------
 # create dataset and describe it
 data <- create_data_app(obs = 100)
 describe(data)
@@ -157,6 +160,15 @@ iris %>%
             na = 5.8, 
             name = "sepal_length") %>% 
   describe()
+
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3------------------
+use_data_penguins() %>% 
+  describe_tbl()
+
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3------------------
+use_data_penguins() %>%
+  drop_obs_with_na() %>%
+  describe_tbl()
 
 ## ----eval=FALSE, message=FALSE, warning=FALSE---------------------------------
 #  create_notebook_explore(

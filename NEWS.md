@@ -1,6 +1,27 @@
+# explore 1.2.0
+
+## New features
+
+* add `explain_xgboost()` (#42)
+* add `drop_var_by_names()` (#43)
+* add `drop_var_not_numeric()` (#43)
+* add `check_vec_low_variance()` (helper function)
+* add `drop_var_low_variance()` (#43)
+* add `drop_var_no_variance()` (#43)
+* add `drop_var_with_na()` (#43)
+* add `drop_obs_with_na()` (#43)
+* add `drop_obs_if()` (#43)
+* add `mix_color()`
+* add `show_color()` 
+* add `create_data_esoteric()`
+
+## Breaking changes
+
+* `create_data_empty()` has no longer a parameter `seed` 
+
 # explore 1.1.1
 
-* Fix CRAN check warning in running example `get_nrow()`
+* Fix CRAN check warning in running example `get_nrow()` (#41)
 
 # explore 1.1.0
 

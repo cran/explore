@@ -69,7 +69,7 @@ If you use a binary target, the parameter ***split = FALSE*** (or `targetpct = T
 
 ![](../man/figures/report-target.png){width=600px}
 
-### Grow a decision tree
+ ### Grow a decision tree
 
 Grow a decision tree with one line of code:
 
@@ -92,6 +92,8 @@ iris %>% explain_tree(target = Sepal.Length)
 
 You can control the growth of the tree using the parameters `maxdepth`, `minsplit` and `cp`.
 
+To create other types of models use `explain_forest()`, `explain_xgboost()` and `explain_logreg()`.
+
 ### Explore dataset
 
 Explore your table with one line of code to see which type of variables it contains.
@@ -100,7 +102,7 @@ Explore your table with one line of code to see which type of variables it conta
 iris %>% explore_tbl()
 ```
 
-You can also use describe_tbl() if you just need the main facts without visualisation.
+You can also use `describe_tbl()` if you just need the main facts without visualization.
 
 ```{r message=FALSE, warning=FALSE}
 iris %>% describe_tbl()
@@ -180,7 +182,7 @@ iris %>%
 data(iris)
 ```
 
-To use a high number of variables with explore_all() in a RMarkdown-File, it is necessary to set a meaningful fig.width and fig.height in the junk. The function total_fig_height() helps to automatically set fig.height: ```fig.height=total_fig_height(iris)```
+To use a high number of variables with `explore_all()` in a RMarkdown-File, it is necessary to set a meaningful fig.width and fig.height in the junk. The function `total_fig_height()` helps to automatically set fig.height: ```fig.height=total_fig_height(iris)```
 
 ```{r message=FALSE, warning=FALSE, fig.width=7, fig.height=total_fig_height(iris, size=2.5)}
 iris %>% 
@@ -255,16 +257,35 @@ iris %>% describe(Species)
 iris %>% describe(Sepal.Length)
 ```
 
-### Create Data
+### Use data
 
 Use one of the prepared datasets to explore:
 
-* create_data_app()
-* create_data_buy()
-* Create_data_churn()
-* create_data_person()
-* create_data_unfair()
-* create_data_random()
+* `use_data_beer()`
+* `use_data_diamonds()`
+* `use_data_iris()`
+* `use_data_mpg()`
+* `use_data_mtcars()`
+* `use_data_penguins()`
+* `use_data_starwars()`
+* `use_data_titanic()`
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=3}
+use_data_beer() %>% describe()
+```
+
+### Create data
+
+Use one of the prepared datasets to explore:
+
+* `create_data_app()`
+* `create_data_buy()`
+* `create_data_churn()`
+* `create_data_esoteric()`
+* `create_data_newsletter()`
+* `create_data_person()`
+* `create_data_unfair()`
+* `create_data_random()`
 
 ```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=3}
 # create dataset and describe it
@@ -278,7 +299,7 @@ data <- create_data_random(obs = 100, vars = 5)
 describe(data)
 ```
 
-You can build you own random dataset by using ```create_data_empty()``` and  ```add_var_randm_*()``` functions:
+You can build you own random dataset by using ```create_data_empty()``` and  ```add_var_random_*()``` functions:
 
 ```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=3}
 # create dataset and describe it
@@ -311,7 +332,20 @@ iris %>%
   describe()
 ```
 
-### Create Notebook
+To drop variables or observations you can use ```drop_var_*()``` and ```drop_obs_*()``` functions.
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=3}
+use_data_penguins() %>% 
+  describe_tbl()
+```
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=3}
+use_data_penguins() %>%
+  drop_obs_with_na() %>%
+  describe_tbl()
+```
+
+### Create notebook
 
 Create an RMarkdown template to explore your own data. Set output_dir (existing file may be overwritten)
 

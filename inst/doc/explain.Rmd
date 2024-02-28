@@ -20,6 +20,7 @@ The explore package offers a simplified way to use machine learning to understan
 
 * `explain_tree()` creates a decision tree. The target can be binary, categorical or numerical
 * `explain_forest()` creates a random forest. The target can be binary, categorical or numerical
+* `explain_xgboost()` creates a random forest. The target must be binary (0/1, FALSE/TRUE)
 * `explain_logreg()` creates a logistic regression. The target must be binary
 * `balance_target()` to balance a target
 * `weight_target()` to create weights for the decision tree
@@ -34,8 +35,8 @@ library(explore)
 data <- create_data_buy(obs = 1000)
 glimpse(data)
 ```
-
-### Decision Tree
+### Explain / Model
+#### Decision Tree
 
 ```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
 data %>% explain_tree(target = buy)
@@ -49,11 +50,45 @@ data %>% explain_tree(target = mobiledata_prd)
 data %>% explain_tree(target = age)
 ```
 
-#### Random Forrest
+#### Random Forest
 
 ```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
 data %>% explain_forest(target = buy, ntree = 100)
 ```
+
+To get the model itself as output you can use the parameter `out = "model` or `out = all` to get all (feature importance as plot and table, trained model). To use the model for a prediction, you can use `predict_target()`
+
+#### XGBoost
+
+As XGBoost only accepts numeric variables, we use `drop_var_not_numeric()` to drop `mobile_data_prd` as it is not a numeric variable. An alternative would be to convert the non numeric variables into numeric.
+
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4}
+data %>%
+  drop_var_not_numeric() |> 
+  explain_xgboost(target = buy)
+```
+
+Use parameter `out = "all"` to get more details about the training
+
+```{r message=FALSE, warning=FALSE}
+train <- data %>%
+  drop_var_not_numeric() |> 
+  explain_xgboost(target = buy, out = "all")
+```
+
+```{r message=FALSE, warning=FALSE}
+train$importance
+```
+
+```{r message=FALSE, warning=FALSE}
+train$tune_plot
+```
+
+```{r message=FALSE, warning=FALSE}
+train$tune_data
+```
+
+To use the model for a prediction, you can use `predict_target()`
 
 #### Logistic Regression
 

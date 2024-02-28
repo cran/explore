@@ -56,6 +56,10 @@ data <- create_data_churn(obs = 1000)
 glimpse(data)
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
+data <- create_data_esoteric(obs = 1000)
+glimpse(data)
+
+## ----message=FALSE, warning=FALSE---------------------------------------------
 data <- create_data_newsletter(obs = 1000)
 glimpse(data)
 

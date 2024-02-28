@@ -12,7 +12,7 @@
 
 <meta name="author" content="Roland Krasser" />
 
-<meta name="date" content="2024-02-10" />
+<meta name="date" content="2024-02-28" />
 
 <title>Data</title>
 
@@ -340,16 +340,16 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Data</h1>
 <h4 class="author">Roland Krasser</h4>
-<h4 class="date">2024-02-10</h4>
+<h4 class="date">2024-02-28</h4>
 
 
 
 <p>The explore package offers a simplified way to use popular data sets
 or to create synthetic data for experimenting/teaching/training.</p>
-<div id="use-data" class="section level3">
-<h3>Use data</h3>
-<div id="penguins" class="section level4">
-<h4>Penguins</h4>
+<div id="use-data" class="section level2">
+<h2>Use data</h2>
+<div id="penguins" class="section level3">
+<h3>Penguins</h3>
 <p>This data set comes with the palmerpenguins package. It contains
 measurements for penguin species, island in Palmer Archipelago, size
 (flipper length, body mass, bill dimensions), and sex.</p>
@@ -369,8 +369,8 @@ measurements for penguin species, island in Palmer Archipelago, size
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ sex               &lt;fct&gt; male, female, female, NA, female, male, female, male…</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007…</span></span></code></pre></div>
 </div>
-<div id="starwars" class="section level4">
-<h4>Starwars</h4>
+<div id="starwars" class="section level3">
+<h3>Starwars</h3>
 <p>This data set comes with the dplyr package. It contains data of 87
 star war characters.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">use_data_starwars</span>()</span>
@@ -392,8 +392,8 @@ star war characters.</p>
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ vehicles   &lt;list&gt; &lt;&quot;Snowspeeder&quot;, &quot;Imperial Speeder Bike&quot;&gt;, &lt;&gt;, &lt;&gt;, &lt;&gt;, &quot;Imp…</span></span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ starships  &lt;list&gt; &lt;&quot;X-wing&quot;, &quot;Imperial shuttle&quot;&gt;, &lt;&gt;, &lt;&gt;, &quot;TIE Advanced x1&quot;,…</span></span></code></pre></div>
 </div>
-<div id="diamonds" class="section level4">
-<h4>Diamonds</h4>
+<div id="diamonds" class="section level3">
+<h3>Diamonds</h3>
 <p>This data set comes with the ggplot2 package. It contains the prices
 and other attributes of almost 54,000 diamonds.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">use_data_diamonds</span>()</span>
@@ -411,8 +411,8 @@ and other attributes of almost 54,000 diamonds.</p>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ y       &lt;dbl&gt; 3.98, 3.84, 4.07, 4.23, 4.35, 3.96, 3.98, 4.11, 3.78, 4.05, 4.…</span></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ z       &lt;dbl&gt; 2.43, 2.31, 2.31, 2.63, 2.75, 2.48, 2.47, 2.53, 2.49, 2.39, 2.…</span></span></code></pre></div>
 </div>
-<div id="iris" class="section level4">
-<h4>Iris</h4>
+<div id="iris" class="section level3">
+<h3>Iris</h3>
 <p>This data set comes with base R. The data set gives the measurements
 in centimeters of the variables sepal length and width and petal length
 and width, respectively, for 50 flowers from each of 3 species of iris.
@@ -427,8 +427,8 @@ The species are Iris setosa, versicolor, and virginica.</p>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ Petal.Width  &lt;dbl&gt; 0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3, 0.2, 0.2, 0.1, 0.2, 0.…</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ Species      &lt;fct&gt; setosa, setosa, setosa, setosa, setosa, setosa, setosa, s…</span></span></code></pre></div>
 </div>
-<div id="mpg" class="section level4">
-<h4>mpg</h4>
+<div id="mpg" class="section level3">
+<h3>mpg</h3>
 <p>This data set comes with the ggplot2 package. It contains a subset of
 the fuel economy data that the EPA makes available on <a href="https://fueleconomy.gov/" class="uri">https://fueleconomy.gov/</a>. It contains only models which
 had a new release every year between 1999 and 2008 - this was used as a
@@ -449,8 +449,8 @@ proxy for the popularity of the car.</p>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ fl           &lt;chr&gt; &quot;p&quot;, &quot;p&quot;, &quot;p&quot;, &quot;p&quot;, &quot;p&quot;, &quot;p&quot;, &quot;p&quot;, &quot;p&quot;, &quot;p&quot;, &quot;p&quot;, &quot;p&quot;, &quot;p…</span></span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ class        &lt;chr&gt; &quot;compact&quot;, &quot;compact&quot;, &quot;compact&quot;, &quot;compact&quot;, &quot;compact&quot;, &quot;c…</span></span></code></pre></div>
 </div>
-<div id="mtcars" class="section level4">
-<h4>mtcars</h4>
+<div id="mtcars" class="section level3">
+<h3>mtcars</h3>
 <p>This data set comes with base R. The data was extracted from the 1974
 Motor Trend US magazine, and comprises fuel consumption and 10 aspects
 of automobile design and performance for 32 automobiles (1973–74
@@ -471,8 +471,8 @@ models).</p>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ gear &lt;dbl&gt; 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 4, 4, 4, 3, 3,…</span></span>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ carb &lt;dbl&gt; 4, 4, 1, 1, 2, 1, 4, 2, 2, 4, 4, 3, 3, 3, 4, 4, 4, 1, 2, 1, 1, 2,…</span></span></code></pre></div>
 </div>
-<div id="titanic" class="section level4">
-<h4>Titanic</h4>
+<div id="titanic" class="section level3">
+<h3>Titanic</h3>
 <p>This data set comes with base R. Survival of passengers on the
 Titanic.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">use_data_titanic</span>(<span class="at">count =</span> <span class="cn">FALSE</span>)</span>
@@ -493,8 +493,8 @@ Titanic.</p>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ Survived &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;…</span></span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ n        &lt;dbl&gt; 0, 0, 35, 0, 0, 0, 17, 0, 118, 154, 387, 670, 4, 13, 89, 3, 5…</span></span></code></pre></div>
 </div>
-<div id="beer" class="section level4">
-<h4>Beer</h4>
+<div id="beer" class="section level3">
+<h3>Beer</h3>
 <p>This data set is an incomplete collection of popular beers in
 Austria, Germany and Switzerland. Data are collected from various
 websites in 2023. Some of the collected data may be incorrect.</p>
@@ -515,11 +515,11 @@ websites in 2023. Some of the collected data may be incorrect.</p>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ sugar_g_100ml     &lt;dbl&gt; 0.0, 1.2, 0.0, 0.0, 0.0, 0.0, 0.0, 2.7, 0.0, 0.0, 0.…</span></span></code></pre></div>
 </div>
 </div>
-<div id="create-data" class="section level3">
-<h3>Create data</h3>
+<div id="create-data" class="section level2">
+<h2>Create data</h2>
 <p>Artificial data that can be used for unit-testing or teaching.</p>
-<div id="app" class="section level4">
-<h4>App</h4>
+<div id="app" class="section level3">
+<h3>App</h3>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_app</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 1,000</span></span>
@@ -532,8 +532,8 @@ websites in 2023. Some of the collected data may be incorrect.</p>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ updates      &lt;dbl&gt; 63.00000, 58.00000, 62.00000, 44.00000, 24.00000, 75.0000…</span></span>
 <span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ screen_sizes &lt;dbl&gt; 3, 2, 3, 2, 1, 3, 1, 2, 2, 3, 1, 3, 2, 1, 3, 1, 4, 5, 3, …</span></span></code></pre></div>
 </div>
-<div id="buy" class="section level4">
-<h4>Buy</h4>
+<div id="buy" class="section level3">
+<h3>Buy</h3>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_buy</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 1,000</span></span>
@@ -552,8 +552,8 @@ websites in 2023. Some of the collected data may be incorrect.</p>
 <span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ bbi_usg_gb      &lt;int&gt; 77, 49, 53, 44, 55, 93, 50, 64, 63, 87, 45, 45, 70, 79…</span></span>
 <span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ hh_single       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, …</span></span></code></pre></div>
 </div>
-<div id="churn" class="section level4">
-<h4>Churn</h4>
+<div id="churn" class="section level3">
+<h3>Churn</h3>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_churn</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 1,000</span></span>
@@ -568,110 +568,123 @@ websites in 2023. Some of the collected data may be incorrect.</p>
 <span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ duration   &lt;int&gt; 7, 47, 99, 33, 94, 17, 95, 92, 43, 16, 62, 14, 52, 20, 76, …</span></span>
 <span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ churn      &lt;dbl&gt; 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,…</span></span></code></pre></div>
 </div>
-<div id="newsletter" class="section level4">
-<h4>Newsletter</h4>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_newsletter</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
+<div id="esoteric" class="section level3">
+<h3>Esoteric</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_esoteric</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 1,000</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 6</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ sending_h &lt;int&gt; 14, 14, 13, 13, 14, 16, 15, 12, 13, 14, 16, 14, 14, 12, 15, …</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ message   &lt;chr&gt; &quot;voucher&quot;, &quot;news&quot;, &quot;news&quot;, &quot;news&quot;, &quot;voucher&quot;, &quot;news&quot;, &quot;news&quot;…</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ age       &lt;int&gt; 80, 25, 17, 78, 30, 76, 30, 64, 50, 72, 65, 23, 23, 19, 30, …</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ send      &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ click     &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, …</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ buy       &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, …</span></span></code></pre></div>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ starsign        &lt;chr&gt; &quot;Leo&quot;, &quot;Aquarius&quot;, &quot;Virgo&quot;, &quot;Pisces&quot;, &quot;Aries&quot;, &quot;Taurus…</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ chinese         &lt;chr&gt; &quot;Dragon&quot;, &quot;Monkey&quot;, &quot;Tiger&quot;, &quot;Pig&quot;, &quot;Pig&quot;, &quot;Horse&quot;, &quot;D…</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ moon            &lt;chr&gt; &quot;Waxing (+)&quot;, &quot;Waxing (+)&quot;, &quot;Waxing (+)&quot;, &quot;Waning (-)&quot;…</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ blood           &lt;chr&gt; &quot;A+&quot;, &quot;AB+&quot;, &quot;0+&quot;, &quot;0+&quot;, &quot;A+&quot;, &quot;0+&quot;, &quot;B+&quot;, &quot;0+&quot;, &quot;0-&quot;,…</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ fingers_crossed &lt;int&gt; 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, …</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ success         &lt;int&gt; 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, …</span></span></code></pre></div>
 </div>
-<div id="person" class="section level4">
-<h4>Person</h4>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_person</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
+<div id="newsletter" class="section level3">
+<h3>Newsletter</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_newsletter</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 1,000</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 15</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ age               &lt;int&gt; 46, 94, 66, 29, 82, 57, 65, 58, 29, 40, 84, 72, 24, …</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ gender            &lt;chr&gt; &quot;Female&quot;, &quot;Female&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Female&quot;, &quot;Femal…</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ eye_color         &lt;chr&gt; &quot;Blue&quot;, &quot;Green&quot;, &quot;Brown&quot;, &quot;Green&quot;, &quot;Brown&quot;, &quot;Brown&quot;,…</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ shoe_size         &lt;dbl&gt; 45.2, 37.0, 45.0, 45.0, 39.0, 38.2, 41.2, 46.0, 40.0…</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ iq                &lt;dbl&gt; 141, 71, 80, 74, 119, 95, 97, 135, 88, 140, 71, 126,…</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ education         &lt;int&gt; 66, 41, 49, 49, 25, 68, 87, 46, 78, 14, 65, 62, 68, …</span></span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ income            &lt;dbl&gt; 132.0, 95.0, 18.0, 54.0, 70.0, 128.0, 128.5, 32.0, 8…</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ handset           &lt;chr&gt; &quot;Apple&quot;, &quot;Apple&quot;, &quot;Apple&quot;, &quot;Android&quot;, &quot;Apple&quot;, &quot;Andr…</span></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pet               &lt;chr&gt; &quot;No&quot;, &quot;Cat&quot;, &quot;Other&quot;, &quot;No&quot;, &quot;Dog&quot;, &quot;No&quot;, &quot;Cat&quot;, &quot;Dog…</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ favorite_pizza    &lt;chr&gt; &quot;Pepperoni&quot;, &quot;Hawai&quot;, &quot;Margaritha&quot;, &quot;Carciofi&quot;, &quot;Mar…</span></span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ favorite_icecream &lt;chr&gt; &quot;Lemon&quot;, &quot;Strawberry&quot;, &quot;Vanilla&quot;, &quot;Vanilla&quot;, &quot;Apple&quot;…</span></span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ likes_garlic      &lt;int&gt; 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0…</span></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ likes_sushi       &lt;int&gt; 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1…</span></span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ likes_beatles     &lt;int&gt; 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0…</span></span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ likes_beer        &lt;int&gt; 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1…</span></span></code></pre></div>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 6</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ sending_h &lt;int&gt; 14, 14, 13, 13, 14, 16, 15, 12, 13, 14, 16, 14, 14, 12, 15, …</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ message   &lt;chr&gt; &quot;voucher&quot;, &quot;news&quot;, &quot;news&quot;, &quot;news&quot;, &quot;voucher&quot;, &quot;news&quot;, &quot;news&quot;…</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ age       &lt;int&gt; 80, 25, 17, 78, 30, 76, 30, 64, 50, 72, 65, 23, 23, 19, 30, …</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ send      &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ click     &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, …</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ buy       &lt;dbl&gt; 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, …</span></span></code></pre></div>
 </div>
-<div id="random" class="section level4">
-<h4>Random</h4>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_random</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
+<div id="person" class="section level3">
+<h3>Person</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_person</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 1,000</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 12</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ id         &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, …</span></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ target_ind &lt;int&gt; 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0,…</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_1      &lt;int&gt; 27, 59, 16, 85, 85, 48, 77, 30, 7, 44, 46, 34, 19, 51, 2, 7…</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_2      &lt;int&gt; 16, 14, 15, 51, 49, 62, 45, 6, 1, 22, 85, 27, 60, 61, 99, 1…</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_3      &lt;int&gt; 21, 94, 38, 63, 18, 66, 73, 50, 87, 83, 98, 67, 64, 5, 19, …</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_4      &lt;int&gt; 30, 83, 59, 81, 29, 14, 89, 1, 57, 97, 27, 98, 4, 26, 26, 9…</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_5      &lt;int&gt; 25, 99, 72, 65, 24, 9, 30, 54, 78, 27, 32, 95, 49, 97, 85, …</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_6      &lt;int&gt; 44, 40, 37, 53, 7, 72, 24, 84, 100, 11, 49, 68, 82, 77, 43,…</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_7      &lt;int&gt; 93, 59, 8, 85, 3, 81, 39, 14, 67, 62, 45, 81, 87, 99, 40, 3…</span></span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_8      &lt;int&gt; 58, 49, 74, 23, 75, 82, 10, 28, 2, 60, 99, 85, 59, 34, 65, …</span></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_9      &lt;int&gt; 80, 88, 24, 56, 90, 1, 16, 26, 77, 7, 90, 31, 89, 61, 46, 7…</span></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_10     &lt;int&gt; 31, 32, 87, 33, 13, 36, 93, 88, 82, 2, 63, 78, 72, 19, 58, …</span></span></code></pre></div>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 15</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ age               &lt;int&gt; 46, 94, 66, 29, 82, 57, 65, 58, 29, 40, 84, 72, 24, …</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ gender            &lt;chr&gt; &quot;Female&quot;, &quot;Female&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Female&quot;, &quot;Femal…</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ eye_color         &lt;chr&gt; &quot;Blue&quot;, &quot;Green&quot;, &quot;Brown&quot;, &quot;Green&quot;, &quot;Brown&quot;, &quot;Brown&quot;,…</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ shoe_size         &lt;dbl&gt; 45.2, 37.0, 45.0, 45.0, 39.0, 38.2, 41.2, 46.0, 40.0…</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ iq                &lt;dbl&gt; 141, 71, 80, 74, 119, 95, 97, 135, 88, 140, 71, 126,…</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ education         &lt;int&gt; 66, 41, 49, 49, 25, 68, 87, 46, 78, 14, 65, 62, 68, …</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ income            &lt;dbl&gt; 132.0, 95.0, 18.0, 54.0, 70.0, 128.0, 128.5, 32.0, 8…</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ handset           &lt;chr&gt; &quot;Apple&quot;, &quot;Apple&quot;, &quot;Apple&quot;, &quot;Android&quot;, &quot;Apple&quot;, &quot;Andr…</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pet               &lt;chr&gt; &quot;No&quot;, &quot;Cat&quot;, &quot;Other&quot;, &quot;No&quot;, &quot;Dog&quot;, &quot;No&quot;, &quot;Cat&quot;, &quot;Dog…</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ favorite_pizza    &lt;chr&gt; &quot;Pepperoni&quot;, &quot;Hawai&quot;, &quot;Margaritha&quot;, &quot;Carciofi&quot;, &quot;Mar…</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ favorite_icecream &lt;chr&gt; &quot;Lemon&quot;, &quot;Strawberry&quot;, &quot;Vanilla&quot;, &quot;Vanilla&quot;, &quot;Apple&quot;…</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ likes_garlic      &lt;int&gt; 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0…</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ likes_sushi       &lt;int&gt; 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1…</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ likes_beatles     &lt;int&gt; 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0…</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ likes_beer        &lt;int&gt; 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1…</span></span></code></pre></div>
 </div>
-<div id="unfair" class="section level4">
-<h4>Unfair</h4>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_unfair</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
+<div id="random" class="section level3">
+<h3>Random</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_random</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 1,000</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 22</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ age         &lt;int&gt; 46, 94, 66, 29, 82, 57, 65, 58, 29, 40, 84, 72, 24, 87, 41…</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ gender      &lt;chr&gt; &quot;Female&quot;, &quot;Female&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;F…</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ eye_color   &lt;chr&gt; &quot;Blue&quot;, &quot;Green&quot;, &quot;Blue&quot;, &quot;Blue&quot;, &quot;Blue&quot;, &quot;Brown&quot;, &quot;Brown&quot;,…</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ shoe_size   &lt;dbl&gt; 45.2, 37.0, 45.0, 45.0, 39.0, 38.2, 41.2, 46.0, 40.0, 42.0…</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ iq          &lt;dbl&gt; 141, 71, 80, 74, 119, 95, 97, 135, 88, 140, 71, 126, 106, …</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ education   &lt;int&gt; 66, 41, 49, 49, 25, 68, 87, 46, 78, 14, 65, 62, 68, 16, 69…</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ income      &lt;dbl&gt; 132.0, 95.0, 18.0, 54.0, 70.0, 128.0, 128.5, 32.0, 82.0, 9…</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ handset     &lt;chr&gt; &quot;Apple&quot;, &quot;Apple&quot;, &quot;Apple&quot;, &quot;Android&quot;, &quot;Apple&quot;, &quot;Android&quot;, …</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pet         &lt;chr&gt; &quot;Other&quot;, &quot;Cat&quot;, &quot;Cat&quot;, &quot;Dog&quot;, &quot;Cat&quot;, &quot;No&quot;, &quot;Dog&quot;, &quot;No&quot;, &quot;N…</span></span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ smoking     &lt;int&gt; 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0…</span></span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ name_arabic &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0…</span></span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ outfit      &lt;chr&gt; &quot;Casual&quot;, &quot;Casual&quot;, &quot;Casual&quot;, &quot;Alternative&quot;, &quot;Elegant&quot;, &quot;A…</span></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ glasses     &lt;int&gt; 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1…</span></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ tatoos      &lt;int&gt; 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0…</span></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ kids        &lt;int&gt; 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0…</span></span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ bad_debt    &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0…</span></span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ credit_card &lt;chr&gt; &quot;No&quot;, &quot;Master&quot;, &quot;Master&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Visa&quot;, &quot;Visa&quot;, &quot;Vis…</span></span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ left_handed &lt;int&gt; 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0…</span></span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ skin_color  &lt;chr&gt; &quot;White&quot;, &quot;Brown&quot;, &quot;White&quot;, &quot;White&quot;, &quot;White&quot;, &quot;White&quot;, &quot;Bla…</span></span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ religion    &lt;chr&gt; &quot;Christian&quot;, &quot;No&quot;, &quot;Christian&quot;, &quot;No&quot;, &quot;Christian&quot;, &quot;No&quot;, &quot;…</span></span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ internet_gb &lt;dbl&gt; 0.000000, 60.609298, 260.437887, 55.199729, 0.000000, 179.…</span></span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ target_ind  &lt;int&gt; 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1…</span></span></code></pre></div>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 12</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ id         &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, …</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ target_ind &lt;int&gt; 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0,…</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_1      &lt;int&gt; 27, 59, 16, 85, 85, 48, 77, 30, 7, 44, 46, 34, 19, 51, 2, 7…</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_2      &lt;int&gt; 16, 14, 15, 51, 49, 62, 45, 6, 1, 22, 85, 27, 60, 61, 99, 1…</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_3      &lt;int&gt; 21, 94, 38, 63, 18, 66, 73, 50, 87, 83, 98, 67, 64, 5, 19, …</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_4      &lt;int&gt; 30, 83, 59, 81, 29, 14, 89, 1, 57, 97, 27, 98, 4, 26, 26, 9…</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_5      &lt;int&gt; 25, 99, 72, 65, 24, 9, 30, 54, 78, 27, 32, 95, 49, 97, 85, …</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_6      &lt;int&gt; 44, 40, 37, 53, 7, 72, 24, 84, 100, 11, 49, 68, 82, 77, 43,…</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_7      &lt;int&gt; 93, 59, 8, 85, 3, 81, 39, 14, 67, 62, 45, 81, 87, 99, 40, 3…</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_8      &lt;int&gt; 58, 49, 74, 23, 75, 82, 10, 28, 2, 60, 99, 85, 59, 34, 65, …</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_9      &lt;int&gt; 80, 88, 24, 56, 90, 1, 16, 26, 77, 7, 90, 31, 89, 61, 46, 7…</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ var_10     &lt;int&gt; 31, 32, 87, 33, 13, 36, 93, 88, 82, 2, 63, 78, 72, 19, 58, …</span></span></code></pre></div>
 </div>
-<div id="empty" class="section level4">
-<h4>Empty</h4>
+<div id="unfair" class="section level3">
+<h3>Unfair</h3>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_unfair</span>(<span class="at">obs =</span> <span class="dv">1000</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 1,000</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 22</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ age         &lt;int&gt; 46, 94, 66, 29, 82, 57, 65, 58, 29, 40, 84, 72, 24, 87, 41…</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ gender      &lt;chr&gt; &quot;Female&quot;, &quot;Female&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;F…</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ eye_color   &lt;chr&gt; &quot;Blue&quot;, &quot;Green&quot;, &quot;Blue&quot;, &quot;Blue&quot;, &quot;Blue&quot;, &quot;Brown&quot;, &quot;Brown&quot;,…</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ shoe_size   &lt;dbl&gt; 45.2, 37.0, 45.0, 45.0, 39.0, 38.2, 41.2, 46.0, 40.0, 42.0…</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ iq          &lt;dbl&gt; 141, 71, 80, 74, 119, 95, 97, 135, 88, 140, 71, 126, 106, …</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ education   &lt;int&gt; 66, 41, 49, 49, 25, 68, 87, 46, 78, 14, 65, 62, 68, 16, 69…</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ income      &lt;dbl&gt; 132.0, 95.0, 18.0, 54.0, 70.0, 128.0, 128.5, 32.0, 82.0, 9…</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ handset     &lt;chr&gt; &quot;Apple&quot;, &quot;Apple&quot;, &quot;Apple&quot;, &quot;Android&quot;, &quot;Apple&quot;, &quot;Android&quot;, …</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pet         &lt;chr&gt; &quot;Other&quot;, &quot;Cat&quot;, &quot;Cat&quot;, &quot;Dog&quot;, &quot;Cat&quot;, &quot;No&quot;, &quot;Dog&quot;, &quot;No&quot;, &quot;N…</span></span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ smoking     &lt;int&gt; 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0…</span></span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ name_arabic &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0…</span></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ outfit      &lt;chr&gt; &quot;Casual&quot;, &quot;Casual&quot;, &quot;Casual&quot;, &quot;Alternative&quot;, &quot;Elegant&quot;, &quot;A…</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ glasses     &lt;int&gt; 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1…</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ tatoos      &lt;int&gt; 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0…</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ kids        &lt;int&gt; 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0…</span></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ bad_debt    &lt;dbl&gt; 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0…</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ credit_card &lt;chr&gt; &quot;No&quot;, &quot;Master&quot;, &quot;Master&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Visa&quot;, &quot;Visa&quot;, &quot;Vis…</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ left_handed &lt;int&gt; 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0…</span></span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ skin_color  &lt;chr&gt; &quot;White&quot;, &quot;Brown&quot;, &quot;White&quot;, &quot;White&quot;, &quot;White&quot;, &quot;White&quot;, &quot;Bla…</span></span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ religion    &lt;chr&gt; &quot;Christian&quot;, &quot;No&quot;, &quot;Christian&quot;, &quot;No&quot;, &quot;Christian&quot;, &quot;No&quot;, &quot;…</span></span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ internet_gb &lt;dbl&gt; 0.000000, 60.609298, 260.437887, 55.199729, 0.000000, 179.…</span></span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ target_ind  &lt;int&gt; 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1…</span></span></code></pre></div>
+</div>
+<div id="empty" class="section level3">
+<h3>Empty</h3>
 <p>Create an empty data set and add random variables.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_empty</span>(<span class="at">obs =</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_01</span>(<span class="st">&quot;smoking&quot;</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.2</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_cat</span>(<span class="st">&quot;gender&quot;</span>, </span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cat =</span> <span class="fu">c</span>(<span class="st">&quot;female&quot;</span>, <span class="st">&quot;male&quot;</span>, <span class="st">&quot;diverse&quot;</span>), </span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.45</span>, <span class="fl">0.45</span>, <span class="fl">0.1</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_dbl</span>(<span class="st">&quot;internet_usage&quot;</span>, <span class="at">min_val =</span> <span class="dv">0</span>, <span class="at">max_val =</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_int</span>(<span class="st">&quot;age&quot;</span>, <span class="at">min_val =</span> <span class="dv">18</span>, <span class="at">max_val =</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_moon</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_starsign</span>()</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 1,000</span></span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 6</span></span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ smoking         &lt;int&gt; 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, …</span></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ gender          &lt;chr&gt; &quot;male&quot;, &quot;female&quot;, &quot;male&quot;, &quot;female&quot;, &quot;female&quot;, &quot;female&quot;…</span></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ internet_usage  &lt;dbl&gt; 159.673980, 144.515851, 149.180392, 514.434260, 492.82…</span></span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ age             &lt;int&gt; 67, 92, 45, 99, 83, 38, 75, 72, 36, 32, 59, 70, 86, 35…</span></span>
-<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ random_moon     &lt;chr&gt; &quot;New ( )&quot;, &quot;Waning (-)&quot;, &quot;Waxing (+)&quot;, &quot;Waning (-)&quot;, &quot;…</span></span>
-<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ random_starsign &lt;chr&gt; &quot;Aquarius&quot;, &quot;Carpicorn&quot;, &quot;Scorpio&quot;, &quot;Cancer&quot;, &quot;Aries&quot;,…</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">create_data_empty</span>(<span class="at">obs =</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_01</span>(<span class="st">&quot;smoking&quot;</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.8</span>, <span class="fl">0.2</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_cat</span>(<span class="st">&quot;gender&quot;</span>, </span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cat =</span> <span class="fu">c</span>(<span class="st">&quot;female&quot;</span>, <span class="st">&quot;male&quot;</span>, <span class="st">&quot;diverse&quot;</span>), </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.45</span>, <span class="fl">0.45</span>, <span class="fl">0.1</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_dbl</span>(<span class="st">&quot;internet_usage&quot;</span>, <span class="at">min_val =</span> <span class="dv">0</span>, <span class="at">max_val =</span> <span class="dv">1000</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_int</span>(<span class="st">&quot;age&quot;</span>, <span class="at">min_val =</span> <span class="dv">18</span>, <span class="at">max_val =</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_moon</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_var_random_starsign</span>()</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 1,000</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 6</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ smoking         &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, …</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ gender          &lt;chr&gt; &quot;male&quot;, &quot;male&quot;, &quot;female&quot;, &quot;male&quot;, &quot;female&quot;, &quot;female&quot;, …</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ internet_usage  &lt;dbl&gt; 923.7630, 979.0669, 773.8658, 697.6332, 470.4925, 609.…</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ age             &lt;int&gt; 84, 54, 44, 45, 60, 73, 60, 74, 62, 46, 81, 95, 58, 19…</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ random_moon     &lt;chr&gt; &quot;Waxing (+)&quot;, &quot;Waning (-)&quot;, &quot;Waning (-)&quot;, &quot;Waxing (+)&quot;…</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ random_starsign &lt;chr&gt; &quot;Saggitarius&quot;, &quot;Saggitarius&quot;, &quot;Libra&quot;, &quot;Pisces&quot;, &quot;Pisc…</span></span></code></pre></div>
 </div>
 </div>
 

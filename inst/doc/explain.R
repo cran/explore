@@ -23,6 +23,25 @@ data %>% explain_tree(target = age)
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4------------------
 data %>% explain_forest(target = buy, ntree = 100)
 
+## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4------------------
+data %>%
+  drop_var_not_numeric() |> 
+  explain_xgboost(target = buy)
+
+## ----message=FALSE, warning=FALSE---------------------------------------------
+train <- data %>%
+  drop_var_not_numeric() |> 
+  explain_xgboost(target = buy, out = "all")
+
+## ----message=FALSE, warning=FALSE---------------------------------------------
+train$importance
+
+## ----message=FALSE, warning=FALSE---------------------------------------------
+train$tune_plot
+
+## ----message=FALSE, warning=FALSE---------------------------------------------
+train$tune_data
+
 ## ----message=FALSE, warning=FALSE---------------------------------------------
 data %>% explain_logreg(target = buy)
 
