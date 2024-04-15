@@ -14,7 +14,7 @@ mtcars %>% explore_tbl()
 ## ----message=FALSE, warning=FALSE---------------------------------------------
 mtcars %>% describe()
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(mtcars, size = 2.5)----
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=total_fig_height(mtcars, size = 2.5)----
 mtcars %>% 
   explore_all()
 
@@ -22,7 +22,7 @@ mtcars %>%
 mtcars %>% 
   explore(gear)
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4------------------
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=4------------------
 mtcars %>% 
   select(gear, mpg, hp, cyl, am) %>% 
   explore_all(target = gear)
@@ -34,17 +34,17 @@ data <- mtcars %>%
 
 data %>% explore(highmpg)
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4------------------
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=4------------------
 data %>% 
   select(highmpg, cyl, disp, hp) %>% 
   explore_all(target = highmpg)
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4------------------
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=4------------------
 data %>% 
   select(highmpg, drat, wt, qsec, vs) %>% 
   explore_all(target = highmpg)
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4------------------
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=4------------------
 data %>% 
   select(highmpg, am, gear, carb) %>% 
   explore_all(target = highmpg)
@@ -73,7 +73,7 @@ model <- mtcars %>%
 ## ----echo=TRUE, fig.height=4, fig.width=6, message=FALSE, warning=FALSE-------
 model
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4------------------
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=4------------------
 mtcars %>% 
   select(hp, cyl, mpg) %>% 
   explore_all(target = hp)

@@ -1,3 +1,28 @@
+# explore 1.3.0
+
+## New features
+
+* add parameter `nthread` to `explain_xgboost()`. (#45)
+* add `interact()`. (#47)
+* add interactivity as default in explore shiny app. (#47)
+* add `create_data_abtest()`.
+* add basic color parameter to `explore()` & `abtest()` functions.
+* add `get_color()`
+* move NA-info in `explore()` from title to subtitle. (#48)
+* add more descriptive infos into `explore()`subtitle. 
+* add `color` parameter for `explore()`, `explore_*()`, `report()`
+* add `bins` parameter to `target_explore_num()`
+
+## Breaking changes
+
+* `mix_color()` with one color as parameter generates colors from light to dark 
+* `target_explore_num()` bar positioning changes from max to mean value
+
+## Bug fixes / internal
+
+* fix undefined / not meaningful values in abtest() shiny-app
+* rename vignettes `explore_*.Rmd` to `explore-*.Rmd`
+
 # explore 1.2.0
 
 ## New features
@@ -5,7 +30,6 @@
 * add `explain_xgboost()` (#42)
 * add `drop_var_by_names()` (#43)
 * add `drop_var_not_numeric()` (#43)
-* add `check_vec_low_variance()` (helper function)
 * add `drop_var_low_variance()` (#43)
 * add `drop_var_no_variance()` (#43)
 * add `drop_var_with_na()` (#43)
@@ -18,6 +42,10 @@
 ## Breaking changes
 
 * `create_data_empty()` has no longer a parameter `seed` 
+
+## Bug fixes / internal
+
+* add `check_vec_low_variance()` (internal helper function)
 
 # explore 1.1.1
 

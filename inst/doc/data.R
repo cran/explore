@@ -44,6 +44,10 @@ data <- use_data_beer()
 glimpse(data)
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
+data <- create_data_abtest()
+glimpse(data)
+
+## ----message=FALSE, warning=FALSE---------------------------------------------
 data <- create_data_app(obs = 1000)
 glimpse(data)
 

@@ -154,14 +154,32 @@ weight_target <- function(data, target) {
 #' @param text Text as string
 #' @param size Text-size
 #' @param color Text-color
+#' @param ggplot return a ggplot-object? (or base plot)
 #' @return Plot
 #' @examples
 #' plot_text("hello", size = 2, color = "red")
 #' @export
 
-plot_text <- function(text="hello world", size=1.2, color="black")  {
+plot_text <- function(text="hello world", size=1.2, color="black", ggplot = FALSE)  {
+
+  if (ggplot) {
+
+    ggplot(NULL) +
+      geom_blank() +
+      geom_text(aes(x = 0, y = 0, label = text), size = 4 * size) +
+      theme_void()
+      #labs(title = var_txt, x = "", y = " ") +
+    #  theme(axis.title.x=element_blank(),
+    #        axis.text.x=element_blank(),
+    #        axis.ticks.x=element_blank(),
+    #        axis.title.y=element_blank(),
+    #        axis.text.y=element_blank(),
+    #        axis.ticks.y=element_blank(),
+    #        plot.margin = unit(c(0.1,0.1,0.5,1), "cm")) #t,r,b,l
+  } else {
   plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
   text(x = 0.5, y = 0.5, text, cex = size, col = color)
+  }
 }
 
 #' Plot a variable info
@@ -914,7 +932,7 @@ show_color <- function(color) {
 
 } # show_color
 
-#' mix_color
+#' Mix colors
 #'
 #' @param color1 Color 1
 #' @param color2 Color 2
@@ -928,7 +946,7 @@ show_color <- function(color) {
 mix_color <- function(color1, color2 = NA, n = 5) {
 
   if (is.na(color2)) {
-    colors <- grDevices::colorRampPalette(c("black", color1, "white"))(n + 2)
+    colors <- grDevices::colorRampPalette(c("white", color1, "black"))(n + 2)
     colors <- colors[-1]  # drop first color (black)
     colors <- colors[-length(colors)]  # drop last color (white)
   } else {
@@ -938,3 +956,103 @@ mix_color <- function(color1, color2 = NA, n = 5) {
   # return colors as vector
   colors
 } # mix_color
+
+#' Get predefined colors
+#'
+#' @param name Name of color/color-vector
+#' @param fill Fill color vector?
+#' @param fill_color Color to use to fill color vector
+#' @param fill_n Number of color codes to return
+#' @return Vector of color-codes
+#' @export
+#' @examples
+#' get_color("mario")
+#'
+#' get_color("mario")
+#' show_color(get_color("mario"))
+#' show_color(get_color("mario", fill = TRUE, fill_n = 10))
+#'
+#' col <- get_color("mario")
+#' explore(iris, Sepal.Length, target = Species,
+#'   color = col)
+#' explore(iris, Sepal.Length, target = Species,
+#'   color = c(col["peach"], col["bowser"], col["donkeykong"]))
+
+get_color <- function(name, fill = FALSE, fill_color = "#DDDDDD", fill_n = 10) {
+
+  color <- NULL
+
+  color$a1 <- c("greylight" = "#a3a9b0", "red" = "#d32c1c", "blue" = "#5dbcd2",  "black" = "#000000", "greydark" = "#868e96")
+#  color$amazon <- c("orange" = "#ff9900", "blue" = "#146eb4")
+  color$apple <- c("green" = "#61bb46", "yellow" = "#fdb827", "orange"= "#f5821f", "red" = "#e03a3e", "violet" = "#963d97", "blue" = "#009ddc")
+#  color$android <- c("green" = "#a4c639")
+#  color$ferrari <- c("red" = "#e32119")
+  color$google <- c("blue" = "#4285f4", "green" = "#34a853", "yellow"= "#fbbc05", "red" = "#ea4335")
+#  color$ikea <- c("yellow" = "#ffcc00", "blue" = "#003399")
+  color$mario <- c("mario" = "#e0102f", "luigi" = "#08a936", "peach" = "#f096be", "toad" = "#17419a", "bowser" = "#f8be10", "donkeykong" = "#742607")
+#  color$nfl <- c("blue" = "#013369", "red" = "#d50a0a")
+  color$python <- c("yellow" = "#ffde57", "blue" = "#4584b6", "grey" = "#646464")
+  color$r <- c("blue" = "#2065b8")
+  color$redbull <- c("yellow" = "#ffc906", "red" = "#cc1e4a", "blue" = "#223971", "bluedark" = "#121f45")
+  color$slack <- c("blue" = "#36c5f0", "red" = "#e01e5a", "yellow" = "#ecb22e", "green" = "#2eb67d", "violet"= "#4a154b")
+  color$ubuntu <- c("orange" = "#dd4814", "greydark" = "#333333", "greylight" = "#aea79f", "violet" = "#77216f")
+
+  if (missing(name)) {
+    return(color)
+  }
+
+  name <- tolower(name)
+  color_vctr <- color[[name]]
+
+  if (fill) {
+
+    n_colors <- length(color_vctr)
+    if (n_colors < fill_n) {
+      color_add <- rep(fill_color, fill_n - n_colors)
+      names(color_add) <- paste0("undef-", seq_along(color_add))
+    }
+
+    color_vctr <- c(color_vctr, color_add)
+
+  }
+
+  color_vctr
+
+} #get_color
+
+#' Cut a variable
+#'
+#' @param values Variable
+#' @param bins Number of bins
+#' @return Data frame
+
+cut_vec_num_avg <- function(values, bins = 8)  {
+
+  # define variables to pass CRAN checks
+  grp_ <- NULL
+  min_ <- NULL
+  max_ <- NULL
+  avg_ <- NULL
+  val_ <- NULL
+
+  # create bins
+  cut_values <- cut(values, bins, labels = FALSE)
+
+  # calc average
+  data_cut <- data.frame(
+    val_ = values,
+    grp_ = cut_values)
+
+  data_cut_avg <- data_cut %>%
+    group_by(grp_) %>%
+    summarize(min_ = min(val_), max_ = max(val_)) %>%
+    ungroup() %>%
+    mutate(avg_ = (max_ + min_)/2)
+
+  data_cut <- data_cut %>%
+    inner_join(data_cut_avg, by = "grp_")
+
+  # return result
+  data_cut[["avg_"]]
+
+} ## cut_var

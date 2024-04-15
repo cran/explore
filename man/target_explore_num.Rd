@@ -2,7 +2,7 @@
 % Please edit documentation in R/explore.R
 \name{target_explore_num}
 \alias{target_explore_num}
-\title{Explore categorical variable + target}
+\title{Explore Nuberical variable + target}
 \usage{
 target_explore_num(
   data,
@@ -10,10 +10,12 @@ target_explore_num(
   target = "target_ind",
   min_val = NA,
   max_val = NA,
+  bins = 10,
   flip = TRUE,
   title = NA,
   auto_scale = TRUE,
   na = NA,
+  color = c("#ECEFF1", "#CFD8DC", "#B0BEC5", "#90A4AE"),
   legend_position = "bottom"
 )
 }
@@ -28,6 +30,8 @@ target_explore_num(
 
 \item{max_val}{All values > max_val are converted to max_val}
 
+\item{bins}{Nuber of bins}
+
 \item{flip}{Should plot be flipped? (change of x and y)}
 
 \item{title}{Title of plot}
@@ -35,6 +39,8 @@ target_explore_num(
 \item{auto_scale}{Use 0.02 and 0.98 quantile for min_val and max_val (if min_val and max_val are not defined)}
 
 \item{na}{Value to replace NA}
+
+\item{color}{Color vector (4 colors)}
 
 \item{legend_position}{Position of legend ("right"|"bottom"|"non")}
 }

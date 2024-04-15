@@ -6,9 +6,8 @@ knitr::opts_chunk$set(
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
 library(dplyr)
-library(tibble)
 library(explore)
-titanic <- as_tibble(Titanic)
+titanic <- use_data_titanic(count = TRUE)
 
 ## -----------------------------------------------------------------------------
 titanic %>% describe_tbl(n = n)
@@ -25,7 +24,7 @@ titanic %>% explore(Class, n = n)
 ## ----message=FALSE, warning=FALSE---------------------------------------------
 titanic %>% describe(Class, n = n)
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(titanic, var_name_n = "n")----
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=total_fig_height(titanic, var_name_n = "n")----
 titanic %>% explore_all(n = n)
 
 ## ----message=FALSE, warning=FALSE, fig.height= 2.5, fig.width=4---------------

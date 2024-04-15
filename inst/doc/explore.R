@@ -58,27 +58,27 @@ iris %>% explore(Sepal.Length, target = Species)
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3------------------
 iris %>% explore(Sepal.Length, target = Petal.Length)
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=2.5----------------
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=2.5----------------
 iris %>% 
   select(Sepal.Length, Sepal.Width) %>% 
   explore_all()
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=2.5----------------
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=2.5----------------
 iris %>% 
   select(Sepal.Length, Sepal.Width, is_versicolor) %>% 
   explore_all(target = is_versicolor)
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=2.5----------------
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=2.5----------------
 iris %>% 
   select(Sepal.Length, Sepal.Width, is_versicolor) %>% 
   explore_all(target = is_versicolor, split = FALSE)
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=2.5----------------
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=2.5----------------
 iris %>% 
   select(Sepal.Length, Sepal.Width, Species) %>% 
   explore_all(target = Species)
 
-## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=2.5----------------
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=2.5----------------
 iris %>% 
   select(Sepal.Length, Sepal.Width, Petal.Length) %>% 
   explore_all(target = Petal.Length)
@@ -86,11 +86,11 @@ iris %>%
 ## ----message=FALSE, warning=FALSE---------------------------------------------
 data(iris)
 
-## ----message=FALSE, warning=FALSE, fig.width=7, fig.height=total_fig_height(iris, size=2.5)----
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=total_fig_height(iris, size=2.5)----
 iris %>% 
   explore_all()
 
-## ----message=FALSE, warning=FALSE, fig.width=7, fig.height=total_fig_height(iris, var_name_target = "Species", size=2.5)----
+## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=total_fig_height(iris, var_name_target = "Species", size=2.5)----
 iris %>% explore_all(target = Species)
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=3------------------

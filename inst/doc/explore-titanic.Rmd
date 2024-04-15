@@ -1,10 +1,10 @@
 ---
-title: "Explore Titanic"
+title: "Explore titanic"
 author: "Roland Krasser"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Explore Titanic}
+  %\VignetteIndexEntry{Explore titanic}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -24,9 +24,8 @@ The titanic dataset is available in base R. The data has 5 variables and only 32
 
 ```{r message=FALSE, warning=FALSE}
 library(dplyr)
-library(tibble)
 library(explore)
-titanic <- as_tibble(Titanic)
+titanic <- use_data_titanic(count = TRUE)
 ```
 
 ### Explore dataset
@@ -63,7 +62,7 @@ titanic %>% describe(Class, n = n)
 
 To explore all variables, we can simply use explore_all(). You automatically fit the height of the plot using `fig.height=total_fig_height(titanic, var_name_n = "n")` in the code chunk header.
 
-```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=total_fig_height(titanic, var_name_n = "n")}
+```{r message=FALSE, warning=FALSE, fig.width=8, fig.height=total_fig_height(titanic, var_name_n = "n")}
 titanic %>% explore_all(n = n)
 ```
 

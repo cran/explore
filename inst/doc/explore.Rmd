@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-The explore package simplifies Exploratory Data Analysis (EDA). Get faster insights with less code! There are three ways to use the package: **interactive data exploration**, generate an **automated report** or use low code for **manual exploration** (`explore()`, `describe()`, `explain_*()`, `report()` , `abtest()`, ...)  
+The explore package simplifies Exploratory Data Analysis (EDA). Get faster insights with less code! 
 
 explore package on Github: [https://github.com/rolkra/explore](https://github.com/rolkra/explore)
 
@@ -69,7 +69,7 @@ If you use a binary target, the parameter ***split = FALSE*** (or `targetpct = T
 
 ![](../man/figures/report-target.png){width=600px}
 
- ### Grow a decision tree
+### Grow a decision tree
 
 Grow a decision tree with one line of code:
 
@@ -148,31 +148,31 @@ iris %>% explore(Sepal.Length, target = Petal.Length)
 
 ### Explore multiple variables
 
-```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=2.5}
+```{r message=FALSE, warning=FALSE, fig.width=8, fig.height=2.5}
 iris %>% 
   select(Sepal.Length, Sepal.Width) %>% 
   explore_all()
 ```
 
-```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=2.5}
+```{r message=FALSE, warning=FALSE, fig.width=8, fig.height=2.5}
 iris %>% 
   select(Sepal.Length, Sepal.Width, is_versicolor) %>% 
   explore_all(target = is_versicolor)
 ```
 
-```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=2.5}
+```{r message=FALSE, warning=FALSE, fig.width=8, fig.height=2.5}
 iris %>% 
   select(Sepal.Length, Sepal.Width, is_versicolor) %>% 
   explore_all(target = is_versicolor, split = FALSE)
 ```
 
-```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=2.5}
+```{r message=FALSE, warning=FALSE, fig.width=8, fig.height=2.5}
 iris %>% 
   select(Sepal.Length, Sepal.Width, Species) %>% 
   explore_all(target = Species)
 ```
 
-```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=2.5}
+```{r message=FALSE, warning=FALSE, fig.width=8, fig.height=2.5}
 iris %>% 
   select(Sepal.Length, Sepal.Width, Petal.Length) %>% 
   explore_all(target = Petal.Length)
@@ -184,14 +184,14 @@ data(iris)
 
 To use a high number of variables with `explore_all()` in a RMarkdown-File, it is necessary to set a meaningful fig.width and fig.height in the junk. The function `total_fig_height()` helps to automatically set fig.height: ```fig.height=total_fig_height(iris)```
 
-```{r message=FALSE, warning=FALSE, fig.width=7, fig.height=total_fig_height(iris, size=2.5)}
+```{r message=FALSE, warning=FALSE, fig.width=8, fig.height=total_fig_height(iris, size=2.5)}
 iris %>% 
   explore_all()
 ```
 
 If you use a target: ```fig.height=total_fig_height(iris, var_name_target = "Species")```
 
-```{r message=FALSE, warning=FALSE, fig.width=7, fig.height=total_fig_height(iris, var_name_target = "Species", size=2.5)}
+```{r message=FALSE, warning=FALSE, fig.width=8, fig.height=total_fig_height(iris, var_name_target = "Species", size=2.5)}
 iris %>% explore_all(target = Species)
 ```
 
@@ -278,6 +278,7 @@ use_data_beer() %>% describe()
 
 Use one of the prepared datasets to explore:
 
+* `create_data_abtest()`
 * `create_data_app()`
 * `create_data_buy()`
 * `create_data_churn()`

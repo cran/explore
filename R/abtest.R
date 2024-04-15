@@ -5,6 +5,7 @@
 #' @param n A Variable for number of observations (count data)
 #' @param target Target variable
 #' @param sign_level Significance Level (typical 0.01/0.05/0.10)
+#' @param color Fill color of bar/violin-plot
 #' @return Plot that shows if difference is significant
 #' @examples
 #' ## Using chi2-test or t-test depending on target type
@@ -18,14 +19,40 @@
 #' abtest(data, female_ind == 1, target = buy)  # Fisher's Exact test
 #' @export
 
-abtest <- function(data, expr, n, target, sign_level = 0.05) {
+abtest <- function(data, expr, n, target, sign_level = 0.05, color = "grey") {
+
+  ## define variables to pass CRAN tests
+  group <- NULL
+  nn <- NULL
+  success <- NULL
 
   # if not data is provided, start shiny app
   if (missing(data)) {
     abtest_shiny()
     #return("hallo welt")
-  } else {
+  } else if (all(c("group", "success", "n") %in% names(data)) & missing(expr)) {
 
+    data$nn <- data$n
+    abtest_targetpct(data = data,
+                     expr = group == "B",
+                     n = nn,
+                     target = success,
+                     sign_level = as.numeric(sign_level),
+                     group_label = "Group",
+                     ab_label = TRUE,
+                     color = color)
+
+  } else if (all(c("group", "success") %in% names(data)) & missing(expr)) {
+
+    abtest_targetpct(data = data,
+                     expr = group == "B",
+                    #n = nn,
+                     target = success,
+                     sign_level = as.numeric(sign_level),
+                     group_label = "Group",
+                     ab_label = TRUE,
+                     color = color)
+  } else {
   # check parameter
   check_data_frame_non_empty(data)
   rlang::check_required(expr)
@@ -52,13 +79,15 @@ abtest <- function(data, expr, n, target, sign_level = 0.05) {
       p <- abtest_targetpct(data = data,
                             expr = {{ expr }},
                             target = {{ target }},
-                            sign_level = sign_level)
+                            sign_level = sign_level,
+                            color = color)
     } else {
       p <- abtest_targetpct(data = data,
                             expr = {{ expr }},
                             n = {{ n }},
                             target = {{ target }},
-                            sign_level = sign_level)
+                            sign_level = sign_level,
+                            color = color)
 
     } # missing(n)
 
@@ -67,7 +96,8 @@ abtest <- function(data, expr, n, target, sign_level = 0.05) {
     p <- abtest_targetnum(data = data,
                           expr = {{ expr }},
                           target = {{ target }},
-                          sign_level = sign_level)
+                          sign_level = sign_level,
+                          color = color)
   }
 
   # plot output
@@ -83,12 +113,13 @@ abtest <- function(data, expr, n, target, sign_level = 0.05) {
 #' @param expr Expression, that results in a FALSE/TRUE
 #' @param target Target variable (must be numeric)
 #' @param sign_level Significance Level (typical 0.01/0.05/0.10)
+#' @param color fill color
 #' @return Plot that shows if difference is significant
 #' @examples
 #' data <- create_data_buy(obs = 100)
 #' abtest(data, city_ind == 1, target = age)
 
-abtest_targetnum <- function(data, expr, target, sign_level = 0.05) {
+abtest_targetnum <- function(data, expr, target, sign_level = 0.05, color = "grey") {
 
   rlang::check_required(target)
   # parameter target
@@ -171,7 +202,7 @@ abtest_targetnum <- function(data, expr, target, sign_level = 0.05) {
     ggplot2::aes(x = {{ expr }}, y = {{ target }})
   ) +
     ggplot2::geom_violin(
-      fill = "grey") +
+      fill = color) +
     #notch = TRUE,
     #outlier.shape = NA) +
     ggplot2::stat_summary(
@@ -217,13 +248,14 @@ abtest_targetnum <- function(data, expr, target, sign_level = 0.05) {
 #' @param sign_level Significance Level (typical 0.01/0.05/0.10)
 #' @param group_label Label of groups (default = expr)
 #' @param ab_label Label Groups as A and B (default = FALSE)
+#' @param color color of bar
 #' @return Plot that shows if difference is significant
 #' @examples
 #' data <- create_data_buy(obs = 100)
 #' abtest(data, female_ind == 1, target = buy)
 #' abtest(data, age >= 40, target = buy)
 
-abtest_targetpct <- function(data, expr, n, target, sign_level = 0.05, group_label, ab_label = FALSE) {
+abtest_targetpct <- function(data, expr, n, target, sign_level = 0.05, group_label, ab_label = FALSE, color = "grey") {
 
   # parameter target
   rlang::check_required(target)
@@ -240,6 +272,12 @@ abtest_targetpct <- function(data, expr, n, target, sign_level = 0.05, group_lab
     if (!n_text %in% names(data))  {
       stop(paste0("variable '", n_text, "' not found"))
     }
+
+    if(any(is.na(data[[n_text]]))) {
+      p <- plot_text("Undefined values", ggplot = TRUE)
+      return(p)
+    }
+
   } # if
 
   # define variables for CRAN-package check
@@ -297,6 +335,16 @@ abtest_targetpct <- function(data, expr, n, target, sign_level = 0.05, group_lab
     a_grp$target1_sum, b_grp$target1_sum,
     a_grp$n - a_grp$target1_sum, b_grp$n - b_grp$target1_sum),2,2)
 
+  # check if meaningful
+  if(a_grp$n < a_grp$target1_sum) {
+    p <- plot_text("Not meaningful values", ggplot = TRUE)
+    return(p)
+  }
+  if(b_grp$n < b_grp$target1_sum) {
+    p <- plot_text("Not meaningful values", ggplot = TRUE)
+    return(p)
+  }
+
   # test for significance
   if (any(m <= 5)) {
     test_used <- "Fisher's Exact"
@@ -336,7 +384,7 @@ abtest_targetpct <- function(data, expr, n, target, sign_level = 0.05, group_lab
   # plot result
   p <- data_ab %>%
     ggplot2::ggplot(ggplot2::aes(x = expression, y = target1_pct)) +
-    ggplot2::geom_col(fill = "grey") +
+    ggplot2::geom_col(fill = color) +
     ggplot2::geom_hline(
       yintercept = data_ab$target1_pct, alpha = 0.3,
       linetype = "dashed", color = "red") +

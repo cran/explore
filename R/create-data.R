@@ -769,3 +769,56 @@ create_data_esoteric = function(obs = 1000, add_id = FALSE, seed = 123) {
   tibble::as_tibble(data)
 
 } # create_data_esoteric
+
+#' Create data of A/B testing
+#'
+#' Data that can be used for unit-testing or teaching
+#'
+#' @param n_a Total size of group A
+#' @param n_b Total size of group B
+#' @param success_a Success in group A
+#' @param success_b Success in group B
+#' @param success_unit Unit ("count"|"percent")
+#' @param count Create as count-data (FALSE|TRUE)
+#' @return A dataset as tibble
+#' @examples
+#' library(dplyr)
+#' create_data_abtest() %>% abtest()
+#' create_data_abtest(
+#'   n_a = 100,
+#'   n_b = 100,
+#'   success_a = 20,
+#'   success_b = 30,
+#'   success_unit = "count"
+#' ) %>% abtest()
+#' @export
+
+create_data_abtest <- function(n_a = 100, n_b = 100,
+                               success_a = 10, success_b = 5,
+                               success_unit = "count", count = TRUE)  {
+  ## Define variables to pass CRAN check
+  random_int <- NULL
+
+  # check unit
+  if (success_unit == "percent") {
+    success_a <- round(n_a * success_a/10, 0)
+    success_b <- round(n_b * success_b/10, 0)
+  }
+
+  # create count data
+  data <- data.frame(
+    group = c('A', 'A', 'B', 'B'),
+    n = c(n_a - success_a, success_a, n_b - success_b, success_b),
+    success = c(0, 1, 0, 1)
+  )
+
+  # uncount if necessary
+  if (count) {
+    data
+  } else {
+    data <- uncount_compat(data, n) %>% add_var_random_int()
+    data %>% arrange(random_int) %>% select(-random_int)
+  }
+
+} #create_data_abtest
+
