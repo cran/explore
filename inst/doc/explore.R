@@ -80,7 +80,7 @@ iris %>%
 
 ## ----message=FALSE, warning=FALSE, fig.width=8, fig.height=2.5----------------
 iris %>% 
-  select(Sepal.Length, Sepal.Width, Petal.Length) %>% 
+  select(Sepal.Length, Petal.Width, Petal.Length) %>% 
   explore_all(target = Petal.Length)
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
