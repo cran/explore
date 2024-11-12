@@ -1020,6 +1020,12 @@ explore_cor <- function(data, x, y, target, bins = 8, min_val = NA, max_val = NA
 
   }
 
+  else if(x_type == "cat" & is.numeric(data[[y_txt]]) & (x_descr$unique == nrow(data))) {
+
+     p <- explore_col(data, !!x_quo, !!y_quo, ...)
+
+  }
+
   else if(x_type == "cat" & y_type == "num") {
 
     data[[x_txt]] <- as.factor(data[[x_txt]])
@@ -1967,6 +1973,96 @@ explore_count <- function(data, cat, n, target, pct = FALSE, split = TRUE, title
   #data_plot
 
 } # explore_count
+
+#' Explore data without aggregation (label + value)
+#'
+#' Label and Value are in the data. Create a bar plot where the heights of the
+#' bars represent the values for each label.
+#'
+#' @param data A dataset (categories + frequency)
+#' @param var_label Variable containing the label
+#' @param var_value Variable containing the value
+#' @param title Title of the plot
+#' @param subtitle Subtitle of the plot
+#' @param numeric Display variable as numeric (not category)
+#' @param max_cat Maximum number of categories to be plotted
+#' @param na Value to use for NA
+#' @param flip Flip plot? (for categorical variables)
+#' @param color Color for bar
+#' @return Plot object
+#' @examples
+#' library(magrittr)
+#' data <- data.frame(label = LETTERS[1:5], value = c(1.5,2,1.2,3,2.6))
+#' data %>% explore_col(label, value)
+#'
+#' @export
+
+explore_col <- function(data, var_label, var_value,
+                        title = NA, subtitle = "",
+                        numeric = FALSE,
+                        max_cat = 30,
+                        na = 0,
+                        flip = NA,
+                        color = "#ADD8E6") {
+
+  # define variables for CRAN-package check
+  label <- NULL
+  value <- NULL
+
+  # check parameters
+  check_data_frame_non_empty(data)
+  if (ncol(data) < 2) {
+    stop("data must contain at least 2 variables.")
+  }
+
+  # parameter var_label
+  if (!missing(var_label))  {
+    lab_quo <- enquo(var_label)
+    lab_txt <- quo_name(lab_quo)[[1]]
+    if (!lab_txt %in% names(data)) {
+      stop(paste0("variable '", lab_txt, "' not found"))
+    }
+  } else {
+    lab_txt <- names(data)[1]
+  }
+
+  # parameter var_value
+  if (!missing(var_value))  {
+    val_quo <- enquo(var_value)
+    val_txt <- quo_name(val_quo)[[1]]
+    if (!val_txt %in% names(data)) {
+      stop(paste0("variable '", val_txt, "' not found"))
+    }
+  } else {
+    val_txt <- names(data)[2]
+  }
+
+  if (!is.numeric(data[[val_txt]])) {
+    stop("var_value must be a numeric variable")
+  }
+
+  # replace NA values (if wanted)
+  if (!is.na(na)) {
+    data[val_txt] <- ifelse(is.na(data[[val_txt]]), na, data[[val_txt]])
+  }
+
+  data_plot <- data[ , c(lab_txt, val_txt)]
+  names(data_plot) <- c("label", "value")
+
+  # if no title is provided, use default
+  if (is.na(title) | nchar(title == 0)) {
+    title <- lab_txt
+  }
+
+  explore_count(data_plot, label, n = value,
+                title = title, numeric = numeric, max_cat = max_cat,
+                flip = flip, color = color) +
+    ggplot2::labs(subtitle = subtitle) +
+    # ggplot2::xlab(lab_txt) +
+    ggplot2::ylab(val_txt)
+
+} # explore_col
+
 
 #' Make a explore-plot interactive
 #'

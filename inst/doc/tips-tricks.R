@@ -70,3 +70,9 @@ get_color()
 colors <- get_color("google")
 show_color(colors)
 
+## ----echo=TRUE, message=FALSE, warning=FALSE----------------------------------
+yyyymm_calc(202410, add_month = 3)
+
+## ----echo=TRUE, message=FALSE, warning=FALSE----------------------------------
+yyyymm_calc(c(202408, 202409, 202410), add_month = -1, add_year = -1)
+

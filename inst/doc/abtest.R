@@ -38,3 +38,17 @@ data %>% explore(Sex, target = Survived, n = n)
 ## ----message=FALSE, warning=FALSE, fig.width=5--------------------------------
 data %>% abtest(Sex == "Female", target = Survived, n = n, sign_level = 0.05)
 
+## ----message=FALSE, warning=FALSE, fig.width=5--------------------------------
+create_data_abtest(
+  n_a = 1000, n_b = 1000,
+  success_a = 120, success_b = 210,
+  success_unit = "count") %>% 
+abtest(sign_level = 0.05)
+
+## ----message=FALSE, warning=FALSE, fig.width=5--------------------------------
+create_data_abtest(
+  n_a = 1000, n_b = 1000,
+  success_a = 12, success_b = 21,
+  success_unit = "percent") %>% 
+abtest(sign_level = 0.05)
+

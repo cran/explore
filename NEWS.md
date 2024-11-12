@@ -1,3 +1,17 @@
+# explore 1.3.3
+
+## New features
+
+* add `explore_col()` for simple bar plots without aggregation
+* add `yyyymm_calc()` for calculation with periods (format yyyymm)
+* add `use_data_wordle()`: data from a wordle challange
+* update vignette `abtest.Rmd`
+
+## Bug fixes / internal
+
+* fix create_data_abtest() with success_unit = "percent"
+
+
 # explore 1.3.2
 
 ## New features

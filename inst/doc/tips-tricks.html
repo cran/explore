@@ -12,7 +12,7 @@
 
 <meta name="author" content="Roland Krasser" />
 
-<meta name="date" content="2024-09-02" />
+<meta name="date" content="2024-11-12" />
 
 <title>Tips &amp; tricks</title>
 
@@ -333,7 +333,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Tips &amp; tricks</h1>
 <h4 class="author">Roland Krasser</h4>
-<h4 class="date">2024-09-02</h4>
+<h4 class="date">2024-11-12</h4>
 
 
 
@@ -474,6 +474,14 @@ data_dict.md)</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>colors <span class="ot">&lt;-</span> <span class="fu">get_color</span>(<span class="st">&quot;google&quot;</span>)</span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">show_color</span>(colors)</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="period-yyyymm" class="section level2">
+<h2>Period yyyymm</h2>
+<p>This is how to calculate with periods (format yyyymm)</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">yyyymm_calc</span>(<span class="dv">202410</span>, <span class="at">add_month =</span> <span class="dv">3</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co">#&gt; [1] 202501</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">yyyymm_calc</span>(<span class="fu">c</span>(<span class="dv">202408</span>, <span class="dv">202409</span>, <span class="dv">202410</span>), <span class="at">add_month =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">add_year =</span> <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="co">#&gt; [1] 202307 202308 202309</span></span></code></pre></div>
 </div>
 
 
