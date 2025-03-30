@@ -12,7 +12,7 @@
 
 <meta name="author" content="Roland Krasser" />
 
-<meta name="date" content="2024-11-12" />
+<meta name="date" content="2025-03-30" />
 
 <title>Explain</title>
 
@@ -51,7 +51,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -121,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; }
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -333,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Explain</h1>
 <h4 class="author">Roland Krasser</h4>
-<h4 class="date">2024-11-12</h4>
+<h4 class="date">2025-03-30</h4>
 
 
 
@@ -360,19 +367,19 @@ tree</li>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt; Rows: 1,000</span></span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; Columns: 13</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; $ period          &lt;int&gt; 202012, 202012, 202012, 202012, 202012, 202012, 202012~</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; $ buy             &lt;int&gt; 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, ~</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; $ age             &lt;int&gt; 39, 57, 55, 66, 71, 44, 64, 51, 70, 44, 58, 47, 68, 71~</span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; $ city_ind        &lt;int&gt; 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, ~</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; $ female_ind      &lt;int&gt; 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, ~</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; $ fixedvoice_ind  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, ~</span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; $ fixeddata_ind   &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ~</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; $ fixedtv_ind     &lt;int&gt; 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, ~</span></span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; $ mobilevoice_ind &lt;int&gt; 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, ~</span></span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; $ mobiledata_prd  &lt;chr&gt; &quot;NO&quot;, &quot;NO&quot;, &quot;MOBILE STICK&quot;, &quot;NO&quot;, &quot;BUSINESS&quot;, &quot;BUSINES~</span></span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; $ bbi_speed_ind   &lt;int&gt; 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, ~</span></span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; $ bbi_usg_gb      &lt;int&gt; 77, 49, 53, 44, 55, 93, 50, 64, 63, 87, 45, 45, 70, 79~</span></span>
-<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; $ hh_single       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, ~</span></span></code></pre></div>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; $ period          &lt;int&gt; 202012, 202012, 202012, 202012, 202012, 202012, 202012…</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; $ buy             &lt;int&gt; 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, …</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; $ age             &lt;int&gt; 39, 57, 55, 66, 71, 44, 64, 51, 70, 44, 58, 47, 68, 71…</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; $ city_ind        &lt;int&gt; 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, …</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; $ female_ind      &lt;int&gt; 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, …</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; $ fixedvoice_ind  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, …</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; $ fixeddata_ind   &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; $ fixedtv_ind     &lt;int&gt; 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, …</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; $ mobilevoice_ind &lt;int&gt; 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, …</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; $ mobiledata_prd  &lt;chr&gt; &quot;NO&quot;, &quot;NO&quot;, &quot;MOBILE STICK&quot;, &quot;NO&quot;, &quot;BUSINESS&quot;, &quot;BUSINES…</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; $ bbi_speed_ind   &lt;int&gt; 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, …</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; $ bbi_usg_gb      &lt;int&gt; 77, 49, 53, 44, 55, 93, 50, 64, 63, 87, 45, 45, 70, 79…</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; $ hh_single       &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, …</span></span></code></pre></div>
 <div id="explain-model" class="section level3">
 <h3>Explain / Model</h3>
 <div id="decision-tree" class="section level4">
@@ -410,32 +417,34 @@ training</p>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="fu">explain_xgboost</span>(<span class="at">target =</span> buy, <span class="at">out =</span> <span class="st">&quot;all&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>train<span class="sc">$</span>importance</span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt;           variable        gain       cover  frequency  importance</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt; 1:             age 0.438876303 0.269718075 0.22916667 0.438876303</span></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; 2:      bbi_usg_gb 0.273748162 0.309418667 0.31250000 0.273748162</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; 3:      female_ind 0.148257513 0.145936389 0.13095238 0.148257513</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; 4:     fixedtv_ind 0.087929669 0.126867898 0.12500000 0.087929669</span></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; 5:   bbi_speed_ind 0.022082801 0.057552002 0.07440476 0.022082801</span></span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; 6:        city_ind 0.018582322 0.064343469 0.06845238 0.018582322</span></span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; 7:       hh_single 0.005310378 0.010887744 0.02083333 0.005310378</span></span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; 8:  fixedvoice_ind 0.003014395 0.008814722 0.02083333 0.003014395</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; 9: mobilevoice_ind 0.002198457 0.006461034 0.01785714 0.002198457</span></span></code></pre></div>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt;             &lt;char&gt;       &lt;num&gt;       &lt;num&gt;      &lt;num&gt;       &lt;num&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; 1:             age 0.438876299 0.269718075 0.22916667 0.438876299</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; 2:      bbi_usg_gb 0.273748159 0.309418667 0.31250000 0.273748159</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; 3:      female_ind 0.148257511 0.145936389 0.13095238 0.148257511</span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; 4:     fixedtv_ind 0.087929677 0.126867898 0.12500000 0.087929677</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; 5:   bbi_speed_ind 0.022082803 0.057552002 0.07440476 0.022082803</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; 6:        city_ind 0.018582321 0.064343469 0.06845238 0.018582321</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; 7:       hh_single 0.005310378 0.010887744 0.02083333 0.005310378</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; 8:  fixedvoice_ind 0.003014397 0.008814722 0.02083333 0.003014397</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; 9: mobilevoice_ind 0.002198457 0.006461034 0.01785714 0.002198457</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>train<span class="sc">$</span>tune_plot</span></code></pre></div>
 <p><img src="data:image/png;base64,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" /><!-- --></p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>train<span class="sc">$</span>tune_data</span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt;    model_nr  eta max_depth runtime iter train_auc_mean test_auc_mean</span></span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt; 1:        1 0.30         3  0 mins   21      0.9599662     0.9259773</span></span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; 2:        2 0.10         3  0 mins   52      0.9572578     0.9271735</span></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; 3:        3 0.01         3  0 mins  551      0.9592901     0.9268295</span></span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; 4:        4 0.30         5  0 mins   13      0.9762086     0.9212647</span></span>
-<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; 5:        5 0.10         5  0 mins   38      0.9773647     0.9258133</span></span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; 6:        6 0.01         5  0 mins   71      0.9601223     0.9256453</span></span></code></pre></div>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt;    model_nr   eta max_depth    runtime  iter train_auc_mean test_auc_mean</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt;       &lt;int&gt; &lt;num&gt;     &lt;num&gt; &lt;difftime&gt; &lt;num&gt;          &lt;num&gt;         &lt;num&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; 1:        1  0.30         3     0 mins    21      0.9599662     0.9259773</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; 2:        2  0.10         3     0 mins    52      0.9572578     0.9271735</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; 3:        3  0.01         3     0 mins   551      0.9592901     0.9268295</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; 4:        4  0.30         5     0 mins    13      0.9762086     0.9212647</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; 5:        5  0.10         5     0 mins    38      0.9773647     0.9258133</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt; 6:        6  0.01         5     0 mins    71      0.9601223     0.9256453</span></span></code></pre></div>
 <p>To use the model for a prediction, you can use
 <code>predict_target()</code></p>
 </div>
 <div id="logistic-regression" class="section level4">
 <h4>Logistic Regression</h4>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>data <span class="sc">%&gt;%</span> <span class="fu">explain_logreg</span>(<span class="at">target =</span> buy)</span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 x 5</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 5</span></span>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="co">#&gt;   term          estimate std.error statistic  p.value</span></span>
 <span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;</span></span>
 <span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; 1 (Intercept)  5.87      0.544        10.8   3.88e-27</span></span>

@@ -1,3 +1,15 @@
+# explore 1.3.4
+
+## New features
+
+* add new data for `use_data_wordle()`
+
+## Bug fixes / internal
+
+* round absolute numbers if `abtest()` is used with percentage
+* accept vector as input for `mix_color()`, but only use first element
+* `geom_abline()`: switch from `size` to `linewidth` 
+
 # explore 1.3.3
 
 ## New features
@@ -10,7 +22,6 @@
 ## Bug fixes / internal
 
 * fix create_data_abtest() with success_unit = "percent"
-
 
 # explore 1.3.2
 

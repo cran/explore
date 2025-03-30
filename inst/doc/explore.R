@@ -9,20 +9,20 @@ library(dplyr)
 library(explore)
 
 ## ----eval=FALSE, echo=TRUE----------------------------------------------------
-#  explore(iris)
+# explore(iris)
 
 ## ----eval=FALSE, echo=TRUE----------------------------------------------------
-#  # report of all variables
-#  iris %>% report(output_file = "report.html", output_dir = tempdir())
+# # report of all variables
+# iris %>% report(output_file = "report.html", output_dir = tempdir())
 
 ## ----eval=FALSE, echo=TRUE----------------------------------------------------
-#  # report of all variables and their relationship with a binary target
-#  iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
-#  iris %>%
-#    report(output_file = "report.html",
-#           output_dir = tempdir(),
-#           target = is_versicolor)
-#  
+# # report of all variables and their relationship with a binary target
+# iris$is_versicolor <- ifelse(iris$Species == "versicolor", 1, 0)
+# iris %>%
+#   report(output_file = "report.html",
+#          output_dir = tempdir(),
+#          target = is_versicolor)
+# 
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4------------------
 iris %>% explain_tree(target = Species)
@@ -171,7 +171,7 @@ use_data_penguins() %>%
   describe_tbl()
 
 ## ----eval=FALSE, message=FALSE, warning=FALSE---------------------------------
-#  create_notebook_explore(
-#    output_dir = tempdir(),
-#    output_file = "notebook-explore.Rmd")
+# create_notebook_explore(
+#   output_dir = tempdir(),
+#   output_file = "notebook-explore.Rmd")
 

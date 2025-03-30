@@ -537,7 +537,7 @@ explore_bar <- function(data, var, target, flip = NA, title = "", numeric = NA, 
 #' @param ... Further arguments
 #' @return Plot object (density plot)
 #' @examples
-#' explore_density(iris, "Sepal.Length")
+#' explore_density(iris, Sepal.Length)
 #' iris$is_virginica <- ifelse(iris$Species == "virginica", 1, 0)
 #' explore_density(iris, Sepal.Length, target = is_virginica)
 #' @export
@@ -989,7 +989,7 @@ explore_cor <- function(data, x, y, target, bins = 8, min_val = NA, max_val = NA
         geom_abline(intercept = reg_intercept, slope = reg_slope,
                     #color = "#7f7f7f", alpha = 0.5,
                     color = color_dark,
-                    alpha = 0.75, linetype = "solid", size = 1) +
+                    alpha = 0.75, linetype = "solid", linewidth = 1) +
         theme(
           panel.background = element_rect("white"),
           panel.grid.major = element_line("grey85"),

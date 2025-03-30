@@ -5,15 +5,16 @@
 [![R-CMD-check](https://github.com/rolkra/explore/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rolkra/explore/actions/workflows/R-CMD-check.yaml) 
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/explore)](https://CRAN.r-project.org/package=explore)
 [![Downloads](https://cranlogs.r-pkg.org/badges/explore)](https://CRAN.r-project.org/package=explore)
+[![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/grand-total/explore?color=blue)](https://r-pkg.org/pkg/explore)
 <!-- badges: end -->
 
 Simplifies Exploratory Data Analysis:
 
--   **Interactive data exploration** using `explore()`
--   Use **AI** to unveil hidden patterns in your data (xgboost, RF, logreg, DT)
--   Generate an **automated report** of your data (or patterns in your data) using `report()`
--   **Manual exploration** using `explore()`, `describe()`, `explain_*()`, `abtest()`, ...
--   18 ready to use **datasets for teaching & testing**
+-   **Interactive data exploration**: `explore()`
+-   Use **AI** to unveil hidden patterns in your data (xgboost, RF, logreg, DT): `explain_*()`
+-   Generate an **automated report** of your data (or patterns in your data): `report()`
+-   **Manual exploration**: `explore()`, `describe()`, `explain_*()`, `abtest()`, ...
+-   18 ready to use **datasets for teaching & testing**: `use_data_*()`, `create_data_*()`
 
 ``` r
 # install from CRAN
