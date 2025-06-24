@@ -10,7 +10,7 @@ library(explore)
 data <- create_data_churn()
 
 ## ----eval=FALSE---------------------------------------------------------------
-# data %>% report(target = churn, targetpct = TRUE, output_dir = tempdir())
+#  data %>% report(target = churn, targetpct = TRUE, output_dir = tempdir())
 
 ## ----fig.height=3, fig.width=6, echo=FALSE, message=FALSE, warning=FALSE------
 data %>% explore_tbl()

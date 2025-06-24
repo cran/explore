@@ -12,6 +12,10 @@ data <- use_data_penguins()
 glimpse(data)
 
 ## ----message=FALSE, warning=FALSE---------------------------------------------
+data <- use_data_penguins(short_names = TRUE)
+glimpse(data)
+
+## ----message=FALSE, warning=FALSE---------------------------------------------
 data <- use_data_starwars()
 glimpse(data)
 

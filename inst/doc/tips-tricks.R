@@ -27,17 +27,17 @@ create_notebook_explore(
   output_file = "notebook-explore.Rmd")
 
 ## ----eval=FALSE, echo=TRUE----------------------------------------------------
-# iris  %>%  data_dict_md(output_dir = tempdir())
+#  iris  %>%  data_dict_md(output_dir = tempdir())
 
 ## ----eval=FALSE, echo=TRUE----------------------------------------------------
-# description <- data.frame(
-#                   variable = c("Species"),
-#                   description = c("Species of Iris flower"))
-# data_dict_md(iris,
-#              title = "iris flower data set",
-#              description =  description,
-#              output_file = "data_dict_iris.md",
-#              output_dir = tempdir())
+#  description <- data.frame(
+#                    variable = c("Species"),
+#                    description = c("Species of Iris flower"))
+#  data_dict_md(iris,
+#               title = "iris flower data set",
+#               description =  description,
+#               output_file = "data_dict_iris.md",
+#               output_dir = tempdir())
 
 ## ----message=FALSE, warning=FALSE, fig.width=6, fig.height=4------------------
 data <- use_data_penguins()
